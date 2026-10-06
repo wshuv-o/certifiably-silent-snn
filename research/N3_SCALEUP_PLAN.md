@@ -902,3 +902,127 @@ anti-optional-stopping rule exists -- had the seeds been added and then selected
 -0.91 (FT, 6 seeds) vs -1.09 (scratch, 3 seeds). The two are now close, and a 6-seed scratch arm would be
 needed before claiming FT is meaningfully better on accuracy at H = 512. The certifiability gap remains
 clear (55.8% FT vs 60.5% scratch).
+
+## SCALE-FT-002 stage 1 — RESULT (2026-10-06, H = 1024, seed 1, validation only): the 1024 failure WAS a budget artefact
+
+Control validation accuracy at H = 1024: 76.13 (mean, seeds 1-3). Budget 0.3935. All figures below are on
+the **speaker-disjoint validation set**, so they are comparable with each other (the -2.77 figure quoted
+earlier for scratch is a *test* number and must not be compared with these directly).
+
+| config | val cost | certified | R_mean |
+|---|---|---|---|
+| scratch lam=0.3 (n=3)        | -5.59 | 63.55% | 0.392 |
+| FT lam=0.3, 20 ep (n=3)      | -3.99 |  0.59% | 0.510 |
+| **FT lam=0.3, 40 ep (n=1)**  | **-2.48** | **54.03%** | 0.395 |
+| FT lam=1.0, 20 ep (n=1)      | -4.88 | 59.95% | 0.345 |
+| FT lam=1.0, 40 ep (n=1)      | -5.82 | 62.07% | 0.309 |
+
+**SCALE-FT-001's conclusion is REVISED.** "Fine-tuning does not generalize to 1,024 neurons" was an
+artefact of the **20-epoch** fine-tuning budget, not a property of fine-tuning. At 40 epochs with the same
+lambda = 0.3, fine-tuning at H = 1024 costs **-2.48** and certifies **54.03%**, against scratch's -5.59 at
+63.55%: **less than half the accuracy cost at a comparable certifiable operating point.** A longer
+fine-tune is what the larger fan-in distance required, exactly as the R ~ fan-in analysis implied.
+
+**Flaw in this experiment's own pre-registered selection rule (disclosed, not worked around).** The rule
+gated eligibility on `R_mean <= 0.3935`. That excluded FT lam=0.3/40 ep (R_mean = 0.395) by 0.4% -- yet
+that config certifies 54%. **R_mean is the wrong gate:** certification is evaluated per neuron, so a mean
+marginally above the budget still leaves many neurons below it. The rule's literal winner is
+FT lam=1.0/20 ep (-4.88, 59.95%), which is *dominated on accuracy* by the config the rule excluded.
+The better config is **not** silently substituted; both are carried into a replication with a corrected
+rule (below).
+
+# SCALE-FT-003 — replication of the two 1024 candidates with a corrected rule (PRE-REGISTERED 2026-10-06, before running)
+
+**Why:** the stage-1 candidates are single-seed (n = 1), and the stage-1 eligibility gate was
+mis-specified (see above). Both candidates are therefore replicated before any test evaluation.
+
+**Corrected eligibility rule:** gate on the quantity actually of interest -- **validation certified core
+fraction >= 50%** -- rather than on `R_mean <= budget`. R_mean is retained as a *reported diagnostic*,
+not as a gate. Rationale: certification is per-neuron; a mean marginally above the budget can still
+certify a large fraction, which stage 1 demonstrated empirically.
+
+**Runs:** validation only, H = 1024, seeds 2-3 (seed 1 already done in stage 1), for both candidates:
+- FT lambda = 0.3, 40 epochs, lr 5e-4, ramp, init from that seed's control;
+- FT lambda = 1.0, 20 epochs, lr 5e-4, ramp, init from that seed's control.
+
+**Selection (3 seeds each, validation):** among configs with mean validation certified >= 50%, take the
+**smallest mean accuracy cost**. Report both configs' full numbers regardless of which wins.
+
+**Stage 2 (one shot, test set, seeds 1-3):** the selected config, plus the scratch lambda = 0.3 arm already
+measured at this width, for a like-for-like comparison.
+**Pass:** mean test cost **<= 3.0 points** AND mean test certified **>= 50%** AND 0 violations. The 3.0-point
+bar is set in advance and is deliberately looser than the 512 bar of 1.0, because the alternative
+certifiable configuration at this width (scratch) costs -5.59 on validation; the question here is whether
+fine-tuning *materially reduces* that cost, not whether it eliminates it.
+
+**Pre-registered interpretations:**
+- **Pass:** the size limitation weakens from "the fix fails at scale" to "the fix needs a longer
+  fine-tune at larger fan-in, and costs ~2-3 points at 1,024 instead of ~5.6". The manuscript's
+  limitation section must be rewritten accordingly.
+- **Fail:** fine-tuning's advantage does not survive replication at this width; SCALE-FT-001's original
+  negative conclusion stands and must be reported as such.
+
+## SCALE-FT-003 — RESULT (2026-10-06, H = 1024, validation, 3 seeds each)
+
+**CORRECTION to the stage-1 entry above.** The "-2.48, less than half the cost" figure recorded for
+FT lambda=0.3/40 ep (seed 1) was computed against the **mean** control validation accuracy (76.13)
+instead of **seed 1's own** control (77.41). Seed-matched, that run costs **-3.76**, not -2.48. All
+figures below are seed-matched. The stage-1 conclusion that "the 1024 failure was a budget artefact" is
+**withdrawn**: a longer fine-tune helps, but far less than that error suggested.
+
+| config (validation, seed-matched, n=3) | mean cost | mean certified | mean R_mean |
+|---|---|---|---|
+| **FT lambda=0.3, 40 ep** | **-4.02** | **55.82%** | 0.399 |
+| FT lambda=1.0, 20 ep | -6.10 | 61.37% | 0.347 |
+| scratch lambda=0.3 | -5.59 | 63.55% | 0.392 |
+| FT lambda=0.3, 20 ep (SCALE-FT-001) | -3.99 | 0.59% | 0.510 |
+
+Per-seed costs / certified -- FT lam0.3/40ep: -3.76/54.03%, -3.59/56.58%, -4.70/56.86%.
+FT lam1.0/20ep: -6.16/59.95%, -5.13/62.64%, -7.01/61.53%. **0 violations in all 12 runs.**
+
+**Corrected pre-registered rule (certified >= 50%, smallest cost) selects FT lambda=0.3, 40 epochs.**
+
+**Honest conclusion: SCALE-FT-001's negative finding largely STANDS.** At H = 1024, fine-tuning for 40
+epochs buys only **+1.57 accuracy points** over from-scratch training (-4.02 vs -5.59) while certifying
+**7.7 points less** (55.82% vs 63.55%). That is a mild trade-off along the same curve, not a fix. The
+dramatic initialization advantage measured at H = 512 (-0.91 FT vs -1.09 scratch, with the from-scratch
+*validation* cost at -3.34) **does not carry to 1024**.
+
+**Note on the 20-epoch result:** FT lambda=0.3/20 ep has essentially the same *validation accuracy cost*
+as 40 ep (-3.99 vs -4.02) but certifies 0.59% instead of 55.82%. The extra 20 epochs buy certification at
+no additional accuracy cost -- the constraint needs the time to pull R under the budget, and until it does,
+the accuracy has already been paid without the benefit being obtained. **This is the clearest evidence yet
+that R vs budget is a threshold, not a gradient (Proposition 1).**
+
+**Process note:** this is the second baseline error of the session in the same direction (over-optimistic).
+Both were caught by seed-matching and replication. Any future cost figure must be computed per seed against
+that seed's own control, never against a pooled control mean.
+
+# CORE-SCALING-001 — exact speed-up vs core count (PRE-REGISTERED 2026-10-06, before running)
+
+**Why:** the manuscript's headline speed figures (1.5-2.3x local, 1.15-1.40x dense) were measured at
+**8 cores on a 6-core i7-10750H** -- oversubscribed, and the plan already records one invalid engine run
+from exactly that cause. This machine has **32 threads**, so core counts 2..32 can be measured without
+oversubscription for the first time. The paper's motivation is that *synchronization cost grows with
+system size*; if the certificate advantage does **not** grow with core count, the motivation undercuts
+the result, and if it does, that rising curve is the single most valuable figure for a
+parallel-computing venue.
+
+**Setup:** CONFIRM-002's confirmed-recipe model (FT + cert lambda 0.3, H = 512, seed 2) and its control.
+`CORES` in {2, 4, 8, 16, 32} (all divide 512). The engine sweeps interconnect latency
+L in {0, 5, 20, 100, 500} us internally and compares mode 0 (local handshake) against mode 1 (certificate),
+verifying spike trains **bit-for-bit** against a single-thread reference on every run.
+
+**Timing hygiene (mandatory):** the script blocks until no GPU training process remains, because CPU
+wall-clock measurement requires an idle machine. All earlier engine timings taken alongside GPU jobs are
+treated as within-run comparisons only.
+
+**Pre-registered predictions and interpretations:**
+- **Speed-up rises with core count** (expected): supports the paper's core motivation and becomes the
+  headline scaling figure. Report the curve at each latency.
+- **Speed-up flat in core count:** the "synchronization cost grows with scale" motivation is not
+  demonstrated by our own engine; the claim must be weakened to a fixed-size statement and the venue
+  strategy reconsidered.
+- **Speed-up falls with core count:** report as a negative result; the mechanism does not scale and the
+  paper must say so explicitly.
+- **Any bit-mismatch vs the reference is a soundness failure** and overrides all speed results.
