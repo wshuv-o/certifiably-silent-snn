@@ -1331,3 +1331,66 @@ cert lambda = 0.3. Max 3 concurrent, retry + resume.
   Pareto frontier; the method requires giving up some absolute accuracy, stated quantitatively.
 - **Certification collapses as soon as radius rises:** the free-certification regime is confined to very
   sparse connectivity, which is a sharp and honest scope condition.
+
+# DELAY-001 — multi-tap synaptic delays: accuracy AND a stronger certificate (PRE-REGISTERED 2026-10-07, before running)
+
+**Why this is the right next step.** RADIUS-001 established that certification is already nearly free at
+every connectivity radius (cost +1.80 to -0.86) and that accuracy is driven by fan-in, topping out at
+**77.42** (dense H = 1024). The ~77% ceiling therefore belongs to the **architecture class** -- a single
+recurrent ALIF layer at T = 100 bins, no delays, no dropout, 40 epochs -- not to the certificates.
+Published nets of that class reach 83-84%; the ~95-96% results on SHD use **synaptic delays**. No further
+certificate or connectivity work can close that gap.
+
+**Why delays also strengthen the mechanism (not a side benefit -- the main theoretical point).**
+With v(t) = BETA*v(t-1) + iext(t) + sum_d W_d s(t-d), a certificate at origin t needs, at horizon k,
+the spikes s(t+k-d). For **d >= k** that arrival time is <= t, so it is **already known and exactly
+computable**; only **d < k** is uncertain. Hence the worst-case drive that must be bounded at horizon k is
+**sum_{d<k} R_d**, not sum_d R_d. Two consequences:
+1. Spreading weight mass across taps shrinks the drive that binds short horizons.
+2. A minimum delay d_min gives **d_min steps of exact, free lookahead** -- precisely the lookahead
+   conservative PDES takes from minimum synaptic delay (NEST etc.). Our certificates then extend *beyond*
+   it. This makes the relationship to the PDES literature constructive rather than merely distinguishing:
+   delays and certificates compose.
+
+**Implementation:** `s5_delays.py`. Recurrence is a sum of delayed taps; initial per-tap weight variance is
+divided by the number of taps so total initial drive matches a 1-tap net. `certify()` and `cert_penalty()`
+both use the exact/bounded split above. Reports `R_per_delay`, `R_mean` (= sum_d R_d, the unbounded-horizon
+worst case) and `R_short` (= sum_{d<K} R_d, what binds a K-step certificate).
+
+**Two documented deviations from `s4_improve.py`, stated now rather than discovered later:**
+1. **Equivalence at DELAYS=1 is statistical, not bit-for-bit.** `nn.Linear`'s default init consumes RNG
+   that a raw `Parameter` does not, so the random streams differ even at the same seed. The check is that
+   D0 lands near the known s4 control (74.68 validation at H = 512 seed 1) within seed noise, with a
+   comparable R_mean (~4.8).
+2. **The training penalty now matches the certificate at k = 1.** `s4_improve.py` bounded k = 1 with the
+   full R in its *penalty* while computing k = 1 exactly in its *certificate* -- an asymmetry that
+   over-penalised. In `s5_delays.py` the penalty uses the same exact/bounded split as the certificate.
+   This is arguably a fix, but it means **constrained** s5 results are not directly comparable with
+   constrained s4 results, and any cross-script comparison must say so.
+
+**Stage 1 (controls only, no constraint, H = 512, seed 1, validation):**
+| id | DELAYS | epochs | AUG | purpose |
+|---|---|---|---|---|
+| D0 | 1 | 40 | 1 | equivalence check against the s4 control |
+| D1 | 1,2,4,8 | 40 | 1 | does multi-tap delay raise accuracy at matched epochs? |
+| D2 | 1,2,4,8 | 150 | 2 | best-effort accuracy (delays + long training + strong augmentation) |
+
+**Pre-registered expectations:**
+- D0 within ~2 points of 74.68 and R_mean ~4.8. **If not, the implementation is wrong and nothing else in
+  DELAY-001 may be interpreted** until it is fixed.
+- D1 > D0 by at least +2 points, else multi-tap delays do not help this architecture at this budget and
+  the delay direction is reconsidered rather than scaled up.
+- D2 is the honest best-effort number for the current architecture plus the cheap levers. It sets how much
+  of the remaining gap to ~96% must come from depth and finer time resolution.
+
+**Stage 2 (only if D1 or D2 clears its bar):** re-run the certification story on the best delay model --
+control vs fine-tuned constrained version -- and report certified fraction, cost, `R_short` vs `R_mean`,
+and whether the free lookahead from d_min appears as predicted.
+
+**Pre-registered interpretations:**
+- **Delays raise accuracy and certification holds:** this is the configuration the paper should be built
+  on, and the delay/certificate composition becomes a theoretical contribution in its own right.
+- **Delays raise accuracy but certification collapses:** report the trade-off; the mechanism would then be
+  confined to delay-free architectures, which is a sharp and limiting scope condition.
+- **Delays do not raise accuracy:** the ~77% ceiling is not explained by missing delays, and the gap to
+  SOTA must be attributed to depth, time resolution or training protocol instead. Record and redirect.
