@@ -1,0 +1,92 @@
+small_cert lif_local H 256 P 8 C 32 R mean 0.3269546846184648
+small_clamp lif_local H 256 P 8 C 32 R mean 0.31812921367919866
+small_l1 lif_local H 256 P 8 C 32 R mean 0.04328318225650296
+dense_ctrl alif H 512 P 8 C 64 R mean 4.812243674786698
+dense_cert alif H 512 P 8 C 64 R mean 0.3304566333874096
+model=small_cert N=200 cores=8 meanR=0.3270
+inter-core edges (directed) = 16 of 56
+RESULT model=small_cert L_us=0 mode=handshake median_ms=2.4557 exact=1 cert_coverage=0.000
+RESULT model=small_cert L_us=0 mode=cert median_ms=2.2394 exact=1 cert_coverage=0.674
+RESULT model=small_cert L_us=0 mode=dcert median_ms=4.0648 exact=1 cert_coverage=0.681
+RESULT model=small_cert L_us=5 mode=handshake median_ms=4.3517 exact=1 cert_coverage=0.000
+RESULT model=small_cert L_us=5 mode=cert median_ms=2.4786 exact=1 cert_coverage=0.674
+RESULT model=small_cert L_us=5 mode=dcert median_ms=5.9964 exact=1 cert_coverage=0.681
+RESULT model=small_cert L_us=20 mode=handshake median_ms=4.7504 exact=1 cert_coverage=0.000
+RESULT model=small_cert L_us=20 mode=cert median_ms=4.3138 exact=1 cert_coverage=0.674
+RESULT model=small_cert L_us=20 mode=dcert median_ms=8.0135 exact=1 cert_coverage=0.681
+RESULT model=small_cert L_us=100 mode=handshake median_ms=17.7326 exact=1 cert_coverage=0.000
+RESULT model=small_cert L_us=100 mode=cert median_ms=10.9505 exact=1 cert_coverage=0.674
+RESULT model=small_cert L_us=100 mode=dcert median_ms=16.9976 exact=1 cert_coverage=0.681
+RESULT model=small_cert L_us=500 mode=handshake median_ms=59.5910 exact=1 cert_coverage=0.000
+RESULT model=small_cert L_us=500 mode=cert median_ms=39.5568 exact=1 cert_coverage=0.674
+RESULT model=small_cert L_us=500 mode=dcert median_ms=60.6252 exact=1 cert_coverage=0.681
+model=small_clamp N=200 cores=8 meanR=0.3181
+inter-core edges (directed) = 16 of 56
+RESULT model=small_clamp L_us=0 mode=handshake median_ms=3.0977 exact=1 cert_coverage=0.000
+RESULT model=small_clamp L_us=0 mode=cert median_ms=2.2943 exact=1 cert_coverage=0.674
+RESULT model=small_clamp L_us=0 mode=dcert median_ms=4.7619 exact=1 cert_coverage=0.689
+RESULT model=small_clamp L_us=5 mode=handshake median_ms=3.4527 exact=1 cert_coverage=0.000
+RESULT model=small_clamp L_us=5 mode=cert median_ms=3.1194 exact=1 cert_coverage=0.674
+RESULT model=small_clamp L_us=5 mode=dcert median_ms=4.8804 exact=1 cert_coverage=0.689
+RESULT model=small_clamp L_us=20 mode=handshake median_ms=6.6947 exact=1 cert_coverage=0.000
+RESULT model=small_clamp L_us=20 mode=cert median_ms=3.0737 exact=1 cert_coverage=0.674
+RESULT model=small_clamp L_us=20 mode=dcert median_ms=9.6424 exact=1 cert_coverage=0.689
+RESULT model=small_clamp L_us=100 mode=handshake median_ms=17.4136 exact=1 cert_coverage=0.000
+RESULT model=small_clamp L_us=100 mode=cert median_ms=8.5120 exact=1 cert_coverage=0.674
+RESULT model=small_clamp L_us=100 mode=dcert median_ms=18.5898 exact=1 cert_coverage=0.689
+RESULT model=small_clamp L_us=500 mode=handshake median_ms=58.8844 exact=1 cert_coverage=0.000
+RESULT model=small_clamp L_us=500 mode=cert median_ms=28.1474 exact=1 cert_coverage=0.674
+RESULT model=small_clamp L_us=500 mode=dcert median_ms=64.6695 exact=1 cert_coverage=0.689
+model=small_l1 N=200 cores=8 meanR=0.0433
+inter-core edges (directed) = 16 of 56
+RESULT model=small_l1 L_us=0 mode=handshake median_ms=4.1079 exact=1 cert_coverage=0.000
+RESULT model=small_l1 L_us=0 mode=cert median_ms=2.7315 exact=1 cert_coverage=0.703
+RESULT model=small_l1 L_us=0 mode=dcert median_ms=5.0992 exact=1 cert_coverage=0.706
+RESULT model=small_l1 L_us=5 mode=handshake median_ms=4.2568 exact=1 cert_coverage=0.000
+RESULT model=small_l1 L_us=5 mode=cert median_ms=2.3835 exact=1 cert_coverage=0.703
+RESULT model=small_l1 L_us=5 mode=dcert median_ms=5.3313 exact=1 cert_coverage=0.706
+RESULT model=small_l1 L_us=20 mode=handshake median_ms=4.7698 exact=1 cert_coverage=0.000
+RESULT model=small_l1 L_us=20 mode=cert median_ms=3.6251 exact=1 cert_coverage=0.703
+RESULT model=small_l1 L_us=20 mode=dcert median_ms=8.3405 exact=1 cert_coverage=0.706
+RESULT model=small_l1 L_us=100 mode=handshake median_ms=17.3941 exact=1 cert_coverage=0.000
+RESULT model=small_l1 L_us=100 mode=cert median_ms=7.8306 exact=1 cert_coverage=0.703
+RESULT model=small_l1 L_us=100 mode=dcert median_ms=19.4515 exact=1 cert_coverage=0.706
+RESULT model=small_l1 L_us=500 mode=handshake median_ms=59.5239 exact=1 cert_coverage=0.000
+RESULT model=small_l1 L_us=500 mode=cert median_ms=25.7298 exact=1 cert_coverage=0.703
+RESULT model=small_l1 L_us=500 mode=dcert median_ms=61.2558 exact=1 cert_coverage=0.706
+model=dense_ctrl N=200 cores=8 meanR=4.8122
+inter-core edges (directed) = 56 of 56
+RESULT model=dense_ctrl L_us=0 mode=handshake median_ms=14.6300 exact=1 cert_coverage=0.000
+RESULT model=dense_ctrl L_us=0 mode=cert median_ms=13.3558 exact=1 cert_coverage=0.000
+RESULT model=dense_ctrl L_us=0 mode=dcert median_ms=15.4468 exact=1 cert_coverage=0.000
+RESULT model=dense_ctrl L_us=5 mode=handshake median_ms=13.5050 exact=1 cert_coverage=0.000
+RESULT model=dense_ctrl L_us=5 mode=cert median_ms=12.5388 exact=1 cert_coverage=0.000
+RESULT model=dense_ctrl L_us=5 mode=dcert median_ms=15.7097 exact=1 cert_coverage=0.000
+RESULT model=dense_ctrl L_us=20 mode=handshake median_ms=17.8511 exact=1 cert_coverage=0.000
+RESULT model=dense_ctrl L_us=20 mode=cert median_ms=19.2103 exact=1 cert_coverage=0.000
+RESULT model=dense_ctrl L_us=20 mode=dcert median_ms=17.2318 exact=1 cert_coverage=0.000
+RESULT model=dense_ctrl L_us=100 mode=handshake median_ms=27.6519 exact=1 cert_coverage=0.000
+RESULT model=dense_ctrl L_us=100 mode=cert median_ms=31.3192 exact=1 cert_coverage=0.000
+RESULT model=dense_ctrl L_us=100 mode=dcert median_ms=29.2411 exact=1 cert_coverage=0.000
+RESULT model=dense_ctrl L_us=500 mode=handshake median_ms=76.4912 exact=1 cert_coverage=0.000
+RESULT model=dense_ctrl L_us=500 mode=cert median_ms=72.5525 exact=1 cert_coverage=0.000
+RESULT model=dense_ctrl L_us=500 mode=dcert median_ms=73.6684 exact=1 cert_coverage=0.000
+model=dense_cert N=200 cores=8 meanR=0.3305
+inter-core edges (directed) = 56 of 56
+RESULT model=dense_cert L_us=0 mode=handshake median_ms=14.3670 exact=1 cert_coverage=0.000
+RESULT model=dense_cert L_us=0 mode=cert median_ms=14.4044 exact=1 cert_coverage=0.614
+RESULT model=dense_cert L_us=0 mode=dcert median_ms=17.4839 exact=1 cert_coverage=0.631
+RESULT model=dense_cert L_us=5 mode=handshake median_ms=20.2772 exact=1 cert_coverage=0.000
+RESULT model=dense_cert L_us=5 mode=cert median_ms=14.9988 exact=1 cert_coverage=0.614
+RESULT model=dense_cert L_us=5 mode=dcert median_ms=23.2609 exact=1 cert_coverage=0.631
+RESULT model=dense_cert L_us=20 mode=handshake median_ms=17.6556 exact=1 cert_coverage=0.000
+RESULT model=dense_cert L_us=20 mode=cert median_ms=14.4281 exact=1 cert_coverage=0.614
+RESULT model=dense_cert L_us=20 mode=dcert median_ms=22.1580 exact=1 cert_coverage=0.631
+RESULT model=dense_cert L_us=100 mode=handshake median_ms=30.3134 exact=1 cert_coverage=0.000
+RESULT model=dense_cert L_us=100 mode=cert median_ms=22.7583 exact=1 cert_coverage=0.614
+RESULT model=dense_cert L_us=100 mode=dcert median_ms=31.2522 exact=1 cert_coverage=0.631
+RESULT model=dense_cert L_us=500 mode=handshake median_ms=73.2723 exact=1 cert_coverage=0.000
+RESULT model=dense_cert L_us=500 mode=cert median_ms=54.6682 exact=1 cert_coverage=0.614
+RESULT model=dense_cert L_us=500 mode=dcert median_ms=75.7899 exact=1 cert_coverage=0.631
+
+[exited with code 0]

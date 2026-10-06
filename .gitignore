@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.tmp.*
+*.tmp
+# large / regenerable artifacts live outside the repo (~/research/data, ~/research/models)
+*.pt
+*.h5
+*.h5.gz
+*.bin
+results/engines_raw/

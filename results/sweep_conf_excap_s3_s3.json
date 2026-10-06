@@ -1,0 +1,33 @@
+{
+ "tag": "conf_excap_s3",
+ "dataset": "shd",
+ "alt": "clamp",
+ "lam": 0.0,
+ "mu": 0.1,
+ "nhub": 0,
+ "alpha": 1.0,
+ "seed": 3,
+ "epochs": 40,
+ "acc_val": 0.9349693251533743,
+ "test": {
+  "acc": 0.765017667844523,
+  "test_core_cert": 0.6584713697433472,
+  "test_core_oracle": 0.6804857015609741,
+  "test_violations": 0,
+  "test_neuron_cert": 0.9700250148773193,
+  "test_allcore_cert": 0.6584713697433472,
+  "test_R_mean": 0.3268583118915558,
+  "test_budget": 0.3934693402873666
+ },
+ "acc": 0.765017667844523,
+ "acc_norec": 0.2049079754601227,
+ "rate": 0.014200780540704727,
+ "core_cert": 0.6705768346786499,
+ "core_oracle": 0.6945703268051148,
+ "violations": 0,
+ "neuron_cert": 0.9708968877792359,
+ "allcore_cert": 0.6705768346786499,
+ "R_mean": 0.3268583118915558,
+ "budget": 0.3934693402873666,
+ "H": 512
+}

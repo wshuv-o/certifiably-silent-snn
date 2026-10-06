@@ -1,0 +1,33 @@
+{
+ "tag": "conf_cert03_s2",
+ "dataset": "shd",
+ "alt": "none",
+ "lam": 0.3,
+ "mu": 0.1,
+ "nhub": 0,
+ "alpha": 1.0,
+ "seed": 2,
+ "epochs": 40,
+ "acc_val": 0.9263803680981595,
+ "test": {
+  "acc": 0.7853356890459364,
+  "test_core_cert": 0.6063620090484619,
+  "test_core_oracle": 0.6478828310966491,
+  "test_violations": 0,
+  "test_neuron_cert": 0.961611270904541,
+  "test_allcore_cert": 0.6063620090484619,
+  "test_R_mean": 0.33796992897987366,
+  "test_budget": 0.3934693402873666
+ },
+ "acc": 0.7853356890459364,
+ "acc_norec": 0.23680981595092024,
+ "rate": 0.02034277282655239,
+ "core_cert": 0.6193528890609741,
+ "core_oracle": 0.6635416746139526,
+ "violations": 0,
+ "neuron_cert": 0.9632719874382019,
+ "allcore_cert": 0.6193528890609741,
+ "R_mean": 0.33796992897987366,
+ "budget": 0.3934693402873666,
+ "H": 512
+}

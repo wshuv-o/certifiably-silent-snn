@@ -1,0 +1,33 @@
+{
+ "tag": "conf_hub4_s2",
+ "dataset": "shd",
+ "alt": "none",
+ "lam": 0.3,
+ "mu": 0.1,
+ "nhub": 4,
+ "alpha": 1.0,
+ "seed": 2,
+ "epochs": 40,
+ "acc_val": 0.9325153374233128,
+ "test": {
+  "acc": 0.7848939929328622,
+  "test_core_cert": 0.6359236359596252,
+  "test_core_oracle": 0.6513593912124633,
+  "test_violations": 0,
+  "test_neuron_cert": 0.7974519252777099,
+  "test_allcore_cert": 0.4771471440792084,
+  "test_R_mean": 1.4925506114959717,
+  "test_budget": 0.3934693402873666
+ },
+ "acc": 0.7848939929328622,
+ "acc_norec": 0.1067484662576687,
+ "rate": 0.029948631301522255,
+ "core_cert": 0.65345139503479,
+ "core_oracle": 0.6700729250907898,
+ "violations": 0,
+ "neuron_cert": 0.7953767299652099,
+ "allcore_cert": 0.49028255939483645,
+ "R_mean": 1.4925506114959717,
+ "budget": 0.3934693402873666,
+ "H": 512
+}

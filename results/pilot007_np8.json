@@ -1,0 +1,24 @@
+[
+ {
+  "seed": "np8",
+  "lam": 0.0,
+  "lock": 400000,
+  "cert": 259126,
+  "oracle": 125719,
+  "reduction": 1.5436505792548798,
+  "oracle_reduction": 3.1816988681106277,
+  "mean_horizon_when_silent": 1.0034868034176208,
+  "frac_steps_certified": 0.7300252525252525
+ },
+ {
+  "seed": "np8",
+  "lam": 0.1,
+  "lock": 400000,
+  "cert": 180141,
+  "oracle": 126677,
+  "reduction": 2.2204828439944264,
+  "oracle_reduction": 3.1576371401280423,
+  "mean_horizon_when_silent": 3.970609309023116,
+  "frac_steps_certified": 0.7260252525252525
+ }
+]

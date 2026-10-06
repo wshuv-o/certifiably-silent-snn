@@ -1,0 +1,6 @@
+[
+ {"name": "syn_w16", "N": 1048576, "M": 8388608, "rounds": 74953, "mean_frontier_frac": 1.3336337479657825e-05, "reached_frac": 0.999598503112793},
+ {"name": "syn_w256", "N": 1048576, "M": 8388608, "rounds": 4621, "mean_frontier_frac": 0.00021632742866296528, "reached_frac": 0.9996490478515625},
+ {"name": "syn_w4096", "N": 1048576, "M": 8388608, "rounds": 289, "mean_frontier_frac": 0.0034590031448945044, "reached_frac": 0.9996519088745117},
+ {"name": "syn_w0", "N": 1048576, "M": 8388608, "rounds": 11, "mean_frontier_frac": 0.09087857333096591, "reached_frac": 0.999664306640625}
+]

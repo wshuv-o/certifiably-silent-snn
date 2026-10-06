@@ -1,0 +1,33 @@
+{
+ "tag": "conf_excap_s2",
+ "dataset": "shd",
+ "alt": "clamp",
+ "lam": 0.0,
+ "mu": 0.1,
+ "nhub": 0,
+ "alpha": 1.0,
+ "seed": 2,
+ "epochs": 40,
+ "acc_val": 0.9190184049079755,
+ "test": {
+  "acc": 0.7606007067137809,
+  "test_core_cert": 0.65047527551651,
+  "test_core_oracle": 0.684319019317627,
+  "test_violations": 0,
+  "test_neuron_cert": 0.971097731590271,
+  "test_allcore_cert": 0.65047527551651,
+  "test_R_mean": 0.3258712887763977,
+  "test_budget": 0.3934693402873666
+ },
+ "acc": 0.7606007067137809,
+ "acc_norec": 0.2343558282208589,
+ "rate": 0.01276425737887621,
+ "core_cert": 0.6654323101043701,
+ "core_oracle": 0.697044289112091,
+ "violations": 0,
+ "neuron_cert": 0.9720290780067444,
+ "allcore_cert": 0.6654323101043701,
+ "R_mean": 0.3258712887763977,
+ "budget": 0.3934693402873666,
+ "H": 512
+}

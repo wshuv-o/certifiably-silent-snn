@@ -1,0 +1,42 @@
+﻿model=clamp N=200 meanR=0.3181 budget=(1-beta)theta=0.3935
+RESULT kind=1 model=clamp L_us=0 mode=handshake median_ms=0.4499 exact=1 cert_coverage=0.000
+RESULT kind=1 model=clamp L_us=0 mode=cert median_ms=0.6911 exact=1 cert_coverage=0.674
+RESULT kind=1 model=clamp L_us=5 mode=handshake median_ms=1.0362 exact=1 cert_coverage=0.000
+RESULT kind=1 model=clamp L_us=5 mode=cert median_ms=0.7508 exact=1 cert_coverage=0.674
+RESULT kind=1 model=clamp L_us=20 mode=handshake median_ms=2.8684 exact=1 cert_coverage=0.000
+RESULT kind=1 model=clamp L_us=20 mode=cert median_ms=1.6306 exact=1 cert_coverage=0.674
+RESULT kind=1 model=clamp L_us=100 mode=handshake median_ms=11.6293 exact=1 cert_coverage=0.000
+RESULT kind=1 model=clamp L_us=100 mode=cert median_ms=5.7424 exact=1 cert_coverage=0.674
+RESULT kind=1 model=clamp L_us=500 mode=handshake median_ms=51.5314 exact=1 cert_coverage=0.000
+RESULT kind=1 model=clamp L_us=500 mode=cert median_ms=24.8013 exact=1 cert_coverage=0.674
+model=l1 N=200 meanR=0.0433 budget=(1-beta)theta=0.3935
+RESULT kind=1 model=l1 L_us=0 mode=handshake median_ms=0.8303 exact=1 cert_coverage=0.000
+RESULT kind=1 model=l1 L_us=0 mode=cert median_ms=0.6306 exact=1 cert_coverage=0.703
+RESULT kind=1 model=l1 L_us=5 mode=handshake median_ms=1.0673 exact=1 cert_coverage=0.000
+RESULT kind=1 model=l1 L_us=5 mode=cert median_ms=0.7667 exact=1 cert_coverage=0.703
+RESULT kind=1 model=l1 L_us=20 mode=handshake median_ms=2.7379 exact=1 cert_coverage=0.000
+RESULT kind=1 model=l1 L_us=20 mode=cert median_ms=1.6253 exact=1 cert_coverage=0.703
+RESULT kind=1 model=l1 L_us=100 mode=handshake median_ms=11.6787 exact=1 cert_coverage=0.000
+RESULT kind=1 model=l1 L_us=100 mode=cert median_ms=5.2358 exact=1 cert_coverage=0.703
+RESULT kind=1 model=l1 L_us=500 mode=handshake median_ms=51.6356 exact=1 cert_coverage=0.000
+RESULT kind=1 model=l1 L_us=500 mode=cert median_ms=22.1997 exact=1 cert_coverage=0.703
+RESULT model=dense_control L_us=0 mode=handshake median_ms=4.9048 exact=1 cert_coverage=0.000
+RESULT model=dense_control L_us=0 mode=cert median_ms=5.6316 exact=1 cert_coverage=0.000
+RESULT model=dense_control L_us=5 mode=handshake median_ms=5.5142 exact=1 cert_coverage=0.000
+RESULT model=dense_control L_us=5 mode=cert median_ms=5.7463 exact=1 cert_coverage=0.000
+RESULT model=dense_control L_us=20 mode=handshake median_ms=7.4197 exact=1 cert_coverage=0.000
+RESULT model=dense_control L_us=20 mode=cert median_ms=8.5567 exact=1 cert_coverage=0.000
+RESULT model=dense_control L_us=100 mode=handshake median_ms=17.9381 exact=1 cert_coverage=0.000
+RESULT model=dense_control L_us=100 mode=cert median_ms=17.5720 exact=1 cert_coverage=0.000
+RESULT model=dense_control L_us=500 mode=handshake median_ms=59.2251 exact=1 cert_coverage=0.000
+RESULT model=dense_control L_us=500 mode=cert median_ms=59.3644 exact=1 cert_coverage=0.000
+RESULT model=dense_certified L_us=0 mode=handshake median_ms=4.9331 exact=1 cert_coverage=0.000
+RESULT model=dense_certified L_us=0 mode=cert median_ms=4.9053 exact=1 cert_coverage=0.614
+RESULT model=dense_certified L_us=5 mode=handshake median_ms=5.7209 exact=1 cert_coverage=0.000
+RESULT model=dense_certified L_us=5 mode=cert median_ms=5.4081 exact=1 cert_coverage=0.614
+RESULT model=dense_certified L_us=20 mode=handshake median_ms=9.1048 exact=1 cert_coverage=0.000
+RESULT model=dense_certified L_us=20 mode=cert median_ms=7.9314 exact=1 cert_coverage=0.614
+RESULT model=dense_certified L_us=100 mode=handshake median_ms=18.7651 exact=1 cert_coverage=0.000
+RESULT model=dense_certified L_us=100 mode=cert median_ms=13.9532 exact=1 cert_coverage=0.614
+RESULT model=dense_certified L_us=500 mode=handshake median_ms=59.0967 exact=1 cert_coverage=0.000
+RESULT model=dense_certified L_us=500 mode=cert median_ms=42.2226 exact=1 cert_coverage=0.614

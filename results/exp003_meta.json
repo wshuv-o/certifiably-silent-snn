@@ -1,0 +1,1024 @@
+{
+ "exp": "EXP-001",
+ "protocol": "v2-interleaved",
+ "args": {
+  "N": 1048576,
+  "F": [
+   32
+  ],
+  "windows": [
+   256,
+   0
+  ],
+  "s": [
+   0.0001,
+   0.0003,
+   0.001,
+   0.003,
+   0.01,
+   0.03,
+   0.1,
+   0.2,
+   0.3,
+   0.5,
+   0.7,
+   1.0
+  ],
+  "platforms": [
+   "cpu",
+   "gpu"
+  ],
+  "reps": 15,
+  "warm": 2,
+  "seed": 3,
+  "spread": [
+   1.0,
+   0.5,
+   0.25,
+   0.167,
+   0.1
+  ],
+  "out": "../results/exp003"
+ },
+ "theta": 1.0,
+ "started": "Sun Oct  4 11:57:16 2026",
+ "python": "3.12.3",
+ "numpy": "2.5.3",
+ "numba": "0.68.0",
+ "numba_threads": 6,
+ "omp_wait_policy": "active",
+ "uname": {
+  "system": "Linux",
+  "node": "DESKTOP-AAKBJPP",
+  "release": "6.18.40.1-microsoft-standard-WSL2",
+  "version": "#1 SMP PREEMPT_DYNAMIC Fri Jul 31 22:12:15 UTC 2026",
+  "machine": "x86_64",
+  "processor": "x86_64"
+ },
+ "telemetry": [
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.0001,
+   "sm_clock_mhz": 1905,
+   "temp_c": 63,
+   "power_w": 55.732
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.0003,
+   "sm_clock_mhz": 1890,
+   "temp_c": 68,
+   "power_w": 98.912
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.001,
+   "sm_clock_mhz": 1890,
+   "temp_c": 70,
+   "power_w": 103.62
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.003,
+   "sm_clock_mhz": 1890,
+   "temp_c": 70,
+   "power_w": 100.874
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.01,
+   "sm_clock_mhz": 1890,
+   "temp_c": 66,
+   "power_w": 102.434
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.03,
+   "sm_clock_mhz": 1890,
+   "temp_c": 67,
+   "power_w": 108.31
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.1,
+   "sm_clock_mhz": 1890,
+   "temp_c": 71,
+   "power_w": 106.449
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.2,
+   "sm_clock_mhz": 1185,
+   "temp_c": 65,
+   "power_w": 39.532
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.3,
+   "sm_clock_mhz": 1890,
+   "temp_c": 69,
+   "power_w": 107.396
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.5,
+   "sm_clock_mhz": 1815,
+   "temp_c": 66,
+   "power_w": 45.38
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.7,
+   "sm_clock_mhz": 1005,
+   "temp_c": 65,
+   "power_w": 45.547
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 1.0,
+   "sm_clock_mhz": 1200,
+   "temp_c": 63,
+   "power_w": 27.278
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.0001,
+   "sm_clock_mhz": 1890,
+   "temp_c": 71,
+   "power_w": 100.822
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.0003,
+   "sm_clock_mhz": 1890,
+   "temp_c": 70,
+   "power_w": 99.555
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.001,
+   "sm_clock_mhz": 1890,
+   "temp_c": 68,
+   "power_w": 88.091
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.003,
+   "sm_clock_mhz": 1890,
+   "temp_c": 71,
+   "power_w": 108.648
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.01,
+   "sm_clock_mhz": 1890,
+   "temp_c": 73,
+   "power_w": 106.325
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.03,
+   "sm_clock_mhz": 1890,
+   "temp_c": 74,
+   "power_w": 112.415
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.1,
+   "sm_clock_mhz": 1875,
+   "temp_c": 74,
+   "power_w": 113.341
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.2,
+   "sm_clock_mhz": 1875,
+   "temp_c": 70,
+   "power_w": 111.336
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.3,
+   "sm_clock_mhz": 1875,
+   "temp_c": 72,
+   "power_w": 110.431
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.5,
+   "sm_clock_mhz": 1470,
+   "temp_c": 68,
+   "power_w": 45.076
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.7,
+   "sm_clock_mhz": 540,
+   "temp_c": 66,
+   "power_w": 43.755
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 1.0,
+   "sm_clock_mhz": 1005,
+   "temp_c": 66,
+   "power_w": 41.478
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.0001,
+   "sm_clock_mhz": 1890,
+   "temp_c": 69,
+   "power_w": 115.478
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.0003,
+   "sm_clock_mhz": 1890,
+   "temp_c": 74,
+   "power_w": 111.597
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.001,
+   "sm_clock_mhz": 1890,
+   "temp_c": 75,
+   "power_w": 109.709
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.003,
+   "sm_clock_mhz": 1890,
+   "temp_c": 75,
+   "power_w": 112.54
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.01,
+   "sm_clock_mhz": 1890,
+   "temp_c": 75,
+   "power_w": 115.042
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.03,
+   "sm_clock_mhz": 1890,
+   "temp_c": 76,
+   "power_w": 106.991
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.1,
+   "sm_clock_mhz": 1890,
+   "temp_c": 76,
+   "power_w": 114.594
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.2,
+   "sm_clock_mhz": 1890,
+   "temp_c": 76,
+   "power_w": 114.508
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.3,
+   "sm_clock_mhz": 1890,
+   "temp_c": 76,
+   "power_w": 111.643
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.5,
+   "sm_clock_mhz": 1005,
+   "temp_c": 69,
+   "power_w": 40.421
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.7,
+   "sm_clock_mhz": 1005,
+   "temp_c": 68,
+   "power_w": 39.891
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 1.0,
+   "sm_clock_mhz": 1170,
+   "temp_c": 66,
+   "power_w": 28.088
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.0001,
+   "sm_clock_mhz": 1890,
+   "temp_c": 74,
+   "power_w": 106.644
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.0003,
+   "sm_clock_mhz": 1890,
+   "temp_c": 75,
+   "power_w": 111.692
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.001,
+   "sm_clock_mhz": 1890,
+   "temp_c": 74,
+   "power_w": 113.73
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.003,
+   "sm_clock_mhz": 1890,
+   "temp_c": 76,
+   "power_w": 117.762
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.01,
+   "sm_clock_mhz": 1890,
+   "temp_c": 77,
+   "power_w": 113.465
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.03,
+   "sm_clock_mhz": 1890,
+   "temp_c": 77,
+   "power_w": 113.575
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.1,
+   "sm_clock_mhz": 1890,
+   "temp_c": 76,
+   "power_w": 114.759
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.2,
+   "sm_clock_mhz": 1890,
+   "temp_c": 76,
+   "power_w": 115.487
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.3,
+   "sm_clock_mhz": 1875,
+   "temp_c": 76,
+   "power_w": 117.086
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.5,
+   "sm_clock_mhz": 1800,
+   "temp_c": 72,
+   "power_w": 51.293
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.7,
+   "sm_clock_mhz": 1005,
+   "temp_c": 69,
+   "power_w": 42.048
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 1.0,
+   "sm_clock_mhz": 690,
+   "temp_c": 66,
+   "power_w": 28.355
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.0001,
+   "sm_clock_mhz": 1875,
+   "temp_c": 71,
+   "power_w": 109.197
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.0003,
+   "sm_clock_mhz": 1875,
+   "temp_c": 75,
+   "power_w": 115.87
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.001,
+   "sm_clock_mhz": 1875,
+   "temp_c": 77,
+   "power_w": 113.851
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.003,
+   "sm_clock_mhz": 1875,
+   "temp_c": 77,
+   "power_w": 111.409
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.01,
+   "sm_clock_mhz": 1875,
+   "temp_c": 77,
+   "power_w": 113.766
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.03,
+   "sm_clock_mhz": 1875,
+   "temp_c": 77,
+   "power_w": 114.664
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.1,
+   "sm_clock_mhz": 1875,
+   "temp_c": 75,
+   "power_w": 114.187
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.2,
+   "sm_clock_mhz": 1875,
+   "temp_c": 77,
+   "power_w": 118.469
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.3,
+   "sm_clock_mhz": 1875,
+   "temp_c": 78,
+   "power_w": 108.518
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.5,
+   "sm_clock_mhz": 1005,
+   "temp_c": 71,
+   "power_w": 49.519
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 0.7,
+   "sm_clock_mhz": 1320,
+   "temp_c": 70,
+   "power_w": 44.443
+  },
+  {
+   "F": 32,
+   "win": 256,
+   "s": 1.0,
+   "sm_clock_mhz": 1095,
+   "temp_c": 67,
+   "power_w": 28.525
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.0001,
+   "sm_clock_mhz": 1860,
+   "temp_c": 76,
+   "power_w": 109.391
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.0003,
+   "sm_clock_mhz": 1875,
+   "temp_c": 76,
+   "power_w": 102.895
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.001,
+   "sm_clock_mhz": 1875,
+   "temp_c": 75,
+   "power_w": 104.562
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.003,
+   "sm_clock_mhz": 1875,
+   "temp_c": 73,
+   "power_w": 106.643
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.01,
+   "sm_clock_mhz": 1875,
+   "temp_c": 77,
+   "power_w": 107.233
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.03,
+   "sm_clock_mhz": 1875,
+   "temp_c": 77,
+   "power_w": 106.24
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.1,
+   "sm_clock_mhz": 1785,
+   "temp_c": 71,
+   "power_w": 43.523
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.2,
+   "sm_clock_mhz": 1755,
+   "temp_c": 70,
+   "power_w": 45.844
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.3,
+   "sm_clock_mhz": 1005,
+   "temp_c": 71,
+   "power_w": 47.571
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.5,
+   "sm_clock_mhz": 1005,
+   "temp_c": 69,
+   "power_w": 40.906
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.7,
+   "sm_clock_mhz": 1005,
+   "temp_c": 69,
+   "power_w": 44.958
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 1.0,
+   "sm_clock_mhz": 1005,
+   "temp_c": 67,
+   "power_w": 23.15
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.0001,
+   "sm_clock_mhz": 1875,
+   "temp_c": 76,
+   "power_w": 107.302
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.0003,
+   "sm_clock_mhz": 1875,
+   "temp_c": 73,
+   "power_w": 107.513
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.001,
+   "sm_clock_mhz": 1875,
+   "temp_c": 77,
+   "power_w": 105.52
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.003,
+   "sm_clock_mhz": 1875,
+   "temp_c": 78,
+   "power_w": 107.275
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.01,
+   "sm_clock_mhz": 1875,
+   "temp_c": 78,
+   "power_w": 108.601
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.03,
+   "sm_clock_mhz": 1875,
+   "temp_c": 79,
+   "power_w": 108.474
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.1,
+   "sm_clock_mhz": 1140,
+   "temp_c": 73,
+   "power_w": 42.352
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.2,
+   "sm_clock_mhz": 1005,
+   "temp_c": 72,
+   "power_w": 47.572
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.3,
+   "sm_clock_mhz": 1185,
+   "temp_c": 72,
+   "power_w": 42.779
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.5,
+   "sm_clock_mhz": 1005,
+   "temp_c": 71,
+   "power_w": 41.876
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.7,
+   "sm_clock_mhz": 1005,
+   "temp_c": 71,
+   "power_w": 42.222
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 1.0,
+   "sm_clock_mhz": 1515,
+   "temp_c": 68,
+   "power_w": 24.231
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.0001,
+   "sm_clock_mhz": 1875,
+   "temp_c": 78,
+   "power_w": 106.573
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.0003,
+   "sm_clock_mhz": 1875,
+   "temp_c": 76,
+   "power_w": 105.09
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.001,
+   "sm_clock_mhz": 1875,
+   "temp_c": 75,
+   "power_w": 107.942
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.003,
+   "sm_clock_mhz": 1875,
+   "temp_c": 79,
+   "power_w": 104.924
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.01,
+   "sm_clock_mhz": 1875,
+   "temp_c": 78,
+   "power_w": 109.188
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.03,
+   "sm_clock_mhz": 1875,
+   "temp_c": 79,
+   "power_w": 107.942
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.1,
+   "sm_clock_mhz": 1860,
+   "temp_c": 75,
+   "power_w": 53.507
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.2,
+   "sm_clock_mhz": 1425,
+   "temp_c": 73,
+   "power_w": 45.172
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.3,
+   "sm_clock_mhz": 1470,
+   "temp_c": 73,
+   "power_w": 43.226
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.5,
+   "sm_clock_mhz": 1005,
+   "temp_c": 72,
+   "power_w": 48.675
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.7,
+   "sm_clock_mhz": 1005,
+   "temp_c": 71,
+   "power_w": 42.497
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 1.0,
+   "sm_clock_mhz": 1005,
+   "temp_c": 70,
+   "power_w": 46.28
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.0001,
+   "sm_clock_mhz": 1860,
+   "temp_c": 75,
+   "power_w": 98.097
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.0003,
+   "sm_clock_mhz": 1875,
+   "temp_c": 78,
+   "power_w": 108.433
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.001,
+   "sm_clock_mhz": 1875,
+   "temp_c": 78,
+   "power_w": 108.157
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.003,
+   "sm_clock_mhz": 1875,
+   "temp_c": 79,
+   "power_w": 109.559
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.01,
+   "sm_clock_mhz": 1875,
+   "temp_c": 80,
+   "power_w": 110.292
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.03,
+   "sm_clock_mhz": 1875,
+   "temp_c": 79,
+   "power_w": 111.114
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.1,
+   "sm_clock_mhz": 1320,
+   "temp_c": 74,
+   "power_w": 45.047
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.2,
+   "sm_clock_mhz": 1050,
+   "temp_c": 73,
+   "power_w": 43.681
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.3,
+   "sm_clock_mhz": 1005,
+   "temp_c": 73,
+   "power_w": 43.088
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.5,
+   "sm_clock_mhz": 1005,
+   "temp_c": 72,
+   "power_w": 48.666
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.7,
+   "sm_clock_mhz": 1005,
+   "temp_c": 71,
+   "power_w": 48.369
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 1.0,
+   "sm_clock_mhz": 1005,
+   "temp_c": 69,
+   "power_w": 27.644
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.0001,
+   "sm_clock_mhz": 1875,
+   "temp_c": 79,
+   "power_w": 111.249
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.0003,
+   "sm_clock_mhz": 1875,
+   "temp_c": 79,
+   "power_w": 110.986
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.001,
+   "sm_clock_mhz": 1875,
+   "temp_c": 76,
+   "power_w": 109.14
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.003,
+   "sm_clock_mhz": 1875,
+   "temp_c": 80,
+   "power_w": 111.247
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.01,
+   "sm_clock_mhz": 1875,
+   "temp_c": 81,
+   "power_w": 104.153
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.03,
+   "sm_clock_mhz": 1875,
+   "temp_c": 77,
+   "power_w": 112.847
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.1,
+   "sm_clock_mhz": 1125,
+   "temp_c": 74,
+   "power_w": 52.519
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.2,
+   "sm_clock_mhz": 615,
+   "temp_c": 73,
+   "power_w": 44.203
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.3,
+   "sm_clock_mhz": 1005,
+   "temp_c": 72,
+   "power_w": 48.031
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.5,
+   "sm_clock_mhz": 1305,
+   "temp_c": 73,
+   "power_w": 45.412
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.7,
+   "sm_clock_mhz": 1005,
+   "temp_c": 72,
+   "power_w": 49.101
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 1.0,
+   "sm_clock_mhz": 1005,
+   "temp_c": 69,
+   "power_w": 28.558
+  }
+ ],
+ "cupy": "14.2.0",
+ "gpu": "NVIDIA GeForce RTX 2060",
+ "finished": "Sun Oct  4 12:02:54 2026",
+ "verification_failures": []
+}

@@ -1,0 +1,69 @@
+{
+ "accuracy": 0.7093639575971732,
+ "rate": 0.025516405701637268,
+ "results": {
+  "2": {
+   "naive": {
+    "neuron": 0.9619184470663266,
+    "partition32": 0.6715510204081633,
+    "neighbours_silent": 0.626890306122449,
+    "layer": 0.5341632653061225
+   },
+   "recursive": {
+    "neuron": 0.9629300860969388,
+    "partition32": 0.678984693877551,
+    "neighbours_silent": 0.6354591836734694,
+    "layer": 0.5534285714285714
+   },
+   "oracle": {
+    "neuron": 0.9658650350765307,
+    "partition32": 0.6878775510204082,
+    "neighbours_silent": 0.6426887755102041,
+    "layer": 0.5727551020408164
+   },
+   "fixed_point_iters": 5
+  },
+  "4": {
+   "naive": {
+    "neuron": 0.94572412109375,
+    "partition32": 0.6179244791666667,
+    "neighbours_silent": 0.5821744791666666,
+    "layer": 0.4854583333333333
+   },
+   "recursive": {
+    "neuron": 0.9478773600260416,
+    "partition32": 0.63228125,
+    "neighbours_silent": 0.5962890625,
+    "layer": 0.49747916666666664
+   },
+   "oracle": {
+    "neuron": 0.95520654296875,
+    "partition32": 0.6499973958333334,
+    "neighbours_silent": 0.611578125,
+    "layer": 0.5251041666666667
+   },
+   "fixed_point_iters": 5
+  },
+  "8": {
+   "naive": {
+    "neuron": 0.9223887567934783,
+    "partition32": 0.5048451086956521,
+    "neighbours_silent": 0.418125,
+    "layer": 4.347826086956522e-05
+   },
+   "recursive": {
+    "neuron": 0.9275494225543478,
+    "partition32": 0.5836440217391304,
+    "neighbours_silent": 0.5540516304347826,
+    "layer": 0.466
+   },
+   "oracle": {
+    "neuron": 0.9403547044836956,
+    "partition32": 0.6063451086956522,
+    "neighbours_silent": 0.5738206521739131,
+    "layer": 0.4813695652173913
+   },
+   "fixed_point_iters": 5
+  }
+ }
+}

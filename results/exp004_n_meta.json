@@ -1,0 +1,155 @@
+{
+ "exp": "EXP-001",
+ "protocol": "v2-interleaved",
+ "args": {
+  "N": 1,
+  "F": [
+   32
+  ],
+  "windows": [
+   0
+  ],
+  "s": [
+   0.0001,
+   0.0003,
+   0.001,
+   0.003,
+   0.01,
+   0.03,
+   0.1,
+   0.2,
+   0.3,
+   0.5,
+   0.7,
+   1.0
+  ],
+  "platforms": [
+   "cpu",
+   "gpu"
+  ],
+  "reps": 15,
+  "warm": 2,
+  "seed": 4,
+  "spread": [
+   1.0
+  ],
+  "out": "../results/exp004_n"
+ },
+ "theta": 1.0,
+ "started": "Sun Oct  4 12:04:18 2026",
+ "python": "3.12.3",
+ "numpy": "2.5.3",
+ "numba": "0.68.0",
+ "numba_threads": 6,
+ "omp_wait_policy": "active",
+ "uname": {
+  "system": "Linux",
+  "node": "DESKTOP-AAKBJPP",
+  "release": "6.18.40.1-microsoft-standard-WSL2",
+  "version": "#1 SMP PREEMPT_DYNAMIC Fri Jul 31 22:12:15 UTC 2026",
+  "machine": "x86_64",
+  "processor": "x86_64"
+ },
+ "telemetry": [
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.0001,
+   "sm_clock_mhz": 375,
+   "temp_c": 61,
+   "power_w": 18.09
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.0003,
+   "sm_clock_mhz": 375,
+   "temp_c": 61,
+   "power_w": 18.056
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.001,
+   "sm_clock_mhz": 375,
+   "temp_c": 61,
+   "power_w": 18.041
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.003,
+   "sm_clock_mhz": 375,
+   "temp_c": 61,
+   "power_w": 18.037
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.01,
+   "sm_clock_mhz": 375,
+   "temp_c": 61,
+   "power_w": 18.056
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.03,
+   "sm_clock_mhz": 375,
+   "temp_c": 61,
+   "power_w": 17.978
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.1,
+   "sm_clock_mhz": 375,
+   "temp_c": 61,
+   "power_w": 17.946
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.2,
+   "sm_clock_mhz": 375,
+   "temp_c": 61,
+   "power_w": 18.024
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.3,
+   "sm_clock_mhz": 375,
+   "temp_c": 61,
+   "power_w": 18.061
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.5,
+   "sm_clock_mhz": 375,
+   "temp_c": 61,
+   "power_w": 17.941
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 0.7,
+   "sm_clock_mhz": 375,
+   "temp_c": 61,
+   "power_w": 17.907
+  },
+  {
+   "F": 32,
+   "win": 0,
+   "s": 1.0,
+   "sm_clock_mhz": 375,
+   "temp_c": 61,
+   "power_w": 17.943
+  }
+ ],
+ "cupy": "14.2.0",
+ "gpu": "NVIDIA GeForce RTX 2060",
+ "finished": "Sun Oct  4 12:04:30 2026",
+ "verification_failures": []
+}

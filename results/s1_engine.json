@@ -1,0 +1,146 @@
+[
+ {
+  "model": "control",
+  "L_us": 0,
+  "mode": "barrier",
+  "median_ms": 49.2257,
+  "mean_ms": 50.3638335,
+  "exact": true
+ },
+ {
+  "model": "control",
+  "L_us": 0,
+  "mode": "handshake",
+  "median_ms": 3.77185,
+  "mean_ms": 3.8872465000000007,
+  "exact": true
+ },
+ {
+  "model": "control",
+  "L_us": 0,
+  "mode": "cert",
+  "median_ms": 5.843500000000001,
+  "mean_ms": 5.874868999999999,
+  "exact": true
+ },
+ {
+  "model": "control",
+  "L_us": 5,
+  "mode": "barrier",
+  "median_ms": 50.734700000000004,
+  "mean_ms": 51.584653499999995,
+  "exact": true
+ },
+ {
+  "model": "control",
+  "L_us": 5,
+  "mode": "handshake",
+  "median_ms": 4.19145,
+  "mean_ms": 4.286859000000001,
+  "exact": true
+ },
+ {
+  "model": "control",
+  "L_us": 5,
+  "mode": "cert",
+  "median_ms": 6.39065,
+  "mean_ms": 6.4221675000000005,
+  "exact": true
+ },
+ {
+  "model": "control",
+  "L_us": 20,
+  "mode": "barrier",
+  "median_ms": 51.4791,
+  "mean_ms": 52.140223999999996,
+  "exact": true
+ },
+ {
+  "model": "control",
+  "L_us": 20,
+  "mode": "handshake",
+  "median_ms": 5.6133500000000005,
+  "mean_ms": 5.656686,
+  "exact": true
+ },
+ {
+  "model": "control",
+  "L_us": 20,
+  "mode": "cert",
+  "median_ms": 7.719799999999999,
+  "mean_ms": 7.9045065,
+  "exact": true
+ },
+ {
+  "model": "certified",
+  "L_us": 0,
+  "mode": "barrier",
+  "median_ms": 50.1072005,
+  "mean_ms": 52.146094735000005,
+  "exact": true
+ },
+ {
+  "model": "certified",
+  "L_us": 0,
+  "mode": "handshake",
+  "median_ms": 4.0340665,
+  "mean_ms": 4.208496895,
+  "exact": true
+ },
+ {
+  "model": "certified",
+  "L_us": 0,
+  "mode": "cert",
+  "median_ms": 5.1842995,
+  "mean_ms": 5.23095647,
+  "exact": true
+ },
+ {
+  "model": "certified",
+  "L_us": 5,
+  "mode": "barrier",
+  "median_ms": 48.203146000000004,
+  "mean_ms": 49.016328005,
+  "exact": true
+ },
+ {
+  "model": "certified",
+  "L_us": 5,
+  "mode": "handshake",
+  "median_ms": 4.04195,
+  "mean_ms": 4.097120495,
+  "exact": true
+ },
+ {
+  "model": "certified",
+  "L_us": 5,
+  "mode": "cert",
+  "median_ms": 5.342929,
+  "mean_ms": 5.367925755,
+  "exact": true
+ },
+ {
+  "model": "certified",
+  "L_us": 20,
+  "mode": "barrier",
+  "median_ms": 48.500653,
+  "mean_ms": 49.75853039,
+  "exact": true
+ },
+ {
+  "model": "certified",
+  "L_us": 20,
+  "mode": "handshake",
+  "median_ms": 5.6501,
+  "mean_ms": 5.726044000000001,
+  "exact": true
+ },
+ {
+  "model": "certified",
+  "L_us": 20,
+  "mode": "cert",
+  "median_ms": 6.1420915,
+  "mean_ms": 6.19486539,
+  "exact": true
+ }
+]

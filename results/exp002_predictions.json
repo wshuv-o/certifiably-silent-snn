@@ -1,0 +1,86 @@
+[
+ {
+  "platform": "cpu",
+  "window": 0,
+  "N": 1048576,
+  "F": 16,
+  "s_star_pred": 0.17212832094463795
+ },
+ {
+  "platform": "cpu",
+  "window": 0,
+  "N": 1048576,
+  "F": 48,
+  "s_star_pred": 0.15345747581937616
+ },
+ {
+  "platform": "cpu",
+  "window": 0,
+  "N": 524288,
+  "F": 32,
+  "s_star_pred": 0.15807917630876148
+ },
+ {
+  "platform": "cpu",
+  "window": 256,
+  "N": 1048576,
+  "F": 16,
+  "s_star_pred": 0.12491651326451007
+ },
+ {
+  "platform": "cpu",
+  "window": 256,
+  "N": 1048576,
+  "F": 48,
+  "s_star_pred": 0.10406351136409203
+ },
+ {
+  "platform": "cpu",
+  "window": 256,
+  "N": 524288,
+  "F": 32,
+  "s_star_pred": 0.10871484494475132
+ },
+ {
+  "platform": "gpu",
+  "window": 0,
+  "N": 1048576,
+  "F": 16,
+  "s_star_pred": 0.08152326120945844
+ },
+ {
+  "platform": "gpu",
+  "window": 0,
+  "N": 1048576,
+  "F": 48,
+  "s_star_pred": 0.08078217076833472
+ },
+ {
+  "platform": "gpu",
+  "window": 0,
+  "N": 524288,
+  "F": 32,
+  "s_star_pred": 0.0786000208809861
+ },
+ {
+  "platform": "gpu",
+  "window": 256,
+  "N": 1048576,
+  "F": 16,
+  "s_star_pred": 0.2821132289376999
+ },
+ {
+  "platform": "gpu",
+  "window": 256,
+  "N": 1048576,
+  "F": 48,
+  "s_star_pred": 0.18959612450591495
+ },
+ {
+  "platform": "gpu",
+  "window": 256,
+  "N": 524288,
+  "F": 32,
+  "s_star_pred": 0.18080291451410763
+ }
+]
