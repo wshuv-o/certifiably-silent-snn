@@ -8,7 +8,7 @@ source ~/research/venv_gpu/bin/activate
 cd "$(dirname "$0")"
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 M=~/research/models; LOG=~/research/logs; mkdir -p "$M" "$LOG"
-while pgrep -f "s5_delays.py" > /dev/null; do sleep 20; done
+# (serialised by run_overnight.sh)
 runone() { tag=$1; shift
   if grep -qas "^RESULT" "$LOG/d4_$tag.log"; then echo "SKIP $tag"; return 0; fi
   echo "--- $tag $(date +%H:%M:%S) ---"
