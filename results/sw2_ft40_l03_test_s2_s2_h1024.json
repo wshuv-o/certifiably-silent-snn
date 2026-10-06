@@ -1,0 +1,33 @@
+{
+ "tag": "ft40_l03_test_s2",
+ "dataset": "shd",
+ "alt": "none",
+ "lam": 0.3,
+ "mu": 0.1,
+ "nhub": 0,
+ "alpha": 1.0,
+ "seed": 2,
+ "epochs": 40,
+ "acc_val": 0.7125748502994012,
+ "test": {
+  "acc": 0.8021201413427562,
+  "test_core_cert": 0.5376282691955566,
+  "test_core_oracle": 0.6273359537124634,
+  "test_violations": 0,
+  "test_neuron_cert": 0.9360236167907715,
+  "test_allcore_cert": 0.5376282691955566,
+  "test_R_mean": 0.38728320598602295,
+  "test_budget": 0.3934693402873666
+ },
+ "acc": 0.8021201413427562,
+ "acc_norec": 0.055603079555175364,
+ "rate": 0.03563183546066284,
+ "core_cert": 0.565771508216858,
+ "core_oracle": 0.6615918040275574,
+ "violations": 0,
+ "neuron_cert": 0.941466462612152,
+ "allcore_cert": 0.565771508216858,
+ "R_mean": 0.38728320598602295,
+ "budget": 0.3934693402873666,
+ "H": 1024
+}

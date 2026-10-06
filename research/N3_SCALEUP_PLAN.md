@@ -1026,3 +1026,126 @@ treated as within-run comparisons only.
 - **Speed-up falls with core count:** report as a negative result; the mechanism does not scale and the
   paper must say so explicitly.
 - **Any bit-mismatch vs the reference is a soundness failure** and overrides all speed results.
+
+## FAILURE ANALYSIS — where does the accuracy actually go? (2026-10-06, `analyze_accuracy_loss.py`, `analyze_ei_ablation.py`)
+
+**The mechanism, measured.** The trained constraint is R_i = sum_j relu(W_ij) <= (1-beta)*theta = 0.3935.
+That budget is a **fixed absolute quantity** -- it does not grow with the network -- while the required
+drive does: R_mean = 4.66 at H = 512 and 8.72 at H = 1024. Compliance therefore requires a
+**12x (H=512) to 22x (H=1024) reduction in total positive recurrent weight mass**.
+
+Measured on c2_ctrl_s2 vs c2_ours_s2 (H = 512, 300-400 test samples, CPU):
+
+| quantity | control | constrained |
+|---|---|---|
+| positive recurrent weight mass | 2385.5 | **199.1** (12.0x smaller) |
+| negative recurrent weight mass | 3672.2 | **4448.0** (grew) |
+| E/I ratio | 0.650 | **0.045** |
+| R_mean (all-fire bound) | 4.659 | 0.389 |
+| neurons under budget | 0.0% | 64.1% |
+
+**So the constraint works by near-eliminating recurrent excitation while inhibition grows.**
+
+**What recurrence actually contributes (E/I ablation, same models):**
+
+| variant | control acc | constrained acc |
+|---|---|---|
+| full recurrence | 80.00 | 80.00 |
+| excitation removed (negatives kept) | 62.25 (**-17.75**) | 69.25 (**-10.75**) |
+| inhibition removed (positives kept) | 5.00 (-75.00), firing rate explodes to 71% | 17.50 (-62.50) |
+| no recurrence | 11.75 (-68.25) | 14.75 (-65.25) |
+
+Recurrent **inhibition is essential** (removing it causes runaway firing and collapse to chance).
+Recurrent **excitation is worth ~17.8 points** in the control. The constrained model depends on excitation
+**less** (-10.75 vs -17.75), i.e. fine-tuning lets the network **re-route around** the excitation it loses.
+**This is why fine-tuning beats from-scratch training: it preserves a working solution and adapts it,
+rather than having to learn one under the handicap.**
+
+**Hypothesis tested and REJECTED: tightening the bound via an activity cap is not sufficient.**
+The all-fire bound is enormously pessimistic -- measured simultaneous activity is **0.98 of 32 neurons per
+core on average, p99.9 = 7, max = 10**, against a bound assuming all 512 fire. A sound "at most k per
+presynaptic core" bound (sum of the k largest positive weights per core) was computed directly:
+
+| k per core | control R_k | tightening | neurons under budget |
+|---|---|---|---|
+| 1 | 1.125 | 4.1x | 0.0% |
+| 2 | 1.809 | 2.6x | 0.0% |
+| 4 | 2.760 | 1.7x | 0.0% |
+| 10 (observed max) | 4.201 | 1.1x | 0.0% |
+
+Even the most aggressive possible cap (k = 1, one spike per core per step) leaves R = 1.125, still
+**2.9x above the budget**, and certifies 0% of neurons without retraining. The tightening is sublinear
+because the positive weight distribution is heavy-tailed -- the largest few weights carry most of the mass.
+**Activity-cap / k-WTA certificates are therefore NOT the fix.** (Recorded so this is not re-attempted.)
+
+### Solutions implied by the analysis, in order of measured leverage
+
+1. **More, smaller cores (no retraining required).** CORE-SCALING-001 shows certificate coverage rising
+   **0.4% -> 1.4% -> 16.4% -> 40.3% -> 55.8%** as cores go 2 -> 4 -> 8 -> 16 -> 32 at fixed H = 512.
+   Certification requires a **whole core** to be provably silent, so fine-grained cores qualify far more
+   often. This is the largest lever found and it costs no accuracy at all -- it is a partitioning choice.
+   **Design implication: the technique favours fine-grained many-core architectures.**
+2. **Faster membrane leak.** The budget is (1-beta)*theta with beta = exp(-0.5) = 0.6065 today.
+   Halving the membrane time constant gives beta = exp(-1) and a budget of 0.632 (**1.61x**); quartering it
+   gives beta = exp(-2) and 0.865 (**2.20x**). A single hyperparameter, fully sound, no new theory. Cost:
+   shorter membrane memory. **Untested.**
+   (Note: raising theta alone does *not* help -- scaling theta and all weights together leaves R/budget
+   unchanged. The leak is not scale-invariant, which is why it works.)
+3. **Local / sparse recurrent connectivity.** R sums positive weights over *all* presynaptic cores;
+   restricting each neuron to a few neighbouring cores cuts R roughly in proportion (~8x at 16 cores).
+   This is also already the best speed-up regime (1.5-2.3x local vs 1.15-1.40x dense) and PILOT-004
+   reached 56% certification at -2.2 points with local connectivity. **Untested at this scale.**
+4. **Longer fine-tune at larger width** -- now demonstrated (SCALE-FT-003 stage 2).
+
+Combining (2) and (3) would raise the budget ~2.2x while cutting required R ~8x, i.e. roughly a **17x**
+relaxation against the 12-22x shortfall -- plausibly certification at near-zero accuracy cost, without
+crushing excitation. **This is the highest-value method direction and it follows from measurement rather
+than preference.**
+
+## CORE-SCALING-001 — RESULT (2026-10-06, H = 512 seed 2, idle CPU, 32 threads): the advantage GROWS with core count
+
+Speed-up = local-handshake time / certificate time. All runs verified **bit-identical** to a single-thread
+reference (exact=1 throughout).
+
+| model | cores | L=0 | L=5us | L=20us | L=100us | L=500us | cert coverage |
+|---|---|---|---|---|---|---|---|
+| ours | 2  | 0.99 | 0.97 | 0.99 | 1.00 | 1.00 | 0.4% |
+| ours | 4  | 0.98 | 0.96 | 0.99 | 1.00 | 1.00 | 1.4% |
+| ours | 8  | 0.97 | 1.02 | 1.04 | 1.02 | 1.00 | 16.4% |
+| ours | 16 | 1.01 | 1.05 | 1.04 | 1.01 | 1.00 | 40.3% |
+| **ours** | **32** | 19.66* | 1.24 | **1.67** | **1.71** | 1.41 | **55.8%** |
+| control | 32 | 1.25 | 1.24 | 1.03 | 0.99 | 0.95 | **0.0%** |
+
+*The L = 0 value of 19.66x is treated as suspect (measurement artefact at zero emulated latency) and is
+not used in any claim.
+
+**This supports the paper's central motivation using our own engine:** synchronization cost grows with
+system size, and so does the certificate advantage. The control gains nothing at any core count (0%
+coverage), so the entire effect is attributable to training. The gain at 32 cores (1.41-1.71x, dense
+connectivity) also **exceeds the manuscript's dense figure of 1.15-1.40x**, which was measured at 8 cores
+on a 6-core CPU (oversubscribed).
+
+**Mechanism: certification is governed by core granularity.** A whole core must be provably silent, so
+cores of 16 neurons (CORES = 32) qualify far more often than cores of 256 (CORES = 2).
+**Honest caveat:** real neuromorphic cores hold far more neurons (Loihi ~1k), where whole-core silence
+would be rarer. The regime this technique wins in is **many fine-grained cores**, and the paper must say so.
+
+## SCALE-FT-003 stage 2 — RESULT (2026-10-06, H = 1024, TEST set, seeds 1-3): PASS
+
+| arm | test cost | certified | oracle | violations |
+|---|---|---|---|---|
+| **FT lambda=0.3, 40 ep** | **-0.44** | **53.13%** | 61.70 | 0 |
+| scratch lambda=0.3 | -2.77 | 59.99% | 62.99 | 0 |
+
+Per-seed cost: -1.63, -0.22, **+0.53**. Pre-registered bar (cost <= 3.0, cert >= 50%, 0 violations):
+**met on all three.** Fine-tuning gains **+2.33 accuracy points** over from-scratch at this width, for
+6.9 points less certification.
+
+**The H = 1024 limitation is therefore substantially addressed by a longer fine-tune**, reversing
+SCALE-FT-001's negative conclusion (which used 20 epochs).
+
+**Caveat that must be reported: the cost is speaker-dependent.** The same configuration costs **-4.02 on
+speaker-disjoint validation** (held-out speakers 3, 6) but **-0.44 on test** (81% speakers 4, 5). A
+3.6-point gap, well beyond the ~0.9-point validation standard error. The precise accuracy cost therefore
+depends on which speakers are held out, and both figures must appear in the manuscript rather than only
+the favourable one.

@@ -1,0 +1,14 @@
+{
+ "control": {
+  "full recurrence": 80.0,
+  "EXCITATION removed": 62.25000000000001,
+  "INHIBITION removed": 5.0,
+  "no recurrence": 11.75
+ },
+ "constrained": {
+  "full recurrence": 80.0,
+  "EXCITATION removed": 69.25,
+  "INHIBITION removed": 17.5,
+  "no recurrence": 14.75
+ }
+}
