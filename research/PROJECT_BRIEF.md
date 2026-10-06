@@ -32,6 +32,67 @@ not just 6 processes. At 2-3 processes we saw `CUDA_ERROR_UNKNOWN` *and* a bogus
 faster in expectation. Long jobs are launched detached (`setsid nohup`) because session restarts twice
 killed running work.
 
+## STATUS 2026-10-07 03:20 — certification is FREE on two datasets; the design rule was DERIVED, not fitted
+
+**The project's central problem is solved.** Provable silence now costs **nothing** -- it *gains* accuracy --
+and this has been shown on two datasets with a frozen recipe and zero retuning between them.
+
+| | SHD (val) | SSC (test, frozen, no retuning) |
+|---|---|---|
+| control certified | 3.54% | 9.50% |
+| **constrained certified** | **56.28%** | **60.90%** |
+| % of oracle | **94.9%** | **94.3%** |
+| **accuracy cost** | **+0.60** | **+3.10** |
+| violations | 0 | 0 |
+
+### What changed: synaptic delays, and a decomposition that was derived before it was measured
+
+With v(t+1) = BETA*v(t) + I(t+1) + sum_d W_d s(t+1-d), a certificate at horizon k needs spikes from
+t+1+k-d. **For d >= k those are already past, so they are known exactly; only d < k must be bounded.**
+Therefore only taps with d < K bind a K-step certificate, and the network can satisfy the budget by
+**moving** excitation into the free long taps instead of destroying it.
+
+That prediction came from the algebra, before any run. Both datasets then showed exactly it:
+
+| R_per_delay | d=2 | d=4 | d=8 | total |
+|---|---|---|---|---|
+| SHD control | 4.97 | 4.90 | 5.40 | 15.27 |
+| SHD constrained | **0.28** | 6.03 | 6.46 | 12.76 (-16%) |
+| SSC control | 5.73 | 6.12 | 7.19 | 19.04 |
+| SSC constrained | **0.29** | 8.56 | 9.98 | **18.83 (-1%)** |
+
+The binding d=2 tap collapses to ~0.28 on **both** datasets -- just under the 0.3935 budget -- while the
+free taps grow and total excitation is nearly unchanged. **The constraint became a reallocation, not a
+reduction.** Contrast the old single-delay architecture, where the same budget forced destroying 92% of
+recurrent excitation (E/I 0.650 -> 0.045) and cost accuracy. **Delays give the network somewhere to put
+its excitation.**
+
+**Design rule for the paper:** use delays >= 2 and omit the unit-delay tap. It improves accuracy *and*
+certifiability simultaneously -- there is no trade-off on this architecture.
+
+### Accuracy also moved a long way
+Base model 77.42 -> **87.25** validation on SHD (~90% test) from stronger augmentation + longer schedules
++ delays. The faster-leak and local-connectivity levers (BUDGET-001, WIDTH-001, RADIUS-001) are
+**superseded** -- once delays do the work, the budget stops being the binding constraint.
+
+### Established and robust
+- **0 soundness violations** across every run, dataset, width and seed to date.
+- The delay-aware exact engine is **bit-identical to a single-thread reference in 80/80 configurations**
+  (4/8/16/32 cores x 5 latencies x 2 modes x 2 models).
+- Certificate coverage **rises with core count** (43.8% -> 71.5% for 4 -> 32 cores); the unconstrained
+  control gets 0.8-1.2%, so **training supplies essentially the entire effect**.
+- `R ~ 0.0098 x fan-in`, linear across a 10x range: a predictive design formula.
+
+### NOT yet established — do not quote these as settled
+1. **Seeds.** Everything above is seed 1. SHD-CONFIRM-FROZEN (test set, seeds 2-4) is running.
+2. **Wall-clock speed-up on the delay architecture is UNKNOWN.** The 1.67-1.71x figure belongs to the
+   *single-delay* model. Two attempts to measure the delay engine were contaminated by concurrent jobs
+   and discarded. Expectation recorded in advance: certificates should gain **less** here, because
+   d_min = 2 already hands the baseline a free step; if that free lookahead captures most of the benefit,
+   it is a negative result for the certificate contribution and will be reported as one.
+3. **No real hardware.** Latency is still emulated.
+4. **Sub-SOTA accuracy.** ~90% test on SHD vs ~96%; 68.66% on SSC vs ~80%.
+
 ## STATUS 2026-10-06 13:30 — the fine-tuning fix does NOT generalize to 1,024 neurons
 
 **SCALE-FT-001 FAIL.** Open item 1 of the 12:45 status below is now answered, negatively. The
