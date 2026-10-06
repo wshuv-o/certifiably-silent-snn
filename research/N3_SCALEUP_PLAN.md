@@ -1573,3 +1573,43 @@ bit-exactness flag is a correctness property:
 orchestrator's completion marker. The honest expectation recorded earlier stands -- certificates should
 gain *less* here than on the single-delay model because d_min = 2 already hands the baseline a free step,
 and the 16-core preliminary suggested certificates may even lose at low core counts and low latency.
+
+## SSC-FROZEN-001 — RESULT (2026-10-07, frozen recipe, zero retuning, test set): **PASS on all three criteria**
+
+| SSC (35 classes, 14 ep = step-matched to SHD's 150) | control | constrained |
+|---|---|---|
+| test accuracy | 65.56 | **68.66  (+3.10)** |
+| certified core fraction | 9.50% | **60.90%** |
+| oracle | 66.80% | 64.59% |
+| **% of oracle** | 14.2% | **94.3%** |
+| violations | 0 | **0** |
+
+**Pre-registered bar: cost >= -1.0, certified >= 70% of oracle, 0 violations. All three met**, and the
+accuracy criterion not marginally -- the constrained model **beats** its own control by 3.10 points on a
+dataset for which nothing was tuned.
+
+### The mechanism signature is identical across two datasets
+
+| R_per_delay | d=2 | d=4 | d=8 | total |
+|---|---|---|---|---|
+| SHD control | 4.97 | 4.90 | 5.40 | 15.27 |
+| SHD constrained | **0.28** | 6.03 | 6.46 | 12.76 (-16%) |
+| SSC control | 5.73 | 6.12 | 7.19 | 19.04 |
+| SSC constrained | **0.29** | 8.56 | 9.98 | **18.83 (-1%)** |
+
+On SSC the binding d=2 tap collapses 5.73 -> **0.29**, landing just under the 0.3935 budget at essentially
+the same value as SHD's 0.28, while d=4 and d=8 *grow* and **total excitation is unchanged (-1%)**. That is
+purer reallocation than SHD showed, and the two datasets produce the same signature and the same landing
+point.
+
+**Why this is the key result of the project.** The design rule (delays >= 2, drop the unit-delay tap) was
+**derived from the delay decomposition before any of it was measured**: only taps with d < K bind a K-step
+certificate, so the network should be able to satisfy the budget by *moving* excitation into the free long
+taps rather than destroying it. Two independent datasets now show exactly that, with no retuning between
+them. The architecture is therefore **justified rather than selected** -- which is the one thing
+validation-selection bias on SHD could never have given us.
+
+**Scope still to establish:** every number here is seed 1, and the SHD test-set confirmation on fresh
+seeds (SHD-CONFIRM-FROZEN) is still running. Absolute SSC accuracy (68.66%) is below SSC state of the art
+(~80% with delays), as stated in advance, because the schedule is a frozen step-matched translation rather
+than tuned for SSC.
