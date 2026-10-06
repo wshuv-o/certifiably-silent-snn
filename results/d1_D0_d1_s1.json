@@ -1,0 +1,29 @@
+{
+ "tag": "D0_d1",
+ "dataset": "shd",
+ "seed": 1,
+ "epochs": 40,
+ "H": 512,
+ "taum": 2.0,
+ "local": 0,
+ "local_r": 1,
+ "aug": 1,
+ "lam": 0.0,
+ "acc_val": 0.7519247219846023,
+ "acc": NaN,
+ "test": null,
+ "core_cert": 0.0,
+ "core_oracle": 0.6392513314882914,
+ "violations": 0,
+ "neuron_cert": 0.14122708141803741,
+ "allcore_cert": 0.0,
+ "R_per_delay": [
+  4.839654922485352
+ ],
+ "R_mean": 4.839654922485352,
+ "R_short": 4.839654922485352,
+ "budget": 0.3934693402873666,
+ "delays": [
+  1
+ ]
+}
