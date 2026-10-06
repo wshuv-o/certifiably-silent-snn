@@ -136,7 +136,18 @@ def cert_penalty(m, V, S, iext):
     return (torch.relu(worst - THETA) * silent * m.quiet).mean()
 
 
+AUG = int(os.environ.get("AUG", "1"))            # 1 = original; 2 = stronger (shifts + block masking)
+
+
 def augment(x):
+    if AUG >= 2:                                  # SHD has only ~8k training samples; overfitting is the
+        r = np.random.randint(-10, 11)            # dominant failure mode, so mask blocks as well as shift
+        x = torch.roll(x, int(r), dims=1)
+        x = torch.roll(x, int(np.random.randint(-10, 11)), dims=2)
+        x = x.clone()
+        c0 = int(np.random.randint(0, x.shape[2] - 40)); x[:, :, c0:c0 + int(np.random.randint(0, 41))] = 0
+        t0 = int(np.random.randint(0, x.shape[1] - 10)); x[:, t0:t0 + int(np.random.randint(0, 11)), :] = 0
+        return x
     x = torch.roll(x, int(np.random.randint(-5, 6)), dims=1)      # time shift (circular, small)
     return torch.roll(x, int(np.random.randint(-5, 6)), dims=2)   # channel jitter
 
