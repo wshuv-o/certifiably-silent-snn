@@ -32,6 +32,39 @@ not just 6 processes. At 2-3 processes we saw `CUDA_ERROR_UNKNOWN` *and* a bogus
 faster in expectation. Long jobs are launched detached (`setsid nohup`) because session restarts twice
 killed running work.
 
+## STATUS 2026-10-07 05:40 — CONFIRMED on test with fresh seeds AND out-of-sample. Morning summary: `research/paper/README_MORNING_2.md`
+
+**All overnight work complete.** The 03:20 status below was seed-1 validation; it is now confirmed.
+
+| | SHD (test, frozen, seeds 2-4) | SSC (test, frozen, no retuning) |
+|---|---|---|
+| control certified | 4.2% | 9.50% |
+| **constrained certified** | **55.98%** | **60.90%** |
+| % of oracle | **95.0%** | **94.3%** |
+| **accuracy cost** | **+0.24** (sd 0.38, CI ~[-0.19,+0.67]) | **+3.10** |
+| test accuracy | **87.59%** | 68.66% |
+| violations | **0** | **0** |
+
+**Validation-selection bias proved negligible** -- the risk I flagged hardest. Seed-1 validation predicted
++0.60 / 56.28% / 94.9%; fresh-seed test delivered **+0.24 / 55.98% / 95.0%**. `R_short` lands at
+0.253/0.253/0.260 across the three seeds: the mechanism reproduces.
+
+**SPEED (idle CPU, handshake given the delays' free lookahead, exact=1 everywhere):** certificates win
+**only at 32 cores, 1.25-1.49x**, and **lose at 4-16 cores at low latency** (0.78-0.95x) because their
+runtime cost exceeds their benefit once d_min=2 hands the baseline a free step. The control never wins, so
+the 32-core gain is entirely training-attributable. This is **lower than the single-delay architecture's
+1.67-1.71x**: delays buy accuracy and certifiability at the cost of the certificate's marginal speed
+advantage. Pre-registered as the expected outcome before measuring. Caveat: 32 cores on 32 threads
+saturates the scheduler and plausibly inflates the benefit of waiting less.
+
+**Also settled:** 300 epochs is WORSE than 150 on this architecture (87.25 -> 84.69 control), unlike the
+delay-free model. The frozen 150-epoch recipe is correct.
+
+**Remaining gaps:** no real hardware (emulated latency); sub-SOTA accuracy (87.59 vs ~96 SHD, 68.66 vs ~80
+SSC -- the fix is per-synapse learnable delays, since multi-tap multiplies parameters and the model is
+data-limited at ~1M); SSC is seed 1 only; the speed story is now architecture-dependent and each number
+must be attributed to its architecture.
+
 ## STATUS 2026-10-07 03:20 — certification is FREE on two datasets; the design rule was DERIVED, not fitted
 
 **The project's central problem is solved.** Provable silence now costs **nothing** -- it *gains* accuracy --
