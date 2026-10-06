@@ -10,9 +10,20 @@ set -e
 cd "$(dirname "$0")"
 source ~/research/venv_gpu/bin/activate
 B=~/research/build; M=~/research/models; mkdir -p "$B"
-echo "=== waiting for an idle CPU ==="
-while pgrep -f "s5_delays.py|s4_improve.py" > /dev/null; do sleep 30; done
-echo "=== CPU idle at $(date +%H:%M:%S); nproc=$(nproc) ==="
+# GATING (fixed 2026-10-07 after a race): the previous version polled "is any training running?" and
+# happened to sample the one-second gap between two sequential training runs, so it benchmarked for 14
+# minutes alongside a live job and produced invalid timings for the second time. Now it requires BOTH
+# an explicit completion marker from the orchestrator AND a sustained idle period, so a momentary gap
+# between queued runs cannot be mistaken for an idle machine.
+echo "=== waiting for the orchestrator to signal all GPU work complete ==="
+while ! grep -aq "OVERNIGHT GPU WORK COMPLETE" ~/research/logs/overnight.log 2>/dev/null; do sleep 60; done
+echo "=== marker seen; requiring 5 consecutive idle checks ==="
+idle=0
+while [ "$idle" -lt 5 ]; do
+  if pgrep -f "s5_delays.py|s4_improve.py" > /dev/null; then idle=0; else idle=$((idle+1)); fi
+  sleep 20
+done
+echo "=== CPU sustained-idle at $(date +%H:%M:%S); nproc=$(nproc) ==="
 g++ -O3 -march=native -std=c++20 -pthread s6_engine_delays.cpp -o "$B/s6_engine_delays"
 for CORES in 4 8 16 32; do
   echo "########## CORES=$CORES  $(date +%H:%M:%S) ##########"

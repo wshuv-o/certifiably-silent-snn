@@ -1537,3 +1537,39 @@ a genuine negative result for the certificate contribution on this architecture 
 such; or (c) certificate runtime cost exceeds its benefit at low core counts and low latency, which the
 16-core preliminary already suggests. **No speed claim about the delay architecture may be made until the
 idle-CPU run completes.**
+
+## DELAY-ENGINE-001 — correctness VALIDATED, coverage measured, timings INVALID (second contamination)
+
+**Timing incident (2026-10-07 02:58).** The benchmark's gate polled "is any training process running?"
+and happened to sample the one-second gap between SSC's S1 finishing (02:58:27) and S2 starting
+(02:58:27). It declared the CPU idle and then benchmarked from 02:58:29 to 03:12:04 **while S2 trained
+throughout**. All wall-clock numbers from that run are discarded; the log is kept as
+`delay_engine_CONTAMINATED_0258.log`. This is the **second** time CPU timing has been spoiled by a
+concurrent job in this project, so the gate now requires **both** an explicit completion marker from the
+orchestrator **and** five consecutive idle checks, which a momentary gap between queued runs cannot pass.
+
+**What IS valid from that run.** Certificate coverage does not depend on wall-clock timing, and the
+bit-exactness flag is a correctness property:
+
+| cores | trained (F2) | control (E3) |
+|---|---|---|
+| 4  | **43.8%** | 0.9% |
+| 8  | 50.8% | 0.8% |
+| 16 | 60.1% | 1.2% |
+| 32 | **71.5%** | 16.8% |
+
+1. **Coverage rises monotonically with core count** (43.8% -> 71.5%), the same core-granularity effect
+   CORE-SCALING-001 found on the single-delay model: a whole core must be provably silent, so smaller
+   cores qualify more often.
+2. **Training supplies essentially the entire effect.** The unconstrained control certifies 0.8-1.2% at
+   4-16 cores against the trained model's 43.8-60.1% -- a ~48x difference at 4 cores. The control's 16.8%
+   at 32 cores is the "free short certificate" floor that very small cores give for nothing.
+3. **80 RESULT lines, ZERO exactness failures**, across 4/8/16/32 cores x 5 latencies x 2 modes x 2
+   models. Spike trains were bit-identical to a single-thread reference in every configuration, which
+   validates the delay-aware engine, the delay-aware handshake lookahead and the delay-decomposed
+   certificate as a correct implementation.
+
+**Still outstanding: the wall-clock speed-up on the delay architecture.** Re-queued behind the
+orchestrator's completion marker. The honest expectation recorded earlier stands -- certificates should
+gain *less* here than on the single-delay model because d_min = 2 already hands the baseline a free step,
+and the 16-core preliminary suggested certificates may even lose at low core counts and low latency.
