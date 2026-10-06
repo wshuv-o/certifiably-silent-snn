@@ -1281,3 +1281,53 @@ no cost, and no loss of absolute quality.
   the trade-off honestly and the limitation stands in modified form.
 - **R grows with H despite local connectivity:** the fan-in analysis is wrong; investigate before any
   further method claims.
+
+## WIDTH-001 — RESULT (2026-10-06, validation, seed 1): fan-in prediction CONFIRMED, pre-registered bar FAILED
+
+| id | H | TAUM | ctrl R | ours R | budget | R/bud | ctrl acc | ours acc | cost | certified | oracle | viol |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| W1 | 1024 | 2.0 | **0.85** | 0.250 | 0.3935 | 0.63 | 66.21 | 67.24 | **+1.03** | 69.11 | 70.90 | 0 |
+| W2 | 1024 | 0.5 | **0.97** | 0.371 | 0.8647 | 0.43 | 64.84 | 65.44 | **+0.60** | **74.57** | 75.84 | 0 |
+
+**Confirmed: R is width-independent under bounded fan-in.** Local control R = 0.85-0.97 at H = 1024 versus
+**8.72 dense at the same width**, and 0.97 at H = 512 -- i.e. essentially flat in H, exactly as the fan-in
+analysis predicted (cores hold a fixed 32 neurons, so LOCAL_R = 1 gives fan-in 96 at every width).
+**Certification therefore no longer degrades with network size.** 74.57% certified (98% of oracle) at
+**negative cost** is the highest certified fraction achieved in this project.
+
+**Pre-registered bar FAILED on absolute accuracy.** Both configs meet cert >= 60%, cost >= -1.0 and 0
+violations, but absolute accuracy is 65.4-67.2 against the required 74.68 (the dense H = 512 control).
+Width did **not** recover the capacity lost to local connectivity: going H = 512 -> 1024 raised accuracy
+only 65.95 -> 67.24 (~1 point for 2x width). The trade-off is therefore **real, not an equal-H artefact**,
+and pre-registered interpretation 2 applies: local connectivity caps model quality, and the limitation
+stands in modified form.
+
+**Current state of the trade-off:** a strong model with costly certification (dense: 74.68 base,
+cert 59.5% at -2.48) or a weak model with free certification (local: ~66 base, cert 74.6% at +0.60).
+
+# RADIUS-001 — is there a connectivity radius that gets both? (PRE-REGISTERED 2026-10-06, before running)
+
+**Rationale.** LOCAL_R = 1 (3 of 32 cores, fan-in 96) and dense (32 cores, fan-in 1024) are the two
+extremes. R scales roughly with fan-in, so intermediate radii should trade R against capacity smoothly:
+predicted control R ~ 1.6 (r=2, fan-in 160), ~3.0 (r=4, 288), ~5.5 (r=8, 544). With TAUM = 0.5 the budget
+is 0.8647, so required suppression is ~1.9x (r=2), ~3.5x (r=4), ~6.4x (r=8) -- all far gentler than dense
+at this width (8.72/0.8647 = 10.1x), which is what forced the 12x excitation collapse.
+
+**Hypothesis:** an intermediate radius recovers most of the dense model's accuracy while keeping R/budget
+low enough that certification stays high and close to free.
+
+**Configs (H = 1024, TAUM = 0.5, seed 1, VALIDATION only, each with its OWN matched control):**
+LOCAL_R in {2, 4, 8}. Control = scratch 40 ep; ours = FT from that control, 40 ep, lr 5e-4, ramp,
+cert lambda = 0.3. Max 3 concurrent, retry + resume.
+
+**Pre-registered pass:** certified >= 60% AND cost >= -1.0 AND absolute accuracy >= 74.68 AND 0 violations
+-- the same full Pareto bar as WIDTH-001, so this is a like-for-like test, not a moved goalpost.
+
+**Pre-registered interpretations:**
+- **Pass at some radius:** the trade-off is resolved; fan-in becomes a tunable design parameter with a
+  sweet spot, and the paper gains a quantitative design rule (choose fan-in so R/budget < 1 at the largest
+  radius the accuracy target allows).
+- **Accuracy rises with radius but never reaches 74.68 while cert stays >= 60%:** report the measured
+  Pareto frontier; the method requires giving up some absolute accuracy, stated quantitatively.
+- **Certification collapses as soon as radius rises:** the free-certification regime is confined to very
+  sparse connectivity, which is a sharp and honest scope condition.
