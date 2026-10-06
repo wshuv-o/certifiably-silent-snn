@@ -510,3 +510,395 @@
 **Confirmation:**
 - seeds 2–4: control → winner (using that seed's control as init/teacher), plus scratch cert λ = 0.3; test set.
 - Pass: mean test cost ≤ 1.0 point, certified ≥ 55%, 0 violations.
+
+## MACHINE MIGRATION — RTX 2060 -> RTX 5080 (logged 2026-10-06, before rerunning SWEEP-002)
+
+**New environment (frozen for all runs from here on):**
+- GPU: RTX 5080 16 GB (Blackwell, sm_120 native in torch's arch list), driver 616.56; CPU 32 threads; 23 GB RAM.
+- OS/toolchain: WSL2 Ubuntu 26.04, Python 3.14, **torch 2.14.1+cu130**, g++ 15.2 (C++20).
+- Previous environment: RTX 2060 6 GB + i7-10750H (6 cores), older CUDA build.
+- Deviations from `setup_5080.sh`: `sudo` is password-protected on this machine, so pip was bootstrapped
+  without it (`python3 -m venv --without-pip` + `get-pip.py`); `g++` was already installed. The script's
+  cu128 pin has no cp314 wheel for Python 3.14, so **cu130** was used instead.
+- `~/research/venv_speech` is a symlink to `venv_gpu` (disk: the WSL vhdx sits on E:, which has ~8.5 GB free).
+  Verified safe: every script on the venv_speech path is device-agnostic or explicitly `map_location="cpu"`.
+- Environment verified: sm_120 is natively supported (not JIT), GPU matmul matches CPU to 3.2e-5.
+- Throughput: **5 s/epoch** for the 512-ALIF SHD run (40 epochs ~ 4 min).
+
+**Why SWEEP-002 stage 1 is rerun here rather than reusing the 2060's S0:**
+the 2060's S0 control finished (speaker-val 73.05%) but its weights `sw2_S0_ctrl_s1.pt` were never
+committed (models are gitignored), and stage 2 needs them as `INIT`/`TEACHER`. S0 must therefore be
+retrained on this machine; S1 is rerun too so the whole sweep is internally consistent in one environment.
+The 2060 result is archived as `results/sw2_S0_ctrl_s1_rtx2060.json` and used **only** as a cross-machine
+sanity check, never mixed into the sweep.
+
+**Pre-registered cross-machine check (stated before running):** the 5080 S0 control should reach a
+speaker-disjoint validation accuracy **within 3.0 points of 73.05%**. A larger divergence means the new
+environment changed training behaviour and must be diagnosed before any sweep result is trusted.
+Seeded runs are *not* expected to match bit-exactly across GPU architecture and torch version.
+
+**Why the protocol survives the migration:** every reported accuracy cost is computed against a control
+trained in the *same* environment, so cross-machine drift in absolute accuracy does not bias the costs.
+
+**Engineering change, no scientific effect:** `run_sw2_stage2.sh` goes from 2 queues of 3 to 6 parallel
+queues of 1 (16 GB allows it). Identical seeds, configs and selection rule.
+
+**WARNING for the speed results:** the manuscript's 1.5-2.3x engine speed-ups were measured on the
+6-core i7-10750H. This machine has 32 threads and `-march=native` targets a different CPU, so CPU
+wall-clock numbers from the two machines **must not be mixed in one table**. Re-measuring the whole
+speed section here, or keeping the i7 numbers, is an open decision.
+
+**Noted weakness in the SWEEP-002 selection rule (rule unchanged, not revised post-hoc):** the
+speaker-disjoint validation set has 1,169 samples, so the standard error of its accuracy is ~0.88 points
+-- comparable to the rule's 1.0-point eligibility band. Which config wins may therefore be partly noise;
+CONFIRM-002 on fresh seeds against the test set is the real guard. Also note the speaker-disjoint
+validation set is *harder* than the test set (control 73.05% val vs 80-81% test), so it is a conservative
+but not perfectly calibrated proxy.
+
+## SWEEP-002 — RESULT (2026-10-06, RTX 5080, seed 1, speaker-disjoint validation only)
+
+Cross-machine check **passed**: S0 control 74.68% vs the RTX 2060's 73.05% (+1.63, inside the
+pre-registered 3.0-point band). 0 violations in every config. Budget (1-beta)*theta = 0.3935.
+
+| tag | val acc | cost | certified | oracle | R_mean |
+|---|---|---|---|---|---|
+| S0_ctrl              | 74.68 | +0.00 |  0.0% | 63.5 | 4.776 |
+| S1_cert03 (scratch)  | 71.34 | -3.34 | 63.5% | 66.4 | 0.331 |
+| **S2_ft_cert03**     | **73.99** | **-0.68** | **58.0%** | 65.2 | 0.388 |
+| S3_ft_cert03_kd      | 74.76 | +0.09 | 53.7% | 64.6 | 0.461 |
+| S4_ft_cert10_kd      | 73.22 | -1.45 | 59.4% | 65.3 | 0.345 |
+| S5_scratch_cert03_kd | 72.54 | -2.14 | 60.9% | 65.4 | 0.401 |
+| S6_ft_hub4_kd        | 73.40 | -1.28 | 56.0% | 65.8 | 1.602 |
+| S7_ft_excap_kd       | 72.63 | -2.05 | 64.9% | 66.1 | 0.329 |
+
+**Winner by the pre-registered rule: S2_ft_cert03** (eligible within 1.0 point; highest certified
+fraction among eligible). Rule application verified by hand: eligible set = {S2 (-0.68), S3 (+0.09)};
+S2 certifies 58.0% vs S3's 53.7%.
+
+**Main finding — initialization, not the loss, caused most of the accuracy cost.** The identical
+constraint at the identical strength costs 3.34 points from scratch (S1) but 0.68 points as
+fine-tuning from the trained control (S2), while still certifying 58.0% (89% of oracle). This is the
+first result that brings the accuracy cost under the 1-point bar on the harder unseen-speaker condition.
+
+**Knowledge distillation is counterproductive for certifiability.** S3 (= S2 + KD) attains the best
+accuracy of all (+0.09 above control) but its R_mean rises to 0.461, *above* the 0.393 budget, and
+certification falls to 53.7%. KD pulls the network back toward the unconstrained teacher and so fights
+the constraint. Mechanistically consistent with Proposition 1 (certifiability is governed by R_i vs the
+budget), and a useful negative result: accuracy recovery and certifiability are not automatically aligned.
+
+**ExCap remains the certifiability champion and remains too expensive.** S7 certifies 64.9% (98% of its
+oracle) at -2.05 points, still ineligible -- consistent with its CONFIRM-001 failure on unseen speakers.
+
+**Selection fragility (flagged BEFORE running, now quantified).** With a ~0.88-point standard error on
+1,169 validation samples, S2 clears the 73.68 eligibility boundary by only 0.31 points and S4 misses it
+by 0.46 points while certifying *better* (59.4%). The top-3 ordering is therefore inside noise, and the
+winner must be treated as provisional until CONFIRM-002 on fresh seeds against the test set.
+
+### Process issue found and fixed (2026-10-06) — silent failure masking in the harness
+The first attempt at SWEEP-002 appeared to succeed (exit 0, no errors) but produced **no checkpoints**,
+so all six stage-2 configs -- which fine-tune from S0 -- had no `INIT`/`TEACHER` and died instantly,
+also silently. Cause: every run was piped through `grep -E "^(RESULT|epoch ...)"`, which discarded
+tracebacks, so a failing `torch.save` was invisible. Because the result JSON is written *immediately
+before* the checkpoint, the failed run still left a normal-looking result file.
+**Fix:** `run_sw2_stage1.sh`, `run_sw2_stage2.sh` and `run_confirm2.sh` now write full logs to
+`~/research/logs/<tag>.log`, print the RESULT lines after the fact, and exit non-zero with a tail of the
+log if a result line or an expected checkpoint is missing. Stage 2 aborts if the teacher checkpoint is
+absent; each CONFIRM-002 chain aborts if the control a later run depends on failed.
+The exact mechanism by which the pipe killed the save (most likely SIGPIPE propagation on consumer
+close) was **not** proven; the fix is verified to work, and a harness that discards tracebacks is worth
+removing regardless. **Other scripts still using the `| grep` form should be migrated before reuse.**
+
+## CONFIRM-002 — RESULT (2026-10-06, RTX 5080, seeds 2-4, test set, one-shot): **PASS**
+
+Protocol as pre-registered: recipe selected on speaker-disjoint validation (seed 1), confirmed on fresh
+seeds 2-4 against the test set. Winner = **S2_ft_cert03** (fine-tune from that seed's own control,
+20 epochs, lr 5e-4, ramped constraint, cert lambda = 0.3).
+
+| arm (mean of seeds 2-4) | test acc | cost | certified | % of oracle | R_mean (budget 0.3935) |
+|---|---|---|---|---|---|
+| control                      | 78.77 |  --   |  ~0.00% |  --   | 4.80 |
+| **ours: FT + cert 0.3**      | 78.34 | **-0.43** | **55.98%** | 89.3% | 0.390 |
+| reference: scratch + cert 0.3| 77.68 | -1.09 | 60.45% | 95.2% | 0.330 |
+
+Per-seed test accuracy -- control / ours / reference:
+seed 2: 78.53 / **79.42** / 78.31; seed 3: 78.58 / 77.16 / 78.22; seed 4: 79.20 / 78.45 / 76.50.
+Per-seed certified (ours): 55.01 / 56.14 / 56.79. **0 violations in every arm and seed.**
+
+**Pre-registered bar (mean cost <= 1.0 point, certified >= 55%, 0 violations): met on all three.**
+Cost -0.43 (on seed 2 the constrained model beat its control by +0.88), certified 55.98% with every
+seed individually above 55%, zero violations. Controls certify ~0%.
+
+**Mechanism confirms Proposition 1 rather than merely correlating with it:** mean R_mean settles at
+0.3904 against a budget of 0.3935, i.e. training drives worst-case excitatory drive to just under the
+threshold, which is exactly the condition the proposition says makes silence provable.
+
+**Main conclusion -- the accuracy cost was caused by initialization, not by the loss.** Identical loss
+at identical strength costs -1.09 points from scratch and -0.43 as fine-tuning. This resolves the
+project's main open problem (ExCap's -4.5 failure in CONFIRM-001).
+
+**Secondary result -- an accuracy/certifiability trade-off knob.** Scratch training certifies more
+(60.45%, 95% of oracle) at roughly double the accuracy cost; fine-tuning certifies less (55.98%, 89% of
+oracle) at half the cost. Both are defensible operating points and should be reported as a pair rather
+than one winner.
+
+**Honest limits of this result:**
+1. With 3 seeds the per-seed costs span +0.88 to -1.41, so the -0.43 mean is **not statistically
+   distinguishable from zero, nor from a cost of a point or two**. The defensible claim is "no
+   measurable accuracy cost at this size on SHD", not "no cost". More seeds are cheap (~4 min each).
+2. One dataset, one size (512 ALIF, SHD). The documented cost growth at 1,024 neurons (-2.1) and on
+   SSC (-3 to -3.7) was measured with **from-scratch** training and has **not** been retested with
+   fine-tuning. Whether the fix generalizes is now the highest-value open question.
+
+### Methodological finding — the speaker-disjoint protocol costs ~2 points of absolute accuracy
+Holding out speakers 3 and 6 removes 1,169 training samples (14.3%) and 2 of the 10 training speakers.
+Measured effect on the control's test accuracy: **80.8% (CONFIRM-001, random val split, 10 speakers)
+vs 78.8% (CONFIRM-002, speaker-disjoint, 8 speakers)**, i.e. about -2.1 points.
+Consequence for the manuscript: the speaker-disjoint split is the correct instrument for *selecting* a
+recipe (it is what exposed ExCap's failure), but it handicaps the absolute numbers. **The final reported
+model should be retrained on the full training set using the confirmed recipe**, with the
+speaker-disjoint runs reported as the selection/confirmation protocol. Reporting 78.3% as the method's
+accuracy would understate it by ~2 points for a reason unrelated to the method.
+Accuracy *costs* are unaffected, since every cost is computed against a control trained identically.
+
+# SCALE-FT-001 — does the fine-tuning fix survive at 1,024 neurons? (PRE-REGISTERED 2026-10-06, before running)
+
+**Why:** CONFIRM-002 removed the accuracy cost at 512 ALIF on SHD by applying the constraint as
+fine-tuning instead of from scratch. The manuscript's most damaging limitation is that the cost *grows*
+with size (-2.1 points at 1,024, 3 seeds) -- but that was measured with **from-scratch** training. If
+fine-tuning also removes it at 1,024, the strongest reviewer objection ("the principle degrades exactly
+where it would matter") largely dissolves. If it does not, the limitation stands and must be reported.
+
+**No selection occurs in this experiment.** The recipe is already fixed by CONFIRM-002, so this is a
+confirmation run evaluated once on the test set against a bar stated here in advance.
+
+**Configuration:** H = 1,024 (32 cores x 32 neurons), SHD, speaker-disjoint val (speakers 3, 6 held out),
+seeds 1-3, TEST = 1. Arms per seed:
+- control: scratch, 40 epochs;
+- **ours:** fine-tune from that seed's control, 20 epochs, lr 5e-4, constraint ramped over 10 epochs,
+  cert lambda = 0.3 (the CONFIRM-002 recipe, unchanged);
+- reference: scratch + cert lambda = 0.3, 40 epochs (the from-scratch arm that previously cost -2.1).
+
+**Pass (stated before running):** mean test accuracy cost of *ours* vs control <= 1.0 point, mean test
+certified core fraction >= 55%, 0 violations.
+
+**Pre-registered interpretations:**
+- **Pass:** the fix is size-robust; the "cost grows with size" limitation is retired for SHD and the
+  manuscript's limitation section and Table of scale results must be rewritten.
+- **Fail with ours clearly better than the reference (-2.1):** fine-tuning helps but does not fully fix
+  the size trend; report the partial improvement honestly and treat fan-in-aware budgets as the next
+  method step.
+- **Fail with ours ~= the reference:** fine-tuning does not generalize beyond 512; the limitation stands
+  as currently written and the CONFIRM-002 result must be scoped explicitly to 512.
+
+# CONFIRM-002b — seed extension (PRE-REGISTERED 2026-10-06, before running)
+
+**Why:** CONFIRM-002 passed on seeds 2-4, but the per-seed accuracy costs span +0.88 to -1.41, so the
+-0.43 mean is not statistically distinguishable from zero or from a 1-2 point cost. Three more seeds
+roughly halves the standard error.
+
+**Anti-bias commitments, stated before running (adding seeds after seeing a result is how optional
+stopping creeps in):**
+1. Seeds **5, 6, 7** are run, and **all** of them are reported, whatever they show.
+2. **No stopping rule based on the outcome.** Seeds are not added or dropped after inspecting results.
+3. The headline figure becomes the mean over **all six seeds (2-7)**; the seeds 2-4 mean stays on record
+   in this file so the change is auditable.
+4. Identical recipe, protocol and arms to CONFIRM-002 -- only the seed differs. No reselection.
+5. If the six-seed mean cost exceeds the original 1.0-point bar, **CONFIRM-002 is downgraded to a
+   partial pass** and the manuscript must say so.
+
+**Arms per seed:** control (scratch, 40 ep); ours (FT from that seed's control, 20 ep, lr 5e-4, ramp,
+cert 0.3); reference (scratch + cert 0.3, 40 ep). H = 512, SHD, speaker-disjoint val, TEST = 1.
+
+**GPU note:** run concurrently with SCALE-FT-001. Concurrency affects wall-clock only -- seeds, batch
+size (128), precision (fp32) and all hyperparameters are unchanged, so results are unaffected. Batch
+size and precision were deliberately **not** raised to increase GPU usage, because both would alter the
+optimization trajectory/numerics and break comparability with CONFIRM-002 and all earlier results.
+
+# SSC-FT-001 — does the fine-tuning fix survive on the second dataset? (PRE-REGISTERED 2026-10-06, before running)
+
+**Why:** the manuscript reports a -3 to -3.7 point cost on SSC, its worst accuracy result, measured with
+**from-scratch** training at **15 epochs**. CONFIRM-002 showed that on SHD the cost was caused by
+from-scratch initialization, not by the loss. SSC is therefore the second half of the generalization
+question, and the existing SSC number confounds two things: initialization *and* a short training budget.
+
+**Confound to separate:** this experiment matches the SHD protocol (control 40 epochs, ours = FT 20
+epochs, reference = scratch 40 epochs), so it tests fine-tuning *and* retires the separate "SSC with
+40+ epochs" open item at the same time. The 15-epoch scratch result stays on record for comparison.
+
+**Configuration:** DATASET = ssc (35 classes), H = 512, seeds 1-3, TEST = 1. Data staged at
+`/mnt/d/research_data/ssc` (symlinked from `~/research/data/ssc`) because the WSL disk had only ~8.4 GB
+free and this project has a logged disk-full corruption incident. Arms per seed:
+- control: scratch, 40 epochs;
+- **ours:** FT from that seed's control, 20 epochs, lr 5e-4, ramp, cert lambda = 0.3 (CONFIRM-002 recipe,
+  unchanged -- no retuning for this dataset);
+- reference: scratch + cert lambda = 0.3, 40 epochs.
+
+**Note:** SSC has no speaker metadata equivalent to the SHD split used for selection. **No selection is
+performed here** -- the recipe is fixed by CONFIRM-002, so this is a confirmation run against a bar set
+in advance.
+
+**Pass (stated before running):** mean test accuracy cost of *ours* vs control <= 1.5 points (a looser
+bar than SHD's 1.0, stated in advance because SSC is a 35-class task with a weaker control), mean test
+certified core fraction >= 50%, 0 violations.
+
+**Pre-registered interpretations:**
+- **Pass:** the fix is dataset-robust; the manuscript's worst accuracy limitation is retired.
+- **Fail but clearly better than -3 to -3.7:** fine-tuning helps on SSC without eliminating the cost;
+  report the partial gain and keep the limitation in weakened form.
+- **Fail at ~= the scratch cost:** the fix is SHD-specific; CONFIRM-002 must be explicitly scoped to SHD
+  and the generalization claim dropped.
+
+**Step 0 (gate before the full run):** a 1-epoch timing probe. SSC is ~9x SHD's sample count and is read
+lazily per batch from an h5 on drvfs (`/mnt/d`), whose random-read performance is unverified. If a probe
+epoch exceeds ~3 minutes, the h5 must be moved onto the ext4 disk (after compacting the vhdx to reclaim
+space) before committing to 9 runs, rather than burning hours on I/O stalls.
+
+### Infrastructure incident (2026-10-06) — CUDA driver faults at 6 concurrent processes in WSL
+**What happened:** GPU concurrency was raised from 3 to 6 CUDA processes to increase GPU usage. Five runs
+then died with `torch.AcceleratorError: CUDA error: unknown error`
+(`CUDA_ERROR_UNKNOWN` / 999 from `cuMemcpyHtoDAsync_v2`): all three SCALE-FT-001 fine-tuned arms at
+H = 1024 and two of the three CONFIRM-002b controls. **Not** out of memory -- no log contains an OOM
+message and peak usage was 9.9 of 16.3 GB. Consistent with WSL2 GPU paravirtualization becoming unstable
+under many concurrent CUDA contexts.
+
+**Throughput measurement that makes this purely a loss:** at H = 512, 1 job = 5-6 s/epoch, 3 jobs = 8
+s/epoch (~1.9x net throughput), 6 mixed jobs = 19-20 s/epoch, i.e. **total throughput flat-to-worse**
+while GPU power fell from 149 W to 136 W of a ~360 W budget. This workload is launch-latency bound (100
+sequential timesteps over small tensors), so extra processes divide capacity instead of adding to it.
+
+**Standing constraint adopted: at most 3 concurrent CUDA processes on this machine.** It is both faster
+per job and stable. `run_rerun_failed.sh` encodes this.
+
+**Integrity assessment of the surviving runs:** the failures were hard process crashes, not silent
+corruption, and CUDA contexts are isolated between processes, so cross-contamination is implausible. The
+surviving arms completed normally, wrote both result and checkpoint, and their values are in the expected
+ranges (H = 1024 control 79.4-80.4%, scratch-cert 76.4-78.1%, R_mean 0.386-0.401, 0 violations). They are
+treated as valid. Note these runs are not bitwise reproducible across reruns anyway (cuBLAS/cuDNN
+nondeterminism is not disabled), so an exact-match recheck is not available.
+
+**Deliberately NOT done to raise GPU usage:** batch size and precision (bf16 / torch.compile) were left
+unchanged, because both alter the optimization trajectory or numerics and would break comparability with
+CONFIRM-002 and all earlier results; precision additionally affects the R_i bound arithmetic that the
+soundness guarantee depends on.
+
+### SCALE-FT-001 — partial result (surviving arms, seeds 1-3, H = 1024, test set)
+| arm | test acc | cost | certified | % of oracle | R_mean |
+|---|---|---|---|---|---|
+| control        | 79.77 |  --   |  0.00% |  --   | 8.72 |
+| ref (scratch)  | 77.00 | -2.77 | 59.99% | 95.2% | 0.392 |
+| **ours (FT)**  | *lost to the CUDA incident; rerunning* | | | | |
+
+Confirms the manuscript's "cost grows with size" for **from-scratch** training (-2.77 here vs -2.1
+reported). The fine-tuned arm -- the actual question -- is being rerun.
+
+**Mechanistic finding (new): the size effect is a fan-in effect.** Control R_mean rises from 4.78 at
+H = 512 to **8.72** at H = 1024, i.e. **1.83x for 2x width**, while the budget (1-beta)*theta = 0.3935 is
+fixed. Worst-case excitatory drive therefore grows roughly linearly with fan-in and the constraint becomes
+proportionally tighter as the network widens. This explains *why* the accuracy cost grows with size and
+directly motivates **fan-in-aware budgets** (scaling the budget with fan-in, or constraining per-fan-in)
+as the principled next method step rather than an arbitrary extension.
+
+## SCALE-FT-001 — RESULT (2026-10-06, H = 1024, SHD, seeds 1-3, test set): **FAIL**
+
+| arm | test acc | cost | certified | % of oracle | R_mean (budget 0.3935) |
+|---|---|---|---|---|---|
+| control        | 79.77 |  --   |  0.00% |  --   | 8.72 |
+| **ours (FT)**  | 79.30 | **-0.47** | **0.40%** | 0.6% | **0.510** |
+| ref (scratch)  | 77.00 | -2.77 | 59.99% | 95.2% | 0.392 |
+
+Per-seed cost / certified for ours: -0.71 / 0.74%, -0.35 / 0.45%, -0.35 / 0.01%. 0 violations everywhere.
+
+**Pre-registered bar (cost <= 1.0, certified >= 55%, 0 violations): FAILS on certification.**
+Cost passes comfortably (-0.47); certification is 0.40% against a 55% bar.
+
+**Interpretation: fine-tuning preserved accuracy by not actually satisfying the constraint.** R_mean
+finished at 0.510, *above* the 0.3935 budget. Certification is a threshold phenomenon in R vs the budget
+(Proposition 1), so ending 30% above the budget yields ~0% certified rather than a proportionally reduced
+figure. This is Proposition 1 behaving exactly as stated -- the mechanism is confirmed even though the
+experiment failed.
+
+**Consistent with the fan-in finding.** The H = 1024 control sits at R_mean 8.72 vs 4.78 at H = 512, while
+the budget is fixed. A 20-epoch fine-tune at lr 5e-4 cannot cover the larger distance to the same budget,
+so it stalls above it.
+
+**Consequences:**
+1. **CONFIRM-002's result must be explicitly scoped to H = 512 on SHD.** The generalization claim is not
+   supported.
+2. **The manuscript's "accuracy cost grows with size" limitation STANDS** and must remain in the paper.
+   At H = 1024 the only certifiable configuration measured is from-scratch training at -2.77 points.
+3. The trade-off at 1024 is currently binary: accuracy (FT, no certificates) **or** certificates
+   (scratch, -2.77 points). There is no known setting that gives both at this width.
+
+**Shortcoming in this experiment's own pre-registration (recorded, not retrofitted):** the three stated
+interpretations were all framed in terms of *accuracy cost* and none anticipated the observed mode --
+accuracy preserved, certification lost. Future pre-registrations for constrained training must state
+pass/fail jointly over **both** axes and name the "constraint not actually satisfied" outcome explicitly.
+
+# SCALE-FT-002 — is the 1024 failure merely an insufficient fine-tuning budget? (PRE-REGISTERED 2026-10-06, before running)
+
+**Hypothesis:** SCALE-FT-001's fine-tuned arm stalled at R_mean 0.510 vs the 0.3935 budget -- only ~30%
+above it. A longer fine-tune or a stronger constraint weight may push R under the budget while keeping
+most of the accuracy advantage over from-scratch training (-0.47 vs -2.77).
+
+**Protocol discipline: selection on the speaker-disjoint VALIDATION set only.** SCALE-FT-001 already spent
+a test evaluation at this width. Tuning the fine-tuning budget against the test set would be selection on
+test, which this project forbids. Therefore:
+- **Stage 1 (validation only, seed 1, H = 1024):** fine-tune from the existing seed-1 control over
+  EPOCHS x CERT_LAMBDA in {20, 40} x {0.3, 1.0} (4 configs; the {20, 0.3} cell is SCALE-FT-001's setting
+  and is re-run for a like-for-like validation comparison).
+- **Selection rule:** among configs reaching **R_mean <= 0.3935** *and* validation certified >= 50%, take
+  the highest validation accuracy. If none reaches the budget, the experiment **fails** and no test
+  evaluation is performed.
+- **Stage 2 (confirmation, only if stage 1 yields a winner):** seeds 2-3 on the test set, one shot.
+  **Pass:** mean test cost <= 1.5 points (looser than 512's 1.0, stated in advance because the scratch
+  alternative at this width costs -2.77) AND mean test certified >= 55% AND 0 violations.
+
+**Pre-registered interpretations:**
+- **Pass:** the 1024 failure was a budget artefact; the size limitation weakens to "needs a longer
+  fine-tune at larger widths", and the recipe becomes width-dependent rather than broken.
+- **Stage 1 fails to reach the budget:** fine-tuning cannot satisfy the constraint at this width at any
+  tested budget. The size limitation stands as written, and **fan-in-aware budgets** (scaling the budget
+  with fan-in, as the R ~ fan-in finding implies) become the required method change rather than an
+  optional extension.
+- **Stage 2 fails:** report that R can be brought under budget at 1024 but only at an accuracy cost
+  comparable to from-scratch training, i.e. fine-tuning's advantage is 512-specific.
+
+## CONFIRM-002b — RESULT (2026-10-06, seeds 5-7 added; H = 512, SHD, test set): **PASS, but the headline cost roughly doubles**
+
+All six seeds reported as pre-registered (no stopping rule, no reselection).
+
+| seed | control | ours (FT+cert 0.3) | cost | certified | oracle | R_mean | viol |
+|---|---|---|---|---|---|---|---|
+| 2 | 78.53 | 79.42 | **+0.88** | 55.01% | 62.21 | 0.389 | 0 |
+| 3 | 78.58 | 77.16 | -1.41 | 56.14% | 62.38 | 0.409 | 0 |
+| 4 | 79.20 | 78.45 | -0.75 | 56.79% | 63.49 | 0.373 | 0 |
+| 5 | 79.99 | 79.11 | -0.88 | 54.99% | 61.81 | 0.407 | 0 |
+| 6 | 77.47 | 75.75 | -1.72 | 53.94% | 62.40 | 0.388 | 0 |
+| 7 | 79.77 | 78.18 | -1.59 | 57.77% | 62.79 | 0.369 | 0 |
+
+**Six-seed mean cost -0.91** (sd 0.96, se 0.39, 95% CI **[-1.68, -0.14]**); mean certified **55.77%**
+(range 53.94-57.77); **0 violations in all six seeds**.
+
+**Pre-registered bar (mean cost <= 1.0, certified >= 55%, 0 violations): PASS on all three.**
+
+**But the interpretation changes, and the earlier claim must be withdrawn:**
+1. The seeds 2-4 mean was **-0.43**; all three added seeds were worse (-0.88, -1.72, -1.59), moving the
+   mean to **-0.91**. The standard error halves (0.68 -> 0.39) exactly as intended.
+2. **The 95% CI now excludes zero.** The claim "no measurable accuracy cost" (recorded in the 12:45
+   brief status on the 3-seed data) is **no longer supportable and is withdrawn.** The defensible claim is
+   **"a cost of about 0.9 points (95% CI 0.1-1.7)"**.
+3. The mean passes the 1.0-point bar, but **the bar lies inside the confidence interval**, so a true cost
+   above 1.0 cannot be excluded. Report the bar as met by the point estimate, not as a demonstration that
+   the cost is below 1.0.
+4. One seed (6) certifies 53.94%, below 55%; the *mean* of 55.77% is what the pre-registration specified,
+   so the criterion is met, but the per-seed spread should be reported.
+
+**Why this matters methodologically:** the 3-seed estimate was optimistic by ~0.5 points, i.e. by more
+than the entire remaining margin to the bar. This is a concrete demonstration of why the project's
+anti-optional-stopping rule exists -- had the seeds been added and then selected on, the favourable
+3-seed figure would have survived into the manuscript.
+
+**Fine-tuning's advantage over from-scratch training is still real but smaller than first measured:**
+-0.91 (FT, 6 seeds) vs -1.09 (scratch, 3 seeds). The two are now close, and a 6-seed scratch arm would be
+needed before claiming FT is meaningfully better on accuracy at H = 512. The certifiability gap remains
+clear (55.8% FT vs 60.5% scratch).

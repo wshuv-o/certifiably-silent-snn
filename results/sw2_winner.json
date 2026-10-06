@@ -1,0 +1,5 @@
+{
+ "tag": "S2_ft_cert03",
+ "env": "INIT={CTRL} EPOCHS=20 LR=5e-4 RAMP=1 CERT_LAMBDA=0.3",
+ "rule": "within 1 pt, highest cert"
+}

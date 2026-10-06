@@ -1,6 +1,130 @@
 # Project Brief (Layer 2)
 
-Last updated: 2026-10-04
+Last updated: 2026-10-06
+
+## STATUS 2026-10-06 17:00 — six-seed result: the accuracy cost is ~0.9 points, not ~0
+
+**CONFIRM-002b (seeds 5-7 added, all six reported as pre-registered).** The 12:45 claim of "no measurable
+cost" is **WITHDRAWN**.
+
+| H=512 SHD, test | seeds 2-4 | **all six seeds (2-7)** |
+|---|---|---|
+| mean cost | -0.43 | **-0.91** (sd 0.96, se 0.39, 95% CI **[-1.68, -0.14]**) |
+| mean certified | 55.98% | **55.77%** (range 53.94-57.77) |
+| violations | 0 | **0** |
+
+All three added seeds were worse (-0.88, -1.72, -1.59). **The 95% CI now excludes zero**, so there is a
+real, measurable cost of about **0.9 points (CI 0.1-1.7)**. The pre-registered <= 1.0 bar is met by the
+point estimate, but **the bar lies inside the CI**, so a cost above 1.0 cannot be excluded.
+
+**Also revised:** fine-tuning's advantage over from-scratch is smaller than first measured -- -0.91 (FT,
+6 seeds) vs -1.09 (scratch, 3 seeds). A 6-seed scratch arm is needed before claiming FT is meaningfully
+better on *accuracy* at this width; the *certifiability* gap stays clear (55.8% vs 60.5%).
+
+**Methodological note:** the 3-seed estimate was optimistic by ~0.5 points -- more than the whole
+remaining margin to the bar. The anti-optional-stopping commitment (report all seeds, no reselection) is
+what prevented the favourable 3-seed figure from reaching the manuscript.
+
+**Infrastructure escalation:** GPU concurrency is unreliable on this WSL/Blackwell setup at **any** level,
+not just 6 processes. At 2-3 processes we saw `CUDA_ERROR_UNKNOWN` *and* a bogus OOM (48 MiB refused with
+10.45 GiB free, while WSL reported "17179869184 GiB in use" = 2^34 -- corrupted GPU memory accounting).
+**All runs are now serial** (`run_serial_pending.sh`); since each failure costs a full rerun, serial is
+faster in expectation. Long jobs are launched detached (`setsid nohup`) because session restarts twice
+killed running work.
+
+## STATUS 2026-10-06 13:30 — the fine-tuning fix does NOT generalize to 1,024 neurons
+
+**SCALE-FT-001 FAIL.** Open item 1 of the 12:45 status below is now answered, negatively. The
+CONFIRM-002 recipe must be **scoped to H = 512 on SHD**.
+
+| H = 1024, SHD, seeds 1-3, test | acc | cost | certified | R_mean (budget 0.3935) |
+|---|---|---|---|---|
+| control       | 79.77 |  --   |  0.00% | 8.72 |
+| ours (FT)     | 79.30 | -0.47 | **0.40%** | **0.510** |
+| ref (scratch) | 77.00 | -2.77 | 59.99% | 0.392 |
+
+**Fine-tuning kept the accuracy by not actually satisfying the constraint.** R_mean stalled at 0.510,
+*above* the budget. Certification is a threshold in R vs budget (Proposition 1), so 30% over the budget
+certifies ~0% rather than proportionally less. The mechanism is confirmed even though the experiment failed.
+
+**Consequences:**
+- The manuscript's **"accuracy cost grows with size" limitation STANDS** and stays in the paper.
+- At H = 1024 the trade-off is currently **binary**: accuracy (FT, no certificates) **or** certificates
+  (scratch, -2.77 points). No measured setting gives both at this width.
+- CONFIRM-002 (-0.43 at no measurable cost) is a **512-on-SHD** result, not a general one.
+
+**Mechanistic cause -- the size effect is a fan-in effect.** Control R_mean rises 4.78 (H=512) -> **8.72**
+(H=1024), i.e. 1.83x for 2x width, while the budget (1-beta)*theta = 0.3935 is fixed. Worst-case
+excitatory drive grows roughly linearly with fan-in, so the constraint tightens proportionally as the
+network widens, and a fixed-length fine-tune cannot cover the larger distance.
+**Correct implication (an earlier note here overstated it as "fan-in-aware budgets"):** the budget is
+fixed by the neuron model (theta, beta) and *cannot* be scaled with fan-in, and the scratch arm reaches
+R = 0.392 < 0.3935 **at H = 1024**, so the budget is demonstrably reachable at that width. Feasibility is
+not the problem -- the optimization path and its accuracy cost are. The sharper implication is:
+**the method scales with bounded fan-in, not with width.** R_i is the sum of positive recurrent weights
+into neuron i, so under *dense* recurrence fan-in = H and R grows with width; under *local* recurrence
+fan-in is set by the neighbourhood and stays constant as H grows, so R -- and certifiability -- should be
+width-independent. This predicts certification holds at any width under local connectivity, which is also
+already the regime with the best measured speed-ups (1.5-2.3x local vs 1.15-1.40x dense). If it holds, the
+paper's "degrades with size" limitation becomes a **scoping statement** ("scales under bounded fan-in,
+which is the regime where it pays off most") rather than a defect.
+**Untested:** `s4_improve.py` has no local-connectivity path (its mask only implements sink hubs); ring-local
+connectivity exists only in `pilot_silence.py` (`LOCAL=1`, `local_mask()`). Testing this needs a small,
+well-defined port of that mask into `s4_improve.py`.
+
+**Claim-level upside:** the theory now predicts its own failure mode -- provability is governed by the
+excitatory-drive budget, whose required margin scales with fan-in. That is a sharper and more defensible
+claim than an empirically reported limitation.
+
+**In flight:** CONFIRM-002b seeds 6-7 (seed 5 done; 6-7 were lost to a CUDA incident) and **SCALE-FT-002**
+stage 1 -- a fine-tuning-budget sweep at H = 1024 ({20,40} epochs x lambda {0.3,1.0}), **validation only**,
+to test whether the 1024 failure is merely an insufficient fine-tuning budget. Pre-registered, with no test
+evaluation unless a config reaches the budget. See `N3_SCALEUP_PLAN.md`.
+
+**Infrastructure:** max **3 concurrent CUDA processes** on this machine. Six caused `CUDA_ERROR_UNKNOWN`
+and destroyed 5 runs while measurement showed 6 jobs give **no** throughput gain over 3 (launch-latency
+bound workload; 140 W of a ~360 W budget). Batch size and precision deliberately unchanged -- both would
+break comparability and precision affects the R_i bound arithmetic underlying soundness.
+
+## STATUS 2026-10-06 12:45 — the accuracy problem is SOLVED and CONFIRMED (now on RTX 5080)
+
+**CONFIRM-002 PASS (seeds 2-4, test set, one-shot).** The project's main open problem -- the accuracy
+cost that sank ExCap at -4.5 points in CONFIRM-001 -- is resolved.
+
+- **Final confirmed recipe:** fine-tune from that seed's trained control (20 epochs, lr 5e-4, constraint
+  ramped over the first 10 epochs), cert lambda = 0.3. Selected on speaker-disjoint validation, confirmed
+  on fresh seeds against the test set.
+- **Result:** test cost **-0.43 points** (bar: <= 1.0), **55.98% certified** (bar: >= 55%, 89% of oracle),
+  **0 violations**. Controls certify ~0%.
+- **Core insight:** the cost came from *initialization*, not from the loss. The identical loss at identical
+  strength costs -1.09 points from scratch and -0.43 as fine-tuning.
+- **Trade-off knob to report as a pair:** scratch certifies more (60.45%, 95% of oracle) at -1.09;
+  fine-tuning certifies less (55.98%, 89% of oracle) at -0.43.
+- **Mechanism confirms Proposition 1:** mean R_mean lands at 0.3904 vs the 0.3935 budget.
+- **Negative result:** knowledge distillation is counterproductive here -- it recovers accuracy (+0.09 above
+  control) but pushes R above the budget, cutting certification to 53.7%.
+
+**Honest limits:** with 3 seeds the per-seed costs span +0.88 to -1.41, so -0.43 is not statistically
+distinguishable from zero *or* from a 1-2 point cost. Claim "no measurable cost at 512 on SHD", not "no cost".
+
+**Open, in value order:**
+1. **Does the fine-tuning fix generalize?** The documented cost growth at 1,024 neurons (-2.1) and on SSC
+   (-3 to -3.7) was measured with *from-scratch* training and has not been retested with fine-tuning. If it
+   generalizes, the strongest reviewer objection ("it degrades where it matters") largely dissolves.
+2. More seeds, to tighten the accuracy claim (~4 min per seed on this machine).
+3. **Retrain the final model on the full training set.** The speaker-disjoint split costs ~2.1 points of
+   absolute accuracy (control 80.8% with 10 speakers vs 78.8% with 8); it is the right selection instrument
+   but should not set the headline number. Costs are unaffected.
+4. **Speed section decision:** the manuscript's 1.5-2.3x figures were measured on the 6-core i7-10750H.
+   This machine has 32 threads, so numbers from the two machines must not be mixed in one table.
+5. Learned synaptic delays -- potentially raises accuracy toward SOTA *and* adds exact lookahead.
+
+**Harness flaw found and fixed:** runs were piped through `grep -E "^RESULT"`, discarding tracebacks, which
+silently hid a failed `torch.save` and left stage 2 with no checkpoint (exit code 0, no errors). Stage 1,
+stage 2 and CONFIRM-002 now log in full and fail loudly. **15 other scripts still use the risky form.**
+
+**Environment:** WSL2 Ubuntu 26.04, Python 3.14, torch 2.14.1+cu130, g++ 15.2, RTX 5080 16 GB. 5 s/epoch
+(the full 8-config sweep takes 13 min). Details and deviations: `N3_SCALEUP_PLAN.md` -> MACHINE MIGRATION.
 
 ## STATUS 2026-10-06 07:15 — manuscript complete (`research/paper/manuscript.docx`)
 

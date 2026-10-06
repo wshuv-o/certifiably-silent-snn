@@ -8,3 +8,5 @@ __pycache__/
 *.h5.gz
 *.bin
 results/engines_raw/
+# Word/Office lock files
+~$*

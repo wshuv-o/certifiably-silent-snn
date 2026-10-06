@@ -1,0 +1,33 @@
+{
+ "tag": "ctrl_s3",
+ "dataset": "shd",
+ "alt": "none",
+ "lam": 0.0,
+ "mu": 0.1,
+ "nhub": 0,
+ "alpha": 1.0,
+ "seed": 3,
+ "epochs": 40,
+ "acc_val": 0.7493584260051326,
+ "test": {
+  "acc": 0.7857773851590106,
+  "test_core_cert": 0.0,
+  "test_core_oracle": 0.6127408981323242,
+  "test_violations": 0,
+  "test_neuron_cert": 0.19685063064098357,
+  "test_allcore_cert": 0.0,
+  "test_R_mean": 4.958240032196045,
+  "test_budget": 0.3934693402873666
+ },
+ "acc": 0.7857773851590106,
+ "acc_norec": 0.10521813515825491,
+ "rate": 0.027213281020522118,
+ "core_cert": 0.0,
+ "core_oracle": 0.6500455975532532,
+ "violations": 0,
+ "neuron_cert": 0.1376640647649765,
+ "allcore_cert": 0.0,
+ "R_mean": 4.958240032196045,
+ "budget": 0.3934693402873666,
+ "H": 512
+}

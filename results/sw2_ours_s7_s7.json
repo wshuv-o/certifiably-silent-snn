@@ -1,0 +1,33 @@
+{
+ "tag": "ours_s7",
+ "dataset": "shd",
+ "alt": "none",
+ "lam": 0.3,
+ "mu": 0.1,
+ "nhub": 0,
+ "alpha": 1.0,
+ "seed": 7,
+ "epochs": 20,
+ "acc_val": 0.7219846022241232,
+ "test": {
+  "acc": 0.7818021201413428,
+  "test_core_cert": 0.5776627779006958,
+  "test_core_oracle": 0.6279140830039978,
+  "test_violations": 0,
+  "test_neuron_cert": 0.9459869623184204,
+  "test_allcore_cert": 0.5776627779006958,
+  "test_R_mean": 0.36866962909698486,
+  "test_budget": 0.3934693402873666
+ },
+ "acc": 0.7818021201413428,
+ "acc_norec": 0.09751924721984602,
+ "rate": 0.027796484529972076,
+ "core_cert": 0.6071627736091614,
+ "core_oracle": 0.662096357345581,
+ "violations": 0,
+ "neuron_cert": 0.9508776664733887,
+ "allcore_cert": 0.6071627736091614,
+ "R_mean": 0.36866962909698486,
+ "budget": 0.3934693402873666,
+ "H": 512
+}

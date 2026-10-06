@@ -26,5 +26,5 @@ chain() {
   fi
   run ref_cert03_s$S SEED=$S CERT_LAMBDA=0.3 || echo "*** seed $S: reference failed ***"
 }
-for S in 2 3 4; do chain $S & done
+for S in 5 6 7; do chain $S & done
 wait
