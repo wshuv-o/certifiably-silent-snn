@@ -1613,3 +1613,56 @@ validation-selection bias on SHD could never have given us.
 seeds (SHD-CONFIRM-FROZEN) is still running. Absolute SSC accuracy (68.66%) is below SSC state of the art
 (~80% with delays), as stated in advance, because the schedule is a frozen step-matched translation rather
 than tuned for SSC.
+
+## SHD-CONFIRM-FROZEN — RESULT (2026-10-07, TEST SET, fresh seeds 2-4): **PASS**
+
+| seed | control | ours | cost | certified | oracle | % oracle | R_short | viol |
+|---|---|---|---|---|---|---|---|---|
+| 2 | 87.28 | 87.90 | **+0.62** | 55.68% | 58.74% | 94.8% | 0.253 | 0 |
+| 3 | 86.75 | 86.62 | -0.13 | 56.66% | 59.44% | 95.3% | 0.253 | 0 |
+| 4 | 88.03 | 88.25 | **+0.22** | 55.60% | 58.68% | 94.7% | 0.260 | 0 |
+| **mean** | **87.35** | **87.59** | **+0.24** | **55.98%** | **58.95%** | **95.0%** | | **0** |
+
+Cost sd 0.38, se 0.22, so the 95% CI is about [-0.19, +0.67]: **statistically indistinguishable from zero
+with a slightly positive point estimate.** All three pre-registered criteria met.
+
+**The validation-selection bias I was worried about turned out to be negligible.** Seed-1 validation
+predicted cost +0.60, certified 56.28%, 95% of oracle; fresh-seed test delivered **+0.24, 55.98%, 95.0%**.
+`R_short` lands at 0.253-0.260 on all three seeds, reproducing the mechanism exactly. SHD test accuracy is
+now **87.59%**, up from ~80% at the start of this work.
+
+## DELAY-004 — 300 epochs is WORSE on this architecture
+G1 control (300 ep) validation 84.69 vs E3 control (150 ep) **87.25**; G2 constrained (300 ep) 85.20 vs
+F2 (150 ep) **87.85**. Longer training hurts here, unlike the delay-free model where 300 beat 150 by +1.2.
+The frozen 150-epoch recipe is therefore correct, and this is recorded so it is not retried.
+
+## DELAY-ENGINE-001 — RESULT (2026-10-07, IDLE CPU, 32 threads): certificates win only at high core count
+
+Speed-up = handshake / cert. The handshake is **given the delays' own free lookahead** (d_min = 2), as
+pre-registered. **exact=1 in every configuration.**
+
+| model | cores | L=0 | L=5 | L=20 | L=100 | L=500 | coverage |
+|---|---|---|---|---|---|---|---|
+| trained | 4 | 0.93 | 0.95 | 0.91 | 1.07 | 1.11 | 44.5% |
+| trained | 8 | 0.90 | 0.88 | 0.90 | 1.02 | 1.11 | 52.2% |
+| trained | 16 | 0.79 | 0.79 | 0.78 | 1.05 | 1.11 | 61.5% |
+| **trained** | **32** | **1.44** | **1.35** | **1.30** | **1.25** | **1.49** | **71.0%** |
+| control | 32 | 0.99 | 0.98 | 0.83 | 0.98 | 0.99 | 14.4% |
+
+**The pre-registered expectation was correct: certificates gain LESS on the delay architecture.**
+1. At 4-16 cores they **lose** at low latency (0.78-0.95x): certificate runtime cost exceeds its benefit,
+   because the handshake already has a free step from d_min = 2.
+2. They win only at **32 cores** (1.25-1.49x), and the control never wins anywhere (0.83-0.99x), so the
+   gain is entirely attributable to training.
+3. Against the single-delay architecture's **1.67-1.71x** at 32 cores, this is **lower** -- because the
+   delays made the baseline stronger. **Delays buy accuracy and certifiability at the cost of the
+   certificate's marginal speed advantage.** This trade-off must be reported, not buried.
+
+**Caveat on the 32-core column:** 32 cores on a 32-thread machine fully saturates the scheduler (absolute
+medians jump to 39-79 ms/sample from 4-8 ms at 16 cores). Waiting is more expensive when no spare hardware
+thread exists, which plausibly inflates the benefit of waiting less. The 32-core numbers should not be
+extrapolated to a machine with spare threads without re-measurement.
+
+**Net position on speed:** the honest claim is "exact certificate-based execution is 1.25-1.49x faster
+than a lookahead-aware local handshake at 32 cores, and slower below that" -- considerably weaker than the
+single-delay result, and the paper must say which architecture each speed number belongs to.
