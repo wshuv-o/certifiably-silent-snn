@@ -1149,3 +1149,60 @@ speaker-disjoint validation** (held-out speakers 3, 6) but **-0.44 on test** (81
 3.6-point gap, well beyond the ~0.9-point validation standard error. The precise accuracy cost therefore
 depends on which speakers are held out, and both figures must appear in the manuscript rather than only
 the favourable one.
+
+# BUDGET-001 — can the certification cost be cut by raising the budget or lowering the required drive? (PRE-REGISTERED 2026-10-06, before running)
+
+**Motivation (from the measured failure analysis above).** The certification cost arises because the
+budget (1-beta)*theta = 0.3935 is fixed while the network wants R = 4.66 (H=512), forcing a 12x cut in
+positive recurrent weight mass and near-elimination of recurrent excitation. The analysis identified two
+untested levers that attack the ratio R/budget directly, rather than forcing the weights down:
+
+- **Faster membrane leak** raises the budget: budget = (1-BETA)*THETA with BETA = exp(-1/TAUM).
+  TAUM = 2.0 (current) -> 0.3935; TAUM = 1.0 -> 0.6321 (**1.61x**); TAUM = 0.5 -> 0.8647 (**2.20x**).
+- **Ring-local connectivity** lowers R: recurrence restricted to self + 2 neighbouring cores (3 of 16),
+  so R falls roughly 5x.
+
+**Implementation note:** `s4_improve.py` now exposes `TAUM`, `LOCAL`, `LOCAL_R`. Defaults
+(TAUM = 2.0, LOCAL = 0) reproduce the previous behaviour exactly, since exp(-1/2) = exp(-0.5).
+The **readout integrator is held fixed** at exp(-0.5) (`BETA_OUT`) so that only the membrane -- and
+therefore only the budget -- is varied. Recorded as a deliberate deviation from the original code, where
+the readout shared BETA.
+
+**Critical design point: each configuration gets its OWN matched control.** Changing TAUM or the
+connectivity changes the architecture, so an accuracy cost measured against the original control would
+conflate the architecture change with the constraint. Every cost below is computed against a control
+trained with identical TAUM/LOCAL and no constraint, same seed.
+
+**Configs (H = 512, SHD, seed 1, speaker-disjoint VALIDATION only, no test evaluation):**
+
+| id | TAUM | LOCAL | budget | expected effect |
+|---|---|---|---|---|
+| B0 | 2.0 | 0 | 0.3935 | baseline (reproduces the confirmed recipe) |
+| B1 | 1.0 | 0 | 0.6321 | budget 1.61x |
+| B2 | 0.5 | 0 | 0.8647 | budget 2.20x |
+| B3 | 2.0 | 1 | 0.3935 | R ~5x lower |
+| B4 | 0.5 | 1 | 0.8647 | combined, ~11x total relaxation |
+
+Each id runs: **control** (scratch, 40 ep, no constraint) then **ours** (FT from that control, 40 ep,
+lr 5e-4, ramp, cert lambda = 0.3). 10 runs, **serial** (WSL GPU concurrency is unreliable).
+
+**What counts as success -- stated in advance.** These levers may *reduce base accuracy*: a faster leak
+shortens membrane memory and local connectivity removes capacity, so each config's own control may be
+worse than the baseline control. The cost of certification is therefore not the only thing that matters.
+Success is defined on the **Pareto frontier of (absolute validation accuracy, certified core fraction)**:
+a config succeeds if it attains **higher certified coverage at equal or better absolute accuracy** than
+B0, or **equal coverage at better accuracy**. A config that merely reduces the *relative* cost while
+lowering absolute accuracy is **not** an improvement and must not be reported as one.
+
+**Pre-registered interpretations:**
+- **A config dominates B0:** the analysis-driven levers work; the winner is carried to a test-set
+  confirmation on fresh seeds, and the manuscript gains a principled design rule (choose TAUM and
+  connectivity to put R/budget below 1 rather than suppressing weights).
+- **Coverage rises but absolute accuracy falls:** report as a genuine trade-off curve, not an improvement;
+  the levers buy certifiability with capacity.
+- **No config beats B0:** record that neither lever helps at this width, which would leave core
+  granularity (CORE-SCALING-001) as the only demonstrated lever, and say so plainly.
+
+**Diagnostic to report for every run:** R_mean, that config's budget, R_mean/budget, positive and negative
+recurrent weight mass and the E/I ratio -- so the mechanism (does the network still have to crush
+excitation?) is visible, not just the outcome.

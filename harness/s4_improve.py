@@ -19,8 +19,13 @@ from pilot_silence import fetch, T, NIN, NOUT                     # same SHD bin
 
 dev = "cuda"
 H = int(os.environ.get("H", "512")); CPC = 32; NPC = H // CPC    # neurons, cores, neurons per core (SCALE-001)
-BETA = float(np.exp(-0.5)); THETA = 1.0
+TAUM = float(os.environ.get("TAUM", "2.0"))          # membrane time constant in steps; 2.0 = original
+BETA = float(np.exp(-1.0 / TAUM)); THETA = 1.0           # budget (1-BETA)*THETA grows as TAUM falls
+BETA_OUT = float(np.exp(-0.5))                           # readout integrator: HELD FIXED so only the
+                                                         # membrane (and hence the budget) is varied
 RHO, GAMMA = float(np.exp(-14 / 200)), 0.02                     # adaptation decay / jump
+LOCAL = os.environ.get("LOCAL", "0") == "1"             # ring-local recurrent connectivity
+LOCAL_R = int(os.environ.get("LOCAL_R", "1"))           # neighbourhood radius in cores
 LAM = float(os.environ.get("CERT_LAMBDA", "0")); SEED = int(os.environ.get("SEED", "1"))
 EPOCHS = int(os.environ.get("EPOCHS", "40")); K = 4
 DATASET = os.environ.get("DATASET", "shd")                     # shd | ssc (SSC-001)
@@ -93,6 +98,10 @@ class ALIFNet(torch.nn.Module):
         hub = torch.zeros(H, dtype=torch.bool); hub[:NHUB * CPC] = True
         M = torch.ones(H, H); M[~hub][:, hub] = 0.0
         M[(~hub).nonzero().squeeze(1)[:, None], hub.nonzero().squeeze(1)[None, :]] = 0.0
+        if LOCAL:                                        # restrict recurrence to neighbouring cores
+            pc = np.arange(H) // CPC                     # core index of each neuron
+            d = np.abs(pc[:, None] - pc[None, :])
+            M = M * torch.tensor(((d <= LOCAL_R) | (d >= NPC - LOCAL_R)).astype(np.float32))
         self.register_buffer("mask", M); self.register_buffer("quiet", (~hub).float())
 
     def forward(self, x):
@@ -106,7 +115,7 @@ class ALIFNet(torch.nn.Module):
             thr = THETA + a
             s = Spike.apply(v - thr)
             v = v - s * thr
-            u = BETA * u + self.wout(s); out = out + u
+            u = BETA_OUT * u + self.wout(s); out = out + u
             V.append(v); S.append(s)
         return out, iext, torch.stack(V, 1), torch.stack(S, 1)
 
