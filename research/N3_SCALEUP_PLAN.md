@@ -1441,3 +1441,39 @@ mechanism claim is that the network moves excitation out of the binding d=2 tap 
 taps (on SHD: [4.97, 4.90, 5.40] -> [0.28, 6.03, 6.46]). If certification succeeds on SSC, the same
 signature must appear; if it succeeds *without* that signature, the mechanistic explanation is wrong even
 though the outcome is right, and that matters more than the headline number.
+
+# SHD-CONFIRM-FROZEN — test-set confirmation of the delay architecture (PRE-REGISTERED 2026-10-07, before running)
+
+**Why.** Every DELAY-00x number is seed 1 on the speaker-disjoint SHD *validation* split, after a dozen
+architecture choices were selected against that same split (delays, which taps, H, epochs, AUG, lambda,
+TAUM). The validation figures are therefore optimistically biased by an unknown amount. Nothing from
+tonight belongs in a manuscript until it survives fresh seeds on the test set under a frozen recipe.
+
+**Frozen recipe (no changes permitted after seeing results):** H = 512, DELAYS = 2,4,8, AUG = 2,
+TAUM = 2.0, CERT_LAMBDA = 1.0, 150 epochs; control = scratch, ours = fine-tune from that seed's own
+control with LR = 5e-4 and a ramped constraint. Identical to F2, which is the SHD winner.
+
+**Runs:** seeds **2, 3, 4**; both arms per seed; `TEST=1` so the test set is evaluated once per run.
+Each seed's cost is computed against **that seed's own control**, never a pooled mean (the rule adopted
+after the baseline error earlier in this project).
+
+**Pass criteria (same form as SSC-FROZEN-001, for comparability):**
+1. mean test accuracy cost of ours vs control >= **-1.0 points**;
+2. mean test certified core fraction >= **70% of oracle**;
+3. **0 violations**.
+
+**Pre-registered interpretations:**
+- **Pass:** the delay architecture result is real and the manuscript's headline numbers come from here,
+  not from validation. Report the validation figures only as the selection record.
+- **Cost exceeds 1 point on test while validation said +0.60:** validation-selection bias is confirmed and
+  quantified; report the test numbers as the result and the gap as a methodological finding.
+- **Certification materially below 70% of oracle on test:** the certification result does not transfer
+  across seeds, and the mechanism claim must be scoped to seed 1 pending investigation.
+
+**Known gap, recorded rather than quietly skipped:** the exact-execution speed-up (CORE-SCALING-001,
+1.67-1.71x at 32 cores) was measured on the **single-delay** architecture. `s3_engine.cpp` assumes
+one-step recurrence and does not support delayed taps, so the speed-up has NOT been re-measured on the
+delay architecture. The delay decomposition predicts it should IMPROVE, because d_min = 2 gives two steps
+of exact free lookahead before any certificate is needed. Extending the C++ engine to delayed taps is
+required before any speed claim is made about the delay architecture, and no such claim may be made until
+then.
