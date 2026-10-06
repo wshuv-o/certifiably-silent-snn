@@ -1206,3 +1206,78 @@ lowering absolute accuracy is **not** an improvement and must not be reported as
 **Diagnostic to report for every run:** R_mean, that config's budget, R_mean/budget, positive and negative
 recurrent weight mass and the E/I ratio -- so the mechanism (does the network still have to crush
 excitation?) is visible, not just the outcome.
+
+## BUDGET-001 — RESULT (2026-10-06, H = 512, seed 1, speaker-disjoint validation): mechanism CONFIRMED, pre-registered Pareto test NOT passed
+
+Each cost is measured against that configuration's **own matched control**. 0 violations in all 10 runs.
+
+| id | TAUM | conn | budget | ctrl R | ours R | R/budget | ctrl acc | ours acc | cost | certified | oracle |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| B0 | 2.0 | dense | 0.3935 | 4.78 | 0.345 | 0.88 | 74.68 | 72.20 | -2.48 | 59.52 | 65.01 |
+| B1 | 1.0 | dense | 0.6321 | 5.07 | 0.446 | 0.70 | 72.71 | 71.43 | -1.28 | 64.15 | 67.15 |
+| B2 | 0.5 | dense | 0.8647 | 5.39 | 0.537 | 0.62 | 69.55 | 68.18 | -1.37 | 66.35 | 68.87 |
+| B3 | 2.0 | local | 0.3935 | **0.97** | 0.277 | 0.70 | 65.36 | 65.95 | **+0.60** | 64.85 | 66.82 |
+| B4 | 0.5 | local | 0.8647 | 1.13 | 0.414 | **0.48** | 68.09 | 68.43 | **+0.34** | **67.69** | 69.60 |
+
+**Every quantitative prediction was confirmed:**
+1. The budget rose exactly as computed: 0.3935 -> 0.6321 (TAUM 1.0) -> 0.8647 (TAUM 0.5).
+2. Ring-local connectivity cut the control's R from **4.78 to 0.97** -- a 4.9x reduction against the ~5x
+   predicted from restricting recurrence to 3 of 16 cores.
+3. Certification tracks **R/budget** monotonically: 0.88, 0.70, 0.62, 0.70, 0.48 gives
+   59.5%, 64.2%, 66.4%, 64.9%, 67.7%. This is Proposition 1 operating as a design rule, not just a
+   diagnostic.
+4. **When R/budget is low enough the certification cost disappears entirely.** B3 (+0.60) and B4 (+0.34)
+   have *positive* cost: the constrained model slightly **beats its own control** while certifying
+   64.9% and 67.7% (97% of oracle). The accuracy cost was never intrinsic to certifiable silence -- it was
+   the price of forcing an unreachable budget by suppressing excitation.
+
+**Pre-registered Pareto test: NOT PASSED.** Success required higher certification at equal-or-better
+*absolute* accuracy than B0 (72.20). All four configs raise certification (+4.6 to +8.2 points) but all
+lower absolute accuracy, because both levers weaken the base model: a faster leak shortens membrane memory
+(control 74.68 -> 69.55) and local connectivity removes capacity (control 74.68 -> 65.36). Recorded as a
+trade-off curve, **not** as an improvement, exactly as the pre-registration required.
+
+**Note on B0:** B0 uses a 40-epoch fine-tune for consistency with the other configs, whereas the confirmed
+CONFIRM-002 recipe uses 20. The extra epochs drive R lower (0.345 vs 0.388) and certification higher
+(59.5% vs 58.0%) at a larger validation cost (-2.48 vs -0.68) -- another point on the same trade-off curve.
+
+# WIDTH-001 — does local connectivity make certification width-independent? (PRE-REGISTERED 2026-10-06, before running)
+
+**The decisive question BUDGET-001 raises.** Local connectivity gives free certification but costs base
+accuracy, because at fixed H it removes capacity (3 of 16 cores -> 13/16 of the recurrent weights are
+masked out). That is very likely an artefact of comparing at equal H rather than equal capacity.
+
+**Key structural property:** cores hold a fixed 32 neurons (CPC = 32), so ring-local connectivity with
+LOCAL_R = 1 gives a **fan-in of 3 x 32 = 96 presynaptic neurons regardless of H**. Since
+R_i = sum of positive weights over the fan-in, **R should stay ~1 as H grows**, while capacity and accuracy
+grow with H. Dense recurrence has fan-in = H, which is exactly why its R grew 4.78 -> 8.72 from H = 512 to
+1024 and why the constraint tightened with width.
+
+**Hypothesis:** local connectivity at larger H recovers the base accuracy lost at H = 512 **while keeping
+R/budget low**, giving high certification at no accuracy cost. If so, "the method degrades with size"
+inverts into "the method scales with width under bounded fan-in" -- the scoping statement, earned.
+
+**Configs (seed 1, speaker-disjoint VALIDATION only, each with its OWN matched control):**
+
+| id | H | TAUM | conn | predicted ctrl R |
+|---|---|---|---|---|
+| W1 | 1024 | 2.0 | local | ~1.0 |
+| W2 | 1024 | 0.5 | local | ~1.1 |
+| W3 | 2048 | 0.5 | local | ~1.1 |
+
+Control = scratch 40 epochs, no constraint. Ours = fine-tune from that control, 40 epochs, lr 5e-4, ramp,
+cert lambda = 0.3. Max 3 concurrent CUDA processes, retry + resume.
+
+**Pre-registered success test:** a config succeeds if **certified >= 60%** AND **cost >= -1.0 points**
+(against its own control) AND its **absolute accuracy >= 74.68** (the dense H = 512 control, i.e. the best
+base model measured so far) AND 0 violations. That is the full Pareto requirement -- high certification,
+no cost, and no loss of absolute quality.
+
+**Pre-registered interpretations:**
+- **Pass:** certification is width-independent under bounded fan-in. This is the strongest available form
+  of the result: free certification on a model at least as good as the dense baseline. The manuscript's
+  size limitation is replaced by a design rule (bound the fan-in, not the width).
+- **R stays low but absolute accuracy stays below 74.68:** local connectivity caps model quality; report
+  the trade-off honestly and the limitation stands in modified form.
+- **R grows with H despite local connectivity:** the fan-in analysis is wrong; investigate before any
+  further method claims.

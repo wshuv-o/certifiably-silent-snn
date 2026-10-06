@@ -195,6 +195,8 @@ def main():
     Xva, yva = batch(Xtr, vidx), ytr[vidx]
     Xtr = Xtr[tidx] if isinstance(Xtr, np.ndarray) else Xtr; ytr_full = ytr; ytr = ytr[tidx]
     m = ALIFNet().to(dev)
+    if os.environ.get("COMPILE") == "1":        # launch-bound model: fuse kernels + CUDA graphs.
+        m = torch.compile(m, mode="reduce-overhead")   # validate numerics before trusting results
     if INIT:                                         # fine-tune: keep this model's own mask/quiet buffers
         sd = {k: v for k, v in torch.load(os.path.expanduser(INIT), map_location=dev).items() if k not in ('mask', 'quiet')}
         m.load_state_dict(sd, strict=False)
