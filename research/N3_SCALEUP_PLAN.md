@@ -1394,3 +1394,50 @@ and whether the free lookahead from d_min appears as predicted.
   confined to delay-free architectures, which is a sharp and limiting scope condition.
 - **Delays do not raise accuracy:** the ~77% ceiling is not explained by missing delays, and the gap to
   SOTA must be attributed to depth, time resolution or training protocol instead. Record and redirect.
+
+# SSC-FROZEN-001 — out-of-sample test of the architecture on a second dataset (PRE-REGISTERED 2026-10-07, before running)
+
+**Why this experiment exists.** Every architecture choice behind the DELAY-003 result -- delays {2,4,8},
+dropping the unit-delay tap, H = 512, 150 epochs, AUG = 2, lambda = 1.0, TAUM = 2.0 -- was selected on the
+same 1,169-sample speaker-disjoint SHD validation split. That is structurally the ExCap trap (won on
+validation, lost 4.5 points on test) at larger scale. Validation-selection bias cannot be argued away from
+inside SHD. **A frozen recipe on a different dataset, with no retuning, is the one test that bias cannot
+explain.**
+
+**What is frozen (nothing here may be changed after seeing results):**
+H = 512, DELAYS = 2,4,8, AUG = 2, TAUM = 2.0, CERT_LAMBDA = 1.0, control = scratch, ours = fine-tune from
+that control with LR = 5e-4 and a ramped constraint. Identical to the SHD winner.
+
+**The one translation, declared in advance: epochs are matched by GRADIENT STEPS, not by epochs.**
+SHD: 6,987 train samples / 128 = 55 steps/epoch x 150 epochs = **8,250 steps**.
+SSC: 73,966 train samples (75,466 minus a 1,500-sample monitoring slice) / 128 = 578 steps/epoch, so
+8,250 / 578 = **14 epochs**. Running 150 epochs on a 9x larger dataset would be a different recipe, not the
+same one; step-matching is the faithful translation. **Consequence accepted in advance:** absolute SSC
+accuracy will be well below SSC state of the art (~80% with delays), because the schedule is a frozen
+translation rather than a schedule tuned for SSC. This experiment tests the *certification mechanism*, not
+SSC accuracy.
+
+**Dataset handling.** SSC has 35 classes and no speaker metadata, so there is no speaker-disjoint split. A
+1,500-sample random slice of train is held out for **progress monitoring only** and is never used to choose
+anything. The **test set is evaluated once**, at the end, for both arms.
+
+**Pass criteria (stated before running):**
+1. accuracy cost of ours vs its own control on **test** >= **-1.0 points**;
+2. certified core fraction >= **70% of oracle** on test (relative rather than absolute, because the oracle
+   differs between datasets; SHD reached 94.9% of oracle, so 70% is deliberately conservative);
+3. **0 violations**.
+
+**Pre-registered interpretations:**
+- **Pass:** the mechanism is a property of the method, not of SHD. Combined with the fact that the design
+  rule was derived from the delay decomposition rather than found by sweeping, the architecture is
+  justified rather than fitted. This is the result the paper should lead with.
+- **Certification holds but accuracy cost exceeds 1 point:** the reallocation mechanism works but is not
+  free on harder data; report the cost honestly as dataset-dependent.
+- **Certification collapses:** the SHD result is dataset-specific and most of tonight's conclusions must be
+  scoped to SHD. Record it plainly; this would be the single most important negative result of the project.
+
+**Diagnostic to report regardless of outcome:** `R_per_delay` for control and constrained arms. The
+mechanism claim is that the network moves excitation out of the binding d=2 tap into the free d=4 and d=8
+taps (on SHD: [4.97, 4.90, 5.40] -> [0.28, 6.03, 6.46]). If certification succeeds on SSC, the same
+signature must appear; if it succeeds *without* that signature, the mechanistic explanation is wrong even
+though the outcome is right, and that matters more than the headline number.
