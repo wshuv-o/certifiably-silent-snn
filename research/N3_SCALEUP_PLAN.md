@@ -1477,3 +1477,63 @@ delay architecture. The delay decomposition predicts it should IMPROVE, because 
 of exact free lookahead before any certificate is needed. Extending the C++ engine to delayed taps is
 required before any speed claim is made about the delay architecture, and no such claim may be made until
 then.
+
+# DELAY-ENGINE-001 — exact-execution speed-up on the delay architecture (PRE-REGISTERED 2026-10-07, before the definitive run)
+
+**Why a new engine.** `s3_engine.cpp` assumes one-step recurrence and cannot execute the multi-tap delay
+network at all, so the CORE-SCALING-001 speed-up (1.67-1.71x at 32 cores) belongs to the *single-delay*
+model while the certification result (56% certified at +0.60 accuracy) belongs to the *delay* model. They
+are different networks, and no speed claim may span them. `s6_engine_delays.cpp` closes that gap.
+
+**The baseline must be given the delays' own lookahead, or the comparison is a strawman.**
+With v(t+1) = BETA*v(t) + I(t+1) + sum_d W_d s(t+1-d), computing step t+1 needs neighbour spikes only up
+to step **t+1-d_min**. With d_min = 2 every core is permanently one step ahead *with no certificate at
+all*. That is precisely the lookahead conservative PDES takes from minimum synaptic delay, so mode 0
+("handshake") is given it. Measuring certificates against a delay-naive handshake would manufacture a
+speed-up that belongs to the delays rather than to the method. **This makes our own result harder to
+obtain, which is why it is the right comparison.**
+
+**The certificate is correspondingly stronger.** At horizon k the arrival time of tap d is ts = t+1+k-d.
+For ts <= t+1 the spikes are already determined and are used **exactly** (always for the core's own
+neurons; for a neighbour q when ts <= seen[q]); only genuinely future arrivals are bounded by the
+per-tap worst case Rq_d. This is what makes certification possible at all on the trained net, which
+concentrates excitation in the long taps (R_4 = 6.03, R_8 = 6.46, exact at short horizons) and starves
+the short tap (R_2 = 0.275, the only one bounded there, and below the 0.3935 budget).
+
+**Soundness and validation.** Every bound replaces unknown spikes with the worst case (positive weights,
+all presynaptic neurons firing), and the base threshold THETA is used while the true threshold is
+THETA + a with a >= 0. The engine verifies spike trains **bit-for-bit against a single-thread reference on
+every run**; `exact=0` invalidates all timings. **Status: exact=1 on every run so far, at 16 and 32 cores,
+in both modes, at all five latencies.**
+
+**Implementation note worth recording.** The obvious bound implementation (walk the weight row per neuron
+per horizon) made the certificate **2.9x SLOWER** than the handshake. Replacing it with per-core lists of
+firing indices, built once per step and exploiting the ~4% firing rate, cut certificate time from
+13.1 ms to 5.7 ms per sample at 16 cores. Certificate *runtime cost* is a first-class design constraint
+here, not an afterthought -- the same issue made the original Python engine (S1) inconclusive.
+
+## PRELIMINARY numbers — CONTAMINATED, not to be used
+
+Taken while SSC training occupied the GPU and CPU, and at 32 cores on a 32-thread machine alongside
+Python processes (oversubscription). The handshake baseline swings non-monotonically between 113 and
+204 ms across latencies, which is physically impossible and proves the contamination. Recorded only to
+show the direction, and **superseded by the idle-CPU run**.
+
+| cores | L=0 | L=5 | L=20 | L=100 | L=500 | coverage |
+|---|---|---|---|---|---|---|
+| 16 | 0.75x | 0.78x | -- | -- | -- | 54.7% |
+| 32 | 2.24x | 1.78x | 0.75x | 1.13x | 1.28x | 72.0% |
+
+**The one trend that is robust** (coverage is far less timing-sensitive than wall-clock):
+certificate coverage rises **54.7% -> 72.0%** from 16 to 32 cores, the same core-granularity effect
+CORE-SCALING-001 found on the single-delay model (a whole core must be silent, so smaller cores qualify
+more often).
+
+**Honest expectation stated before the definitive run:** certificates will gain *less* here than on the
+single-delay architecture, because the delays have already given the baseline a free step. The plausible
+outcomes are (a) certificates still win at high core counts, where synchronisation cost dominates;
+(b) the free lookahead captures most of the available benefit and certificates add little, which would be
+a genuine negative result for the certificate contribution on this architecture and must be reported as
+such; or (c) certificate runtime cost exceeds its benefit at low core counts and low latency, which the
+16-core preliminary already suggests. **No speed claim about the delay architecture may be made until the
+idle-CPU run completes.**
