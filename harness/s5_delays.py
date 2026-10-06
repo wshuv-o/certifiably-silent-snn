@@ -25,6 +25,10 @@ import torch
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pilot_silence import fetch, T, NIN, NOUT
 
+DATASET = os.environ.get("DATASET", "shd")        # shd | ssc
+if DATASET == "ssc":
+    NOUT = 35                                     # Spiking Speech Commands has 35 classes
+
 dev = "cuda"
 H = int(os.environ.get("H", "512")); CPC = 32; NPC = H // CPC
 TAUM = float(os.environ.get("TAUM", "2.0"))
@@ -43,6 +47,38 @@ VALSPK = [int(s) for s in os.environ.get("VALSPK", "3,6").split(",")]
 INIT = os.environ.get("INIT", "")
 LR = float(os.environ.get("LR", "2e-3")); RAMP = os.environ.get("RAMP", "0") == "1"
 torch.manual_seed(SEED); np.random.seed(SEED)
+
+
+class LazySpikes:
+    """Bin spikes per batch straight from the h5 (SSC dense would be ~5 GB)."""
+
+    def __init__(self, path, window=1.0):
+        import h5py
+        self.f = h5py.File(path, "r", locking=False); self.window = window
+        self.times, self.units = self.f["spikes"]["times"], self.f["spikes"]["units"]
+        self.labels = self.f["labels"][:].astype(np.int64)
+
+    def __len__(self):
+        return len(self.labels)
+
+    def get(self, idx):
+        idx = np.asarray(list(idx)); X = np.zeros((len(idx), T, NIN), np.uint8)
+        for n, i in enumerate(idx):
+            tt, uu = self.times[i], self.units[i]
+            X[n, np.minimum((tt / self.window * T).astype(int), T - 1), uu] = 1
+        return X
+
+
+def fetch_ssc(split):
+    d = os.path.expanduser("~/research/data/ssc")
+    h5 = f"{d}/ssc_{split}.h5"
+    assert os.path.exists(h5), f"missing {h5}; download it first"
+    D = LazySpikes(h5)
+    return D, D.labels
+
+
+def batch(D, idx):
+    return D[idx] if isinstance(D, np.ndarray) else D.get(idx)
 
 
 class Spike(torch.autograd.Function):
@@ -154,7 +190,7 @@ def augment(x):
 def evaluate(m, X, y):
     c = 0
     for i in range(0, len(y), 256):
-        xb = torch.tensor(X[i:min(i + 256, len(y))], dtype=torch.float32, device=dev)
+        xb = torch.tensor(batch(X, range(i, min(i + 256, len(y)))), dtype=torch.float32, device=dev)
         c += (m(xb)[0].argmax(1).cpu().numpy() == y[i:i + 256]).sum()
     return c / len(y)
 
@@ -166,7 +202,7 @@ def certify(m, X):
     res = {"core_cert": 0.0, "core_oracle": 0.0, "violations": 0, "neuron_cert": 0.0, "allcore_cert": 0.0}
     n = 0
     for i in range(0, len(X), 100):
-        _, iext, V, S = m(torch.tensor(X[i:i + 100], dtype=torch.float32, device=dev))
+        _, iext, V, S = m(torch.tensor(batch(X, range(i, min(i + 100, len(X)))), dtype=torch.float32, device=dev))
         Bsz = V.shape[0]; tmax = T - K
 
         def may_fire(Sset_f):
@@ -202,13 +238,26 @@ def certify(m, X):
 
 
 def main():
-    Xtr, ytr = fetch("train"); Xte, yte = fetch("test")
-    import h5py
-    with h5py.File(os.path.expanduser('~/research/data/shd/shd_train.h5')) as f5:
-        spk = f5['extra']['speaker'][:]
-    isval = np.isin(spk, VALSPK); vidx, tidx = np.nonzero(isval)[0], np.nonzero(~isval)[0]
-    Xva, yva = Xtr[vidx], ytr[vidx]
-    Xtr, ytr = Xtr[tidx], ytr[tidx]
+    if DATASET == "ssc":
+        # Out-of-sample architecture test: the recipe is FROZEN from SHD, so nothing is selected here.
+        # SSC has no speaker metadata, so a small random slice of train is held out for PROGRESS
+        # MONITORING ONLY -- it is never used to choose anything. The test set is touched once.
+        Xtr, ytr = fetch_ssc("train"); Xte, yte = fetch_ssc("test")
+        rng = np.random.default_rng(12345)
+        mon = rng.choice(len(ytr), min(1500, len(ytr) // 20), replace=False)
+        Xva, yva = Xtr, ytr[mon]          # lazy dataset: index via batch() at use sites
+        vsel = mon
+        tidx = np.setdiff1d(np.arange(len(ytr)), mon)
+        assert int(ytr.max()) + 1 <= NOUT, f"label count {int(ytr.max())+1} exceeds NOUT={NOUT}"
+    else:
+        Xtr, ytr = fetch("train"); Xte, yte = fetch("test")
+        import h5py
+        with h5py.File(os.path.expanduser('~/research/data/shd/shd_train.h5')) as f5:
+            spk = f5['extra']['speaker'][:]
+        isval = np.isin(spk, VALSPK)
+        vidx, tidx = np.nonzero(isval)[0], np.nonzero(~isval)[0]
+        Xva, yva = Xtr[vidx], ytr[vidx]; vsel = None
+        Xtr, ytr = Xtr[tidx], ytr[tidx]; tidx = np.arange(len(ytr))
     m = DelayNet().to(dev)
     if INIT:
         sd = {k: v for k, v in torch.load(os.path.expanduser(INIT), map_location=dev).items()
@@ -219,10 +268,10 @@ def main():
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, steps)
     t0 = time.time()
     for ep in range(EPOCHS):
-        perm = np.random.permutation(len(ytr))
+        perm = tidx[np.random.permutation(len(tidx))]
         for b in range(0, len(perm), 128):
             idx = perm[b:b + 128]
-            x = augment(torch.tensor(Xtr[idx], dtype=torch.float32, device=dev))
+            x = augment(torch.tensor(batch(Xtr, idx), dtype=torch.float32, device=dev))
             yb = torch.tensor(ytr[idx], device=dev)
             out, iext, V, S = m(x)
             loss = torch.nn.functional.cross_entropy(out, yb)
@@ -230,14 +279,21 @@ def main():
                 lam_eff = LAM * (min(1.0, (ep + 1) / max(1, EPOCHS // 2)) if RAMP else 1.0)
                 loss = loss + lam_eff * cert_penalty(m, V, S, iext)
             opt.zero_grad(); loss.backward(); opt.step(); sched.step()
+        def valacc():
+            if vsel is None: return evaluate(m, Xva, yva)
+            return float((np.concatenate([m(torch.tensor(batch(Xva, vsel[i:i + 256]), dtype=torch.float32,
+                        device=dev))[0].argmax(1).cpu().numpy() for i in range(0, len(vsel), 256)]) == yva).mean())
         if ep % 5 == 4 or ep == EPOCHS - 1:
-            print(f"epoch {ep} val acc {evaluate(m, Xva, yva):.4f} ({(time.time()-t0)/(ep+1):.0f}s/epoch)", flush=True)
-    acc_val = evaluate(m, Xva, yva)
-    vsub = np.random.default_rng(0).choice(len(yva), min(300, len(yva)), replace=False)
-    cert = certify(m, Xva[vsub])
+            print(f"epoch {ep} val acc {valacc():.4f} ({(time.time()-t0)/(ep+1):.0f}s/epoch)", flush=True)
+    acc_val = valacc()
+    if vsel is None:
+        vsub = np.random.default_rng(0).choice(len(yva), min(300, len(yva)), replace=False)
+        cert = certify(m, Xva[vsub])
+    else:
+        cert = certify(m, batch(Xva, vsel[:300]))
     acc = evaluate(m, Xte, yte) if TEST else float('nan')
-    cert_test = certify(m, Xte[np.random.default_rng(1).choice(len(yte), 300, replace=False)]) if TEST else {}
-    res = dict(tag=TAG, dataset="shd", seed=SEED, epochs=EPOCHS, H=H, taum=TAUM, local=int(LOCAL),
+    cert_test = certify(m, batch(Xte, np.random.default_rng(1).choice(len(yte), 300, replace=False))) if TEST else {}
+    res = dict(tag=TAG, dataset=DATASET, seed=SEED, epochs=EPOCHS, H=H, taum=TAUM, local=int(LOCAL),
                local_r=LOCAL_R, aug=AUG, lam=LAM, acc_val=float(acc_val), acc=float(acc),
                test=({'acc': float(acc), **{('test_' + k): v for k, v in cert_test.items()}} if TEST else None),
                **cert)
