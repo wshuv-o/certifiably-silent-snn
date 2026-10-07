@@ -1709,3 +1709,49 @@ headline number.
 
 **Stage 2 (only if both stage-1 bars pass):** test-set confirmation on fresh seeds 2-4, same frozen
 protocol as SHD-CONFIRM-FROZEN.
+
+## DCLS-001 — RESULT (2026-10-07, H = 512, 150 ep, validation): accuracy bar FAILED, and a reframing
+
+| | val acc | certified | oracle | % of oracle | R_short | cost | viol |
+|---|---|---|---|---|---|---|---|
+| **control (no constraint)** | 85.54 | **55.88%** | 57.36% | **97.4%** | 1.595 | -- | 0 |
+| constrained (lambda 1.0) | 85.63 | 55.63% | 56.79% | 98.0% | 0.392 | **+0.09** | 0 |
+
+**Bar 1 (accuracy): FAILED.** The control reaches 85.54 against the required 87.25 (the 3-tap control).
+Per the pre-registered interpretation: **per-synapse learnable delays do not buy accuracy at this scale,
+and the remaining gap to SOTA must be attributed elsewhere (depth, time resolution). Recorded; not
+retried with tweaks.** The parameter-efficiency hypothesis -- that the 3-tap model was limited by its
+3*H^2 parameters -- is therefore **not supported**: 2*H^2 with richer delays scored lower, not higher.
+
+**Bar 2 (certification): PASSED** (98.0% of oracle, +0.09 cost, 0 violations).
+
+### The finding that matters more than either bar: certifiability can be ARCHITECTURAL
+
+**The unconstrained DCLS control already certifies 55.88% at 97.4% of oracle.** Training for
+certification added nothing -- it came out marginally lower (55.63%). Contrast the 3-tap architecture,
+where the control certified **3.54%** and training raised it to 56.28%.
+
+The cause is visible in the delay distribution: learnable delays settle at mean 5.0 with only **32.7%**
+of synapses below d = 4, so **R_short = 1.595** rather than the 3-tap control's **4.97**. That ~3x
+difference flips certification from 3.5% to 55.9% -- the same threshold behaviour Proposition 1 predicts,
+now driven by *where the delays sit* rather than by how hard the weights were squeezed.
+
+**Consequence for the paper.** Certifiability is a property of the **delay distribution**, not
+necessarily of a training objective. A network whose synaptic delays are spread away from short lags is
+certifiable *for free*, with no special loss. That is a simpler, more general and more deployable claim
+than "train with our penalty", and it was **not** what we expected -- the certificate loss was assumed
+to be doing the work. It must be reported as the stronger result, with the certificate loss reframed as
+what is needed when the architecture does *not* already supply the margin (as in the 3-tap and
+single-delay cases, where it supplied everything).
+
+### The falsifiable delay prediction: PARTIALLY confirmed
+Predicted: weight mass moves away from d < K = 4. Measured:
+- weighted mean delay 5.043 -> **5.523** (moved to longer delays, as predicted);
+- fraction of synapses with delay < 4: 32.7% -> 31.5% (**barely changed**);
+- R_per_delay (d = 2..8): control `[0.11,1.48,1.45,1.26,1.43,1.61,0.14]` ->
+  constrained `[0.02,0.37,1.43,1.48,1.67,1.86,0.16]`.
+
+So the binding taps (d = 2, 3) collapsed from 1.59 to 0.39 in total while d = 5-7 grew -- the
+reallocation did happen, but it happened in the **weights assigned to short-delay synapses** rather than
+by relocating the **delay positions** themselves. The prediction is confirmed in its mechanism and
+qualified in its route.
