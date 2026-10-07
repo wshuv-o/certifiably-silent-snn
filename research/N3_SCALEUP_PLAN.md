@@ -1666,3 +1666,46 @@ extrapolated to a machine with spare threads without re-measurement.
 **Net position on speed:** the honest claim is "exact certificate-based execution is 1.25-1.49x faster
 than a lookahead-aware local handshake at 32 cores, and slower below that" -- considerably weaker than the
 single-delay result, and the paper must say which architecture each speed number belongs to.
+
+# DCLS-001 — per-synapse LEARNABLE delays (PRE-REGISTERED 2026-10-07, before running)
+
+**Why.** DELAY-002 showed the model is **data-limited at ~1M recurrent parameters**: every 1.05M config
+scored 77-86% while 4.19M (4 taps at H=1024) collapsed to 73.74%. Multi-tap delays multiply weights by the
+tap count, so they cannot be scaled; the published ~95% SHD methods learn **one delay per synapse**,
+keeping weights at H^2. `s7_dcls.py` implements that: a weight W_ij and a continuous delay D_ij in
+[DMIN, DMAX] per synapse, interpolated onto integer taps by a triangular kernel
+`Wk_ij = W_ij * relu(1 - |D_ij - k|)`.
+
+**Verified before running (CPU unit checks):**
+- integer taps [2..8]; **recurrent parameters 0.524M = 2*H^2**, *fewer* than the 3-tap model's 0.786M,
+  and independent of DMAX;
+- the triangular kernel sums to **exactly 1.0** per synapse and `sum|Wk| / sum|W| = 1.000000`, so total
+  synaptic strength is preserved rather than inflated by interpolation;
+- gradient reaches both weights (5.43e+01) and delays (1.60e-01);
+- **the certificate penalty itself produces delay gradient (5.31e-01)**, so the constraint can be
+  satisfied by *moving synapses to longer delays*, not only by shrinking weights -- the continuous
+  analogue of the reallocation DELAY-003 observed discretely.
+
+**DMIN = 2 by construction, deliberately.** DELAY-002/003 found that omitting the unit-delay tap improves
+accuracy *and* certifiability together, and d_min = 2 guarantees two steps of exact free lookahead.
+Clamping learnable delays to >= 2 preserves that by construction instead of hoping training finds it.
+With K = 4 the only binding taps are d = 2 and 3, so `R_short = R_2 + R_3`.
+
+**Stage 1 (seed 1, H = 512, 150 epochs, AUG = 2, speaker-disjoint VALIDATION only):**
+`DC1_ctrl` = no constraint (matched control); `DC1_cert` = fine-tune from it, lambda = 1.0, lr 5e-4, ramped.
+
+**Pre-registered bars -- two separate questions, judged separately:**
+1. **Accuracy (the reason for doing this):** DC1_ctrl must beat the 3-tap control's **87.25** validation.
+   If it does not, per-synapse delays do not buy accuracy at this scale and the remaining SOTA gap must be
+   attributed elsewhere (depth, time resolution). Recorded, not retried with tweaks.
+2. **Certification:** DC1_cert must reach **>= 70% of oracle** at **cost >= -1.0** with **0 violations** --
+   the same bars as SHD-CONFIRM-FROZEN and SSC-FROZEN-001, so the comparison is like-for-like.
+
+**Sharp falsifiable prediction about the learned delays.** The constrained model should move weight mass
+*away* from d < 4 and into d >= 4, since only d < K binds. Diagnostics reported: `delay_mean_wtd`
+(delay weighted by positive-weight mass) and `frac_delay_lt_K`. **If certification succeeds WITHOUT that
+shift, the mechanistic story is wrong even though the outcome is right**, and that matters more than the
+headline number.
+
+**Stage 2 (only if both stage-1 bars pass):** test-set confirmation on fresh seeds 2-4, same frozen
+protocol as SHD-CONFIRM-FROZEN.
