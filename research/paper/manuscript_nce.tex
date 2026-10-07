@@ -1,51 +1,36 @@
-% Submission to Neuromorphic Computing and Engineering (IOP Publishing)
-%
-% REQUIRES iopart.cls, which is NOT in this repository and was not present on the
-% authoring machine. Obtain it either by:
-%   (a) downloading the LaTeX2e author kit from
-%       https://publishingsupport.iopscience.iop.org/questions/latex-template/
-%       and placing iopart.cls (plus iopart10.clo, iopart12.clo) beside this file; or
-%   (b) opening Overleaf and selecting the "Institute of Physics (IOP) journals"
-%       template, then pasting this file in as the main document.
-%
-% This source has NOT been compiled: no TeX distribution was available on the
-% authoring machine. Expect to fix minor formatting only; the content is final.
-%
-\documentclass[12pt]{iopart}
-\usepackage{graphicx}
-% iopart already defines equation*/eqnarray*; undefine them before amsmath to avoid
-% "LaTeX Error: Command \equation* already defined."
-\expandafter\let\csname equation*\endcsname\relax
-\expandafter\let\csname endequation*\endcsname\relax
-\expandafter\let\csname eqnarray*\endcsname\relax
-\expandafter\let\csname endeqnarray*\endcsname\relax
+%% Submission to Neuromorphic Computing and Engineering (IOP Publishing)
+%% Uses IOP's current template class iopjournal.cls (supplied in IOP's author kit and committed
+%% alongside this file). Build:  tectonic -X compile manuscript_nce.tex
+%%
+%% Option [anonymous] strips author names, affiliations and acknowledgements for double-anonymous
+%% review:  \documentclass[anonymous]{iopjournal}
+\documentclass{iopjournal}
+
+% Latin Modern: the Tectonic bundle lacks some Computer Modern Type 1 fonts (cmr7.pfb),
+% and lmodern is a metrically compatible drop-in that the bundle does provide.
+\usepackage{lmodern}
 \usepackage{amsmath}
 \usepackage{amssymb}
 
 \begin{document}
 
-\title[Short-delay excitatory drive governs provable silence]{Short-Delay Excitatory Drive Governs Provable Silence in Recurrent Spiking Networks}
+\articletype{Paper}
 
-% IOP style: superscript numerals keyed to a numbered \address list, with the corresponding author
-% marked $^*$ and declared below. NCE displays ORCID iDs, so supply one per author at submission.
-\author{[FIRST AUTHOR]$^{1,*}$, [SECOND AUTHOR]$^{2}$ and [THIRD AUTHOR]$^{1}$}
+\title{Short-Delay Excitatory Drive Governs Provable Silence in Recurrent Spiking Networks}
 
-\address{$^1$ [DEPARTMENT, INSTITUTION, CITY, COUNTRY]}
-\address{$^2$ [SECOND INSTITUTION, CITY, COUNTRY]}
-\address{$^*$ Author to whom any correspondence should be addressed.}
+\author{[FIRST AUTHOR]$^{1,*}$\orcid{0000-0000-0000-0000}}
 
-\ead{[CORRESPONDING EMAIL]}
+\affil{$^1$[DEPARTMENT, INSTITUTION, CITY, COUNTRY]}
+
+\affil{$^*$Author to whom any correspondence should be addressed.}
+
+\email{[CORRESPONDING EMAIL]}
+
+\keywords{spiking neural networks, neuromorphic computing, synchronisation, synaptic delays, formal guarantees, parallel discrete-event simulation}
 
 \begin{abstract}
-Multi-core neuromorphic systems advance in discrete time steps, and before a core can compute step $t+1$ it must establish which of its presynaptic neurons spiked at step $t$. This is enforced by a global barrier or by local handshakes, and the resulting synchronisation is a recognised bottleneck. Trained recurrent spiking networks are in fact silent for most of their operation, but silence that is merely observed cannot be exploited: a core may only skip waiting if the silence of its neighbours is \emph{provable} in advance. We show that provability in a recurrent spiking network is governed by a single measurable quantity: the worst-case excitatory recurrent drive arriving through synapses whose delay is shorter than the certificate horizon, which we denote $R_{\mathrm{short}}$. Across six architectures spanning a twenty-fold range of $R_{\mathrm{short}}$, certified silence rises from 0\% to 98\% of the achievable maximum, monotonically in $R_{\mathrm{short}}$. Because only synapses with delay below the horizon contribute uncertainty, a network with multi-tap synaptic delays can satisfy a given $R_{\mathrm{short}}$ by \emph{relocating} excitation into longer delays rather than removing it. We observe exactly this: training with a certificate penalty reduces drive on the binding short-delay tap by 94\% while leaving total excitatory mass essentially unchanged, and the resulting networks certify 56.0\% of core-steps on the Heidelberg Spiking Digits at an accuracy change of $+0.24$ points against matched controls (three test seeds), and 61.5\% on Spiking Speech Commands at $+3.03$ points (four test seeds, frozen recipe transferred without retuning). No soundness violation occurred in any run. We further find that per-synapse learnable delays place enough mass at long lags that the \emph{unconstrained} network already certifies 97.4\% of its achievable maximum, so certifiability can be an architectural property rather than a training objective. Certificates permit barrier-free execution that is bit-identical to lock-step; in a compiled shared-memory engine this is 1.25--1.49$\times$ faster than lookahead-aware local handshaking at 32 cores, but slower below 16 cores, and in a two-process TCP configuration it is 1.37$\times$ slower, because certificates reduce waiting rather than message count.
+Multi-core neuromorphic systems advance in discrete time steps, and before a core can compute step $t+1$ it must establish which of its presynaptic neurons spiked at step $t$. This is enforced by a global barrier or by local handshakes, and the resulting synchronisation is a recognised bottleneck. Trained recurrent spiking networks are in fact silent for most of their operation, but silence that is merely observed cannot be exploited: a core may only skip waiting if the silence of its neighbours is provable in advance. We show that provability in a recurrent spiking network is governed by a single measurable quantity: the worst-case excitatory recurrent drive arriving through synapses whose delay is shorter than the certificate horizon, denoted $R_{\mathrm{short}}$. Across six architectures spanning a twenty-fold range of $R_{\mathrm{short}}$, certified silence rises from 0\% to 98\% of the achievable maximum, monotonically in $R_{\mathrm{short}}$. Because only synapses with delay below the horizon contribute uncertainty, a network with multi-tap synaptic delays can satisfy a given $R_{\mathrm{short}}$ by relocating excitation into longer delays rather than removing it. We observe exactly this: training with a certificate penalty reduces drive on the binding short-delay tap by 94\% while leaving total excitatory mass essentially unchanged, and the resulting networks certify 56.0\% of core-steps on the Heidelberg Spiking Digits at an accuracy change of $+0.24$ points against matched controls (three test seeds), and 61.5\% on Spiking Speech Commands at $+3.03$ points (four test seeds, frozen recipe transferred without retuning). No soundness violation occurred in any run. We further find that per-synapse learnable delays place enough mass at long lags that the unconstrained network already certifies 97.4\% of its achievable maximum, so certifiability can be an architectural property rather than a training objective. Certificates permit barrier-free execution that is bit-identical to lock-step; in a compiled shared-memory engine this is 1.25--1.49$\times$ faster than lookahead-aware local handshaking at 32 cores, but slower below 16 cores, and in a two-process TCP configuration it is 1.37$\times$ slower, because certificates reduce waiting rather than message count.
 \end{abstract}
-
-\vspace{2pc}
-\noindent{\it Keywords}: spiking neural networks, neuromorphic computing, synchronisation, synaptic delays, formal guarantees, parallel discrete-event simulation
-
-\submitto{Neuromorphic Computing and Engineering}
-
-\maketitle
 
 \section{Introduction}
 
@@ -109,7 +94,7 @@ Let $R^{(d)}_i = \sum_j \max(0, W^{(d)}_{ij})$ be the worst-case excitatory driv
 R_i < (1-\beta)\,\theta
 \label{eq:budget}
 \end{equation}
-is sufficient for silence over an unbounded horizon. We refer to $(1-\beta)\theta$ as the \textbf{excitatory budget}. For the parameters used here ($\beta=e^{-1/2}$, $\theta=1$) the budget is $0.3935$. A finite-$K$ certificate is more permissive than \eref{eq:budget}, because it starts from the measured membrane potential rather than from the worst case; section~\ref{sec:governing} quantifies the gap.
+is sufficient for silence over an unbounded horizon. We refer to $(1-\beta)\theta$ as the \textbf{excitatory budget}. For the parameters used here ($\beta=e^{-1/2}$, $\theta=1$) the budget is $0.3935$. A finite-$K$ certificate is more permissive than (\ref{eq:budget}), because it starts from the measured membrane potential rather than from the worst case; section~\ref{sec:governing} quantifies the gap.
 
 We evaluate certificates with a fixed-point refinement. Let $\mathcal{S}$ be a set of neurons that may fire within the window. Bounding each neuron's reach using only the drive attributable to $\mathcal{S}$ yields a possibly smaller set; iterating to a fixed point gives the certified set. This is sound for any initial superset and tightens the bound where the network is mostly quiet.
 
@@ -163,7 +148,7 @@ We report the \textbf{certified core fraction}: the proportion of core-steps for
 \subsection{Exact multi-core execution}
 \label{sec:engines}
 
-Two engines were implemented in C++20. The first is a shared-memory engine with one thread per core and emulated interconnect latency $L$, in which published data becomes visible to other cores $L$\,\textmu s after publication. The second partitions cores across separate operating-system processes exchanging fixed-size frames over TCP with Nagle's algorithm disabled, so that latency, system-call cost and scheduling are those the operating system actually imposes.
+Two engines were implemented in C++20. The first is a shared-memory engine with one thread per core and emulated interconnect latency $L$, in which published data becomes visible to other cores $L$\,$\mu$s after publication. The second partitions cores across separate operating-system processes exchanging fixed-size frames over TCP with Nagle's algorithm disabled, so that latency, system-call cost and scheduling are those the operating system actually imposes.
 
 In both engines the \textbf{baseline is given the lookahead the delays provide}: to compute step $t+1$ a core waits only for neighbour spikes up to step $t+1-d_{\min}$, which with $d_{\min}=2$ leaves every core permanently one step ahead with no certificate at all. Comparing certificates against a delay-naive handshake would attribute to the method a speed-up that belongs to the delays.
 
@@ -178,23 +163,22 @@ Table~\ref{tab:governing} compares six networks spanning a twenty-fold range of 
 
 \begin{table}
 \caption{\label{tab:governing}Certified silence is monotone in $R_{\mathrm{short}}$ and essentially independent of total recurrent excitation. Budget $(1-\beta)\theta = 0.3935$. Validation set, seed 1.}
-\begin{indented}
-\item[]\begin{tabular}{@{}lrrrrrr}
-\br
+\centering
+\begin{tabular}{lrrrrrr}
+\hline
 architecture & accuracy & certified & oracle & \% oracle & $R_{\mathrm{short}}$ & total $R$ \\
-\mr
+\hline
 unit delay $\mathcal{D}=\{1\}$        & 75.19 & 0.00\%  & 63.93\% & 0.0\%  & 4.840 & 4.84 \\
 $\mathcal{D}=\{1,2,4,8\}$             & 81.61 & 1.63\%  & 60.11\% & 2.7\%  & 5.983 & 12.30 \\
 $\mathcal{D}=\{2,4,8\}$, control      & 87.25 & 3.54\%  & 58.63\% & 6.0\%  & 4.968 & 15.27 \\
 $\mathcal{D}=\{2,4,8\}$, constrained  & 87.85 & 56.28\% & 59.28\% & 94.9\% & 0.275 & 12.76 \\
 learnable delays, control             & 85.54 & 55.88\% & 57.36\% & 97.4\% & 1.595 & 7.48 \\
 learnable delays, constrained         & 85.63 & 55.63\% & 56.79\% & 98.0\% & 0.392 & 7.00 \\
-\br
+\hline
 \end{tabular}
-\end{indented}
 \end{table}
 
-Certification is monotone in $R_{\mathrm{short}}$ and unrelated to total excitation: the two networks with the largest total drive (15.27 and 12.76) sit at opposite ends of the certification range, while the pair differing only in $R_{\mathrm{short}}$ (4.968 versus 0.275) differ by a factor of sixteen in certified fraction. Near-oracle certification appears once $R_{\mathrm{short}}$ falls to roughly 1.6, about four times the budget; the finite-horizon certificate is thus more permissive than the unbounded-horizon condition \eref{eq:budget}, as expected, since it starts from the measured membrane potential.
+Certification is monotone in $R_{\mathrm{short}}$ and unrelated to total excitation: the two networks with the largest total drive (15.27 and 12.76) sit at opposite ends of the certification range, while the pair differing only in $R_{\mathrm{short}}$ (4.968 versus 0.275) differ by a factor of sixteen in certified fraction. Near-oracle certification appears once $R_{\mathrm{short}}$ falls to roughly 1.6, about four times the budget; the finite-horizon certificate is thus more permissive than the unbounded-horizon condition (\ref{eq:budget}), as expected, since it starts from the measured membrane potential.
 
 \subsection{Certification at no accuracy cost on SHD}
 \label{sec:shd}
@@ -203,19 +187,18 @@ Table~\ref{tab:shd} reports the frozen recipe evaluated once on the SHD test set
 
 \begin{table}
 \caption{\label{tab:shd}SHD test set, frozen recipe, fresh seeds. Cost standard deviation 0.38, standard error 0.22; the 95\% interval spans roughly $-0.19$ to $+0.67$.}
-\begin{indented}
-\item[]\begin{tabular}{@{}lrrrrrrr}
-\br
+\centering
+\begin{tabular}{lrrrrrrr}
+\hline
 seed & control & constrained & cost & ctrl.\ cert.\ & cert.\ & oracle & viol.\ \\
-\mr
+\hline
 2 & 87.28 & 87.90 & $+0.62$ & 4.08\% & 55.68\% & 58.74\% & 0 \\
 3 & 86.75 & 86.62 & $-0.13$ & 4.60\% & 56.66\% & 59.44\% & 0 \\
 4 & 88.03 & 88.25 & $+0.22$ & 4.06\% & 55.60\% & 58.68\% & 0 \\
-\mr
-mean & 87.35 & 87.59 & $\mathbf{+0.24}$ & 4.25\% & \textbf{55.98\%} & 58.95\% & \textbf{0} \\
-\br
+\hline
+mean & 87.35 & 87.59 & \textbf{+0.24} & 4.25\% & \textbf{55.98\%} & 58.95\% & \textbf{0} \\
+\hline
 \end{tabular}
-\end{indented}
 \end{table}
 
 Certified silence rises from 4.25\% to 55.98\%, which is 95.0\% of the oracle fraction, with no soundness violation. The accuracy change is $+0.24$ points and is statistically indistinguishable from zero. The defensible claim is that certification is obtained at no measurable accuracy cost; we do not claim an accuracy benefit on SHD. Selection bias from the architecture search proved small: the same configuration predicted $+0.60$ and 94.9\% of oracle on the validation set used for selection.
@@ -227,20 +210,19 @@ The frozen SHD recipe was transferred to SSC without retuning. Table~\ref{tab:ss
 
 \begin{table}
 \caption{\label{tab:ssc}SSC test set, frozen recipe transferred without retuning. Cost standard deviation 0.15, standard error 0.08. Certification is 94.0\% of oracle.}
-\begin{indented}
-\item[]\begin{tabular}{@{}lrrrrrrr}
-\br
+\centering
+\begin{tabular}{lrrrrrrr}
+\hline
 seed & control & constrained & cost & ctrl.\ cert.\ & cert.\ & oracle & viol.\ \\
-\mr
+\hline
 1 & 65.56 & 68.66 & $+3.10$ & 9.50\%  & 60.90\% & 64.59\% & 0 \\
 2 & 65.25 & 68.06 & $+2.81$ & 12.94\% & 64.17\% & 68.11\% & 0 \\
 3 & 65.24 & 68.33 & $+3.09$ & 11.32\% & 61.11\% & 65.21\% & 0 \\
 4 & 64.61 & 67.75 & $+3.14$ & 9.51\%  & 59.73\% & 63.84\% & 0 \\
-\mr
-mean & 65.17 & 68.20 & $\mathbf{+3.03}$ & 10.82\% & \textbf{61.48\%} & 65.44\% & \textbf{0} \\
-\br
+\hline
+mean & 65.17 & 68.20 & \textbf{+3.03} & 10.82\% & \textbf{61.48\%} & 65.44\% & \textbf{0} \\
+\hline
 \end{tabular}
-\end{indented}
 \end{table}
 
 Certified silence rises from 10.82\% to 61.48\%, which is 94.0\% of oracle, with no violations. The accuracy change is $+3.03$ points with standard error 0.08 --- on this dataset the constraint acts as an effective regulariser, and the effect is systematic rather than incidental. Absolute SSC accuracy (68.20\%) is below the strongest published results, which is expected and was stated in advance: the schedule is a step-matched transfer of an SHD recipe rather than one tuned for SSC. The purpose of this experiment is to test whether the mechanism survives a change of dataset with no adaptation, and it does.
@@ -252,11 +234,11 @@ Table~\ref{tab:mech} shows the per-delay drive before and after constrained fine
 
 \begin{table}
 \caption{\label{tab:mech}Training reduces drive on the binding $d=2$ tap while leaving total excitation nearly unchanged, with the same signature on both datasets and every seed.}
-\begin{indented}
-\item[]\begin{tabular}{@{}lrrrr}
-\br
+\centering
+\begin{tabular}{lrrrr}
+\hline
 dataset / seed & $R^{(2)}$ & $R^{(4)}$ & $R^{(8)}$ & total \\
-\mr
+\hline
 SHD control              & 4.97 & 4.90 & 5.40 & 15.27 \\
 SHD constrained          & \textbf{0.28} & 6.03 & 6.46 & 12.76 ($-16$\%) \\
 SSC control, seed 1      & 5.73 & 6.12 & 7.19 & 19.04 \\
@@ -264,9 +246,8 @@ SSC constrained, seed 1  & \textbf{0.29} & 8.56 & 9.98 & 18.83 ($-1$\%) \\
 SSC constrained, seed 2  & \textbf{0.29} & 8.54 & 9.84 & --- \\
 SSC constrained, seed 3  & \textbf{0.30} & 7.65 & 8.89 & --- \\
 SSC constrained, seed 4  & \textbf{0.29} & 8.21 & 9.42 & --- \\
-\br
+\hline
 \end{tabular}
-\end{indented}
 \end{table}
 
 The binding $d=2$ tap falls by 94\% while the unconstrained $d=4$ and $d=8$ taps \emph{grow}, so total excitatory mass changes by only 1\% on SSC and 16\% on SHD. Across four SSC seeds the $d=2$ drive lands at 0.29, 0.29, 0.30 and 0.29, and on three SHD test seeds $R_{\mathrm{short}}$ lands at 0.253, 0.253 and 0.260 --- a reproducibility of about $\pm0.01$ in the governing quantity. The constraint is satisfied by \textbf{relocating} excitation in time, which is why it costs no accuracy.
@@ -289,24 +270,23 @@ Certificates permit a core to advance without waiting for a neighbour whose cert
 
 \begin{table}
 \caption{\label{tab:speed}Speed-up of certificate-based over lookahead-aware local handshaking, shared-memory engine, idle machine. Values above 1 favour certificates. The unconstrained control gains nothing at any core count.}
-\begin{indented}
-\item[]\begin{tabular}{@{}lrrrrrr}
-\br
-cores & coverage & $L=0$ & $L=5$\,\textmu s & $L=20$\,\textmu s & $L=100$\,\textmu s & $L=500$\,\textmu s \\
-\mr
+\centering
+\begin{tabular}{lrrrrrr}
+\hline
+cores & coverage & $L=0$ & $L=5$\,$\mu$s & $L=20$\,$\mu$s & $L=100$\,$\mu$s & $L=500$\,$\mu$s \\
+\hline
 4  & 44.5\% & 0.93 & 0.95 & 0.91 & 1.07 & 1.11 \\
 8  & 52.2\% & 0.90 & 0.88 & 0.90 & 1.02 & 1.11 \\
 16 & 61.5\% & 0.79 & 0.79 & 0.78 & 1.05 & 1.11 \\
 \textbf{32} & \textbf{71.0\%} & \textbf{1.44} & \textbf{1.35} & \textbf{1.30} & \textbf{1.25} & \textbf{1.49} \\
 32, control & 14.4\% & 0.99 & 0.98 & 0.83 & 0.98 & 0.99 \\
-\br
+\hline
 \end{tabular}
-\end{indented}
 \end{table}
 
 Three observations. Certificate coverage rises with core count (44.5\% to 71.0\%), because certification requires a \emph{whole} core to be silent and smaller cores qualify more often --- a design implication favouring fine-grained many-core architectures. The unconstrained control gains nothing anywhere, so the effect is attributable to training. And certificates \textbf{lose} below 32 cores at low latency: their computational cost exceeds their benefit once the handshake already has a free step from $d_{\min}=2$.
 
-In the two-process TCP configuration, certificates were \textbf{1.37$\times$ slower} than the handshake (13.4--14.4\,ms against 18.7--19.4\,ms per sample), consistently at 8, 16 and 32 cores. The explanation is visible in the absolute figures: approximately 140\,\textmu s per step is dominated by the network round-trip, and each rank transmits a frame every step regardless of mode. Certificates reduce \emph{waiting}, of which little remains, while their computation is pure added cost. We state this plainly: \textbf{the distributed case, as measured, is negative.} The implication is that over a network the benefit must come from \emph{sending fewer messages} --- a certified-silent core need not transmit at all --- which is a different mechanism from the one implemented here and which we have not evaluated.
+In the two-process TCP configuration, certificates were \textbf{1.37$\times$ slower} than the handshake (13.4--14.4\,ms against 18.7--19.4\,ms per sample), consistently at 8, 16 and 32 cores. The explanation is visible in the absolute figures: approximately 140\,$\mu$s per step is dominated by the network round-trip, and each rank transmits a frame every step regardless of mode. Certificates reduce \emph{waiting}, of which little remains, while their computation is pure added cost. We state this plainly: \textbf{the distributed case, as measured, is negative.} The implication is that over a network the benefit must come from \emph{sending fewer messages} --- a certified-silent core need not transmit at all --- which is a different mechanism from the one implemented here and which we have not evaluated.
 
 \subsection{What does not work}
 \label{sec:negative}
@@ -354,12 +334,19 @@ Since $R$ is linear in fan-in with a measurable coefficient, the maximum afforda
 
 Provable silence in a recurrent spiking network is governed by the worst-case excitatory drive arriving through synapses whose delay falls below the certificate horizon. Because longer-delay synapses contribute from time steps that are already determined, they impose no constraint, and a network can therefore become certifiable by relocating excitation in time rather than removing it. This is what trained networks do: the binding short-delay drive falls by 94\% while total excitation is essentially unchanged, and the resulting networks certify 56\% of core-steps on SHD and 61\% on SSC --- 94--95\% of what is achievable --- at no measurable accuracy cost on one dataset and a 3-point gain on the other, with no soundness violation in any run. Where the delay distribution already places little mass at short lags, the property holds without any dedicated training, which makes certifiability an architectural choice rather than an optimisation objective. The execution benefit is real but conditional: exactness is guaranteed, and barrier-free execution is faster than lookahead-aware handshaking in a many-core shared-memory setting, while a two-process network configuration favours the handshake because certificates reduce waiting rather than message count.
 
-\ack
-[ACKNOWLEDGEMENTS]
+\ack{[ACKNOWLEDGEMENTS]}
 
-\section*{Data availability statement}
+\funding{[FUNDER NAMES AND GRANT NUMBERS, or state that no funding was received]}
+
+\roles{[AUTHOR CONTRIBUTIONS using CRediT terms: https://credit.niso.org -- e.g. Conceptualization,
+Methodology, Software, Validation, Formal analysis, Investigation, Writing -- original draft,
+Writing -- review and editing]}
+
+\data{
 
 All training, certification and execution code, the complete experimental record including pre-registered hypotheses and pass criteria for every experiment, and all result files are available at [REPOSITORY URL]. Both datasets are publicly available \cite{shd}.
+
+}
 
 \section*{Declaration of generative AI use}
 
@@ -373,15 +360,15 @@ All training, certification and execution code, the complete experimental record
 
 \bibitem{spinnaker} Furber S B, Galluppi F, Temple S and Plana L A 2014 The SpiNNaker project \textit{Proc. IEEE} \textbf{102} 652
 
-\bibitem{truenorth} Merolla P A \etal 2014 A million spiking-neuron integrated circuit with a scalable communication network and interface \textit{Science} \textbf{345} 668
+\bibitem{truenorth} Merolla P A \textit{et al} 2014 A million spiking-neuron integrated circuit with a scalable communication network and interface \textit{Science} \textbf{345} 668
 
-\bibitem{loihi} Davies M \etal 2018 Loihi: a neuromorphic manycore processor with on-chip learning \textit{IEEE Micro} \textbf{38} 82
+\bibitem{loihi} Davies M \textit{et al} 2018 Loihi: a neuromorphic manycore processor with on-chip learning \textit{IEEE Micro} \textbf{38} 82
 
 \bibitem{neuroscale} [verify] Decentralised synchronisation for scalable neuromorphic systems
 
 \bibitem{floorline} [verify] Analytical performance modelling of neuromorphic workloads identifying traffic and synchronisation bounds
 
-\bibitem{neurobench} [verify] Yik J \etal NeuroBench: a framework for benchmarking neuromorphic computing algorithms and systems
+\bibitem{neurobench} [verify] Yik J \textit{et al} NeuroBench: a framework for benchmarking neuromorphic computing algorithms and systems
 
 \bibitem{fujimoto} Fujimoto R M 1990 Parallel discrete event simulation \textit{Commun. ACM} \textbf{33} 30
 
