@@ -2175,3 +2175,40 @@ claim is no longer confined to one modality or one generating pipeline.
 **Caveat retained from the amendment:** N-MNIST has simpler temporal structure than DVS128 Gesture,
 which was the intended target and is not obtainable. This tests a change of modality and input
 statistics, not a harder temporal task.
+
+### DISPERSION-001 — 2026-10-08: hypothesis stated, tested, FAILED
+
+**Why.** The governing relation is sharp at its ends and loose in the middle. Two unconstrained
+controls make it plain: dense learnable delays at R_short **1.595** certify **97.4%** of oracle,
+while local connectivity at the *lower* **1.221** certifies **34.6%**.
+
+**Hypothesis (stated before measuring).** A core certifies only if every neuron in it stays below
+threshold, so the binding statistic should be the per-core maximum of R_i rather than its mean, and
+local connectivity (fan-in 96) should give a more variable R_i than dense (fan-in 512) at equal
+mean, spoiling more cores.
+
+**Result: FAILED.** Ten checkpoints, no training.
+
+| model | mean | sd | CV | per-core max | certified |
+|---|---|---|---|---|---|
+| dense learnable ctrl | 1.595 | 0.723 | 0.453 | **3.543** | **97.4%** |
+| local H=512 ctrl | 1.221 | 0.625 | 0.512 | **2.770** | **34.6%** |
+
+The dense network has the higher mean **and** the higher per-core maximum and still certifies three
+times as much. Dispersion is near-constant across every network measured (CV 0.43-0.56), so local
+connectivity is not more variable than dense. Correlations with certified fraction: mean R_short
+**-0.85**, per-core max **-0.85**, coefficient of variation **-0.13**, fraction of cores under a
+fixed bound **+0.59**. Nothing beats the mean.
+
+**Stopping rule honoured.** One hypothesis, one session, no training runs; it failed, so the
+limitation is written rather than the search continued.
+
+**Written into the manuscript** as a stated boundary: the relation is a threshold with sharp ends
+(below 0.40 -> 94.9-98.5% of oracle; above 4.81 -> 0.0-6.3%, across three datasets, three widths and
+two connectivity structures) and should not be used for quantitative prediction in the range
+0.9-1.6. The conjectured remaining cause, untested, is that the certificate starts from the measured
+membrane potential and is tightened by a fixed-point refinement, so the effective bound depends on
+which neurons sit near threshold and not only on the drive available to them.
+
+**Headline claims are unaffected:** every reported result sits at the sharp ends, at R_short
+0.26-0.30 or >= 4.81.
