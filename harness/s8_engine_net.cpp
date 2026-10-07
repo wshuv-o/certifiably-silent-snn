@@ -11,7 +11,12 @@
 // loopback networking, or on two machines for real Ethernet, by pointing PEER at the other host.
 //
 // Protocol (fixed-size frames, so no parsing ambiguity):
-//   struct Msg { int32 step; int32 cert[cores_per_rank]; uint8 spk[neurons_per_rank]; }
+//   struct Msg { int32 sample; int32 step; int32 cert[cores_per_rank]; uint8 spk[neurons_per_rank]; }
+// The sample index is in the frame and spike buffers are allocated PER SAMPLE. An earlier version
+// reset shared buffers at each sample boundary behind a barrier, which still raced: both ranks leave
+// the barrier together, so one could send a sample-b+1 frame while the other was still zeroing, and
+// that frame was erased. Two handshake runs reported exact=0 from precisely that. With per-sample
+// slots there is no reset and no such race.
 // After computing step t+1 each rank sends one frame. A reader thread consumes frames and publishes
 // (step, cert) so the compute loop can decide whether it may proceed.
 //
@@ -199,29 +204,29 @@ int main(int argc, char** argv) {
     }
   }
   const int cpr = P / 2, lo = rank * cpr, hi = lo + cpr, npr = cpr * C;
-  const size_t MSG = 4 + 4 * (size_t)cpr + (size_t)npr;
+  const size_t MSG = 8 + 4 * (size_t)cpr + (size_t)npr;   // +4 for the sample index
   std::vector<char> txbuf(MSG), rxbuf(MSG);
 
   int fd = (rank == 0) ? listen_accept(port) : dial(peer, port);
 
   // shared state written by the reader thread
-  std::atomic<int> peer_step{0};
-  std::atomic<bool> peer_sample_done{false};   // set when the peer's end-of-sample frame arrives
-  std::vector<std::atomic<int>> peer_cert(cpr);
+  std::vector<std::atomic<int>> peer_step(N);          // highest delivered step, per sample
+  for (auto& x : peer_step) x.store(0);
+  std::vector<std::atomic<int>> peer_cert((size_t)N * cpr);
   for (auto& c : peer_cert) c.store(0);
-  std::vector<uint8_t> spk((size_t)(T + 1) * H, 0);
+  std::vector<uint8_t> spk((size_t)N * (T + 1) * H, 0);  // per-sample slots: never reset, never raced
   std::atomic<bool> stop{false};
 
   std::thread reader([&] {
     while (!stop.load(std::memory_order_acquire)) {
       if (!recvall(fd, rxbuf.data(), MSG)) break;
-      int st; std::memcpy(&st, rxbuf.data(), 4);
+      int sb, st; std::memcpy(&sb, rxbuf.data(), 4); std::memcpy(&st, rxbuf.data() + 4, 4);
       if (st == -1) break;                                 // end-of-stream sentinel
-      if (st == -2) { peer_sample_done.store(true, std::memory_order_release); continue; }  // end of sample
       int pl = (rank == 0) ? cpr : 0;                       // peer owns the other half
-      std::memcpy(&spk[(size_t)st * H + pl * C], rxbuf.data() + 4 + 4 * cpr, npr);
-      for (int c = 0; c < cpr; ++c) { int cv; std::memcpy(&cv, rxbuf.data() + 4 + 4 * c, 4); peer_cert[c].store(cv, std::memory_order_release); }
-      peer_step.store(st, std::memory_order_release);
+      std::memcpy(&spk[((size_t)sb * (T + 1) + st) * H + pl * C], rxbuf.data() + 8 + 4 * cpr, npr);
+      for (int c = 0; c < cpr; ++c) { int cv; std::memcpy(&cv, rxbuf.data() + 8 + 4 * c, 4);
+        peer_cert[(size_t)sb * cpr + c].store(cv, std::memory_order_release); }
+      peer_step[sb].store(st, std::memory_order_release);
     }
   });
 
@@ -231,55 +236,52 @@ int main(int argc, char** argv) {
   for (int b = 0; b < N; ++b) {
     std::fill(v.begin(), v.end(), 0.0); std::fill(a.begin(), a.end(), 0.0);
     std::fill(myc.begin(), myc.end(), 0);
-    std::fill(spk.begin(), spk.end(), 0);
-    peer_step.store(0); for (auto& c : peer_cert) c.store(0);
     const double* I = &Iall[(size_t)b * T * H];
+    uint8_t* sb_spk = &spk[(size_t)b * (T + 1) * H];
     int64_t t0 = now_ns();
     for (int t = 0; t < T - 1; ++t) {
       const int need = t + 1 - DMIN;
-      while (peer_step.load(std::memory_order_acquire) < need) {
+      while (peer_step[b].load(std::memory_order_acquire) < need) {
         if (mode == 1) {
           bool ok = true;
-          for (int c = 0; c < cpr; ++c) if (peer_cert[c].load(std::memory_order_acquire) < need) { ok = false; break; }
+          for (int c = 0; c < cpr; ++c)
+            if (peer_cert[(size_t)b * cpr + c].load(std::memory_order_acquire) < need) { ok = false; break; }
           if (ok) break;
         }
         std::this_thread::yield();
       }
       for (int p = lo; p < hi; ++p)
-        core_step(p, &v[(p - lo) * C], &a[(p - lo) * C], spk.data(), t, &I[(size_t)(t + 1) * H],
-                  &spk[(size_t)(t + 1) * H + p * C]);
+        core_step(p, &v[(p - lo) * C], &a[(p - lo) * C], sb_spk, t, &I[(size_t)(t + 1) * H],
+                  &sb_spk[(size_t)(t + 1) * H + p * C]);
       if (mode == 1) {
-        int ps = peer_step.load(std::memory_order_acquire);
+        int ps = peer_step[b].load(std::memory_order_acquire);
         bool any = false;
         for (int p = lo; p < hi && !any; ++p) {
-          for (int ii = 0; ii < C; ++ii) if (spk[(size_t)(t + 1) * H + p * C + ii]) { any = true; break; }
+          for (int ii = 0; ii < C; ++ii) if (sb_spk[(size_t)(t + 1) * H + p * C + ii]) { any = true; break; }
           if (t + 1 >= myc[p - lo]) any = true;
         }
-        if (any) build_fires(F, spk.data(), t);
+        if (any) build_fires(F, sb_spk, t);
         for (int p = lo; p < hi; ++p) {
           bool spiked = false;
-          for (int ii = 0; ii < C; ++ii) if (spk[(size_t)(t + 1) * H + p * C + ii]) { spiked = true; break; }
+          for (int ii = 0; ii < C; ++ii) if (sb_spk[(size_t)(t + 1) * H + p * C + ii]) { spiked = true; break; }
           if (spiked || t + 1 >= myc[p - lo])
             myc[p - lo] = t + 1 + cert_horizon(p, t, &v[(p - lo) * C], I, F, ps, lo, hi, 16);
         }
       }
-      int st = t + 1; std::memcpy(txbuf.data(), &st, 4);
-      for (int c = 0; c < cpr; ++c) std::memcpy(txbuf.data() + 4 + 4 * c, &myc[c], 4);
-      std::memcpy(txbuf.data() + 4 + 4 * cpr, &spk[(size_t)(t + 1) * H + lo * C], npr);
+      int st = t + 1; std::memcpy(txbuf.data(), &b, 4); std::memcpy(txbuf.data() + 4, &st, 4);
+      for (int c = 0; c < cpr; ++c) std::memcpy(txbuf.data() + 8 + 4 * c, &myc[c], 4);
+      std::memcpy(txbuf.data() + 8 + 4 * cpr, &sb_spk[(size_t)(t + 1) * H + lo * C], npr);
       if (!sendall(fd, txbuf.data(), MSG)) { fprintf(stderr, "send failed\n"); return 1; }
     }
-    // Inter-sample barrier. Draining the peer's last step is NOT enough: the peer can finish the
-    // sample, start the next one and send a frame before this rank zeroes its buffers, which would
-    // erase that frame and make the peer's spikes read as zero. The bit-exactness check caught exactly
-    // that (mode 0 reported exact=0). Both ranks must agree the sample is over before either resets.
-    while (peer_step.load(std::memory_order_acquire) < T - 1) std::this_thread::yield();
+    // No barrier and no reset are needed: each sample has its own buffer slot, so a frame that
+    // arrives early simply lands in the slot it belongs to. Still wait for the peer to finish this
+    // sample so the per-sample timing is comparable between ranks.
+    while (peer_step[b].load(std::memory_order_acquire) < T - 1) std::this_thread::yield();
     ms[b] = (now_ns() - t0) / 1e6;
-    int done = -2; std::memcpy(txbuf.data(), &done, 4);
-    if (!sendall(fd, txbuf.data(), MSG)) { perror("send barrier"); return 1; }
-    while (!peer_sample_done.load(std::memory_order_acquire)) std::this_thread::yield();
-    peer_sample_done.store(false, std::memory_order_release);
   }
-  int sentinel = -1; std::memcpy(txbuf.data(), &sentinel, 4); sendall(fd, txbuf.data(), MSG);
+  int zero = 0, sentinel = -1;
+  std::memcpy(txbuf.data(), &zero, 4); std::memcpy(txbuf.data() + 4, &sentinel, 4);
+  sendall(fd, txbuf.data(), MSG);
   stop.store(true, std::memory_order_release);
   shutdown(fd, SHUT_RDWR); reader.join(); close(fd);
 
@@ -291,7 +293,7 @@ int main(int argc, char** argv) {
     const double* I = &Iall[(size_t)(N - 1) * T * H];
     for (int t = 0; t < T - 1; ++t) for (int p = 0; p < P; ++p)
       core_step(p, &rv[p * C], &ra[p * C], ref.data(), t, &I[(size_t)(t + 1) * H], &ref[(size_t)(t + 1) * H + p * C]);
-    bool exact = (std::memcmp(ref.data(), spk.data(), ref.size()) == 0);
+    bool exact = (std::memcmp(ref.data(), &spk[(size_t)(N - 1) * (T + 1) * H], ref.size()) == 0);
     printf("NETRESULT tag=%s mode=%s ranks=%d cores=%d median_ms=%.4f exact=%d\n",
            tag.c_str(), mode == 0 ? "handshake" : "cert", nranks, P, ms[N / 2], (int)exact);
   }

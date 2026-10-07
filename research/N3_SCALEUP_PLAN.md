@@ -1755,3 +1755,43 @@ So the binding taps (d = 2, 3) collapsed from 1.59 to 0.39 in total while d = 5-
 reallocation did happen, but it happened in the **weights assigned to short-delay synapses** rather than
 by relocating the **delay positions** themselves. The prediction is confirmed in its mechanism and
 qualified in its route.
+
+## NET-ENGINE-001 — RESULT (2026-10-07, REAL TCP, idle CPU): correctness established, certificates DO NOT PAY
+
+**Correctness: 36 consecutive runs, 0 exactness failures** (3 repeats x {8,16,32} cores x 2 models x
+2 modes), after two bugs that the bit-exactness check caught:
+1. **no inter-sample barrier** -- draining the peer's last step is insufficient, because the peer can
+   finish a sample, start the next and send a frame before this rank zeroes its buffers, erasing it;
+2. **the barrier itself still raced** -- both ranks leave it together, so one could send a sample-b+1
+   frame while the other was still resetting. Two handshake runs reported exact=0 from this.
+**Fix: per-sample buffer slots and the sample index in every frame, so nothing is ever reset and an
+early frame simply lands in the slot it belongs to.** Reset and barrier removed entirely.
+
+**Timing (2 ranks, cores split between them, loopback TCP, TCP_NODELAY, idle machine):**
+
+| cores | handshake | cert | ratio |
+|---|---|---|---|
+| 8 / 16 / 32, both models | 13.4-14.4 ms | 18.7-19.4 ms | **cert 1.37x SLOWER** |
+
+**Certificates do not pay over a real network in this configuration, consistently at every core count
+and for both models.** The reason is visible in the absolute numbers: ~14 ms for 100 steps is ~140 us
+per step, dominated by the TCP round-trip. Certificates remove *waiting*, but each rank still transmits
+a frame every step and frames arrive in order and promptly, so there is little waiting to remove while
+the certificate computation is pure added cost.
+
+**Design implication, and the route that would actually pay.** Over a network the win must come from
+**sending fewer messages**, not from waiting less. A core that is certified silent need not transmit at
+all -- PILOT-006 measured **2.17x fewer messages** from certified silence. That is a different mechanism
+from the one this engine implements (it skips waits, not sends), and it is the one worth building next
+for a distributed claim.
+
+**Scope consequence for the paper.** The exact-execution speed-up must be stated as a
+**shared-memory many-core** result (1.25-1.49x at 32 cores on the delay architecture; 1.67-1.71x on the
+single-delay architecture), and the paper must report that **a real 2-rank TCP configuration showed no
+benefit**. 2 ranks is the weakest possible distributed configuration -- more ranks would create more
+cross-rank dependencies -- but this engine supports only 2, so the honest statement is that the
+distributed case is **unproven and, as measured, negative**.
+
+**What this does NOT affect:** the certification result itself. Free/beneficial certification on SHD and
+SSC is a training-and-architecture result measured against matched controls, entirely independent of
+execution speed.
