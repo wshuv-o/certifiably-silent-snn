@@ -1,7 +1,8 @@
 """Build the manuscript figures from measured results.
 
-Every number here is transcribed from a recorded experiment and the comment above each block names
-the table or run it came from, so a figure traces back to the run that produced it. Nothing is
+Two figures. Figure 1 carries the claim and its mechanism; figure 2 carries the execution result.
+Every number is transcribed from a recorded experiment and the comment above each block names the
+table or run it came from, so a panel traces back to the run that produced it. Nothing is
 interpolated, smoothed or synthesised.
 
 Style follows the journal's line-art conventions: serif type matching the body text, thin rules, no
@@ -71,91 +72,12 @@ def save(fig, name):
 
 
 # ---------------------------------------------------------------------------------------------
-# Figure 1. The delay decomposition, and the horizon it permits.
-#   (a) evaluates the condition d >= k exactly; it is a statement of the algebra, not a sketch.
-#   (b,c) RECERT-001 (research/N3_SCALEUP_PLAN.md): identical weights re-certified at three
-#         horizons, 18 runs, 0 violations. Only K changes.
+# Figure 1. The governing quantity (a,b) and the mechanism that satisfies it (c,d).
+#   (a,b) manuscript table 1 (tab:governing): six architectures, speaker-disjoint validation.
+#         Panel (b) is the control: the same certified fractions against total excitation.
+#   (c,d) manuscript table 4 (tab:mech). SSC points are the four individual test seeds.
 # ---------------------------------------------------------------------------------------------
 def figure1():
-    delays = [2, 4, 8]
-    ks = np.arange(1, 9)
-
-    fig, axes = plt.subplots(1, 3, figsize=(6.3, 2.2),
-                             gridspec_kw={"width_ratios": [1.2, 1.0, 1.0], "wspace": 0.46})
-
-    # ---- (a) which taps a horizon binds -----------------------------------------------------
-    ax = axes[0]
-    # the staircase is the line d = k: below it a tap arrives from a step already computed
-    bx, by = [], []
-    for xi, d in enumerate(delays, start=1):
-        bx += [xi - 0.5, xi + 0.5]
-        by += [min(d, 8) + 0.5, min(d, 8) + 0.5]
-    ax.step(bx, by, where="post", color=K_DARK, lw=0.9, zorder=4)
-    for xi, d in enumerate(delays, start=1):
-        for k in ks:
-            bounded = d < k
-            ax.plot(xi, k, marker="s", ms=5.5, linestyle="none", zorder=3,
-                    mfc=K_RED if bounded else "white",
-                    mec=K_RED if bounded else K_BLACK, mew=0.7)
-    for K in (2, 4, 8):
-        ax.axhline(K + 0.5, color=K_GREY, lw=0.6, ls=(0, (3, 2)), zorder=2)
-        ax.text(0.56, K + 0.5, "$K=" + str(K) + "$", fontsize=6.3, va="center", ha="left",
-                color=K_DARK, bbox=dict(fc="white", ec="none", pad=0.6))
-    ax.text(2.5, 1.6, "exact\n$d \\geq k$", fontsize=6.6, ha="center", va="center", color=K_DARK)
-    ax.text(1.5, 7.0, "bounded\n$d < k$", fontsize=6.6, ha="center", va="center", color=K_RED)
-    ax.set_xticks([1, 2, 3])
-    ax.set_xticklabels(["2", "4", "8"])
-    ax.set_yticks([1, 2, 4, 6, 8])
-    ax.set_xlim(0.5, 3.5)
-    ax.set_ylim(0.3, 8.9)
-    ax.set_xlabel("synaptic delay $d$")
-    ax.set_ylabel("certificate step $k$")
-    panel_label(ax, "(a)", dx=-0.30)
-
-    # ---- (b) R_short against the horizon ----------------------------------------------------
-    rshort = np.array([0.000, 0.275, 6.307])
-    taps = ["none", "$\\{2\\}$", "$\\{2,4\\}$"]
-    floor = 3e-3
-    ax = axes[1]
-    ax.bar(np.arange(3), np.maximum(rshort, floor), width=0.5, color=K_GREY,
-           edgecolor=K_BLACK, lw=0.6, zorder=3)
-    ax.axhline(BUDGET, color=K_RED, lw=0.8, ls=(0, (4, 2)), zorder=4)
-    ax.text(2.46, BUDGET * 1.35, "budget 0.394", fontsize=6.3, color=K_RED, ha="right")
-    ax.set_yscale("log")
-    ax.set_ylim(2e-3, 60)
-    ax.set_xticks(np.arange(3))
-    ax.set_xticklabels(["2", "4", "8"])
-    ax.set_xlabel("certificate horizon $K$")
-    ax.set_ylabel("$R_{\\mathrm{short}}$")
-    for i, r in enumerate(rshort):
-        ax.text(i, max(r, floor) * 4.2, taps[i], ha="center", fontsize=6.3, color=K_DARK)
-    ax.text(0, floor * 1.25, "$0$", ha="center", va="bottom", fontsize=6.3, color=K_DARK)
-    panel_label(ax, "(b)", dx=-0.34)
-
-    # ---- (c) and what that does to certification --------------------------------------------
-    pct = np.array([99.2, 94.9, 0.2])
-    ax = axes[2]
-    ax.plot(np.arange(3), pct, marker="o", color=K_BLUE, mfc="white", mec=K_BLUE, mew=1.0,
-            zorder=3)
-    for i, p in enumerate(pct):
-        ax.annotate(("%.1f" % p) + "%", (i, p), textcoords="offset points",
-                    xytext=(0, -12 if i < 2 else 8), ha="center", fontsize=6.3, color=K_BLUE)
-    ax.set_xticks(np.arange(3))
-    ax.set_xticklabels(["2", "4", "8"])
-    ax.set_ylim(-10, 115)
-    ax.set_xlabel("certificate horizon $K$")
-    ax.set_ylabel("certified (% of oracle)")
-    panel_label(ax, "(c)", dx=-0.34)
-
-    save(fig, "fig1_decomposition")
-
-
-# ---------------------------------------------------------------------------------------------
-# Figure 2. R_short governs certifiability; total excitation does not.
-#   Manuscript table 1 (tab:governing): six architectures, speaker-disjoint validation, seed 1.
-#   Points are numbered; the key lives in the caption so the panels stay readable.
-# ---------------------------------------------------------------------------------------------
-def figure2():
     # (index, % of oracle, R_short, total R, has certificate penalty)
     rows = [
         (1,  0.0, 4.840,  4.84, False),   # unit delay {1}
@@ -176,10 +98,21 @@ def figure2():
     off_b = {1: (8, -3), 2: (0, -12), 3: (0, 7), 4: (8, -3), 5: (8, -2), 6: (-8, -2)}
     ha_b = {1: "left", 2: "center", 3: "center", 4: "left", 5: "left", 6: "right"}
 
-    fig, axes = plt.subplots(1, 2, figsize=(6.3, 2.5), gridspec_kw={"wspace": 0.30})
+    shd_c = np.array([4.97, 4.90, 5.40])
+    shd_k = np.array([0.28, 6.03, 6.46])
+    ssc_c = np.array([5.73, 6.12, 7.19])
+    ssc_seeds = np.array([[0.29, 8.56, 9.98],     # seed 1
+                          [0.29, 8.54, 9.84],     # seed 2
+                          [0.30, 7.65, 8.89],     # seed 3
+                          [0.29, 8.21, 9.42]])    # seed 4
+    ssc_k = ssc_seeds.mean(axis=0)
 
-    for ax, x, xl, off, hal in ((axes[0], rs, "$R_{\\mathrm{short}}$", off_a, ha_a),
-                                (axes[1], tot, "total recurrent excitation $R$", off_b, ha_b)):
+    fig, axes = plt.subplots(2, 2, figsize=(6.3, 4.7),
+                             gridspec_kw={"wspace": 0.30, "hspace": 0.52})
+
+    # ---- (a,b) the governing relation and its control ---------------------------------------
+    for ax, x, xl, off, hal in ((axes[0, 0], rs, "$R_{\\mathrm{short}}$", off_a, ha_a),
+                                (axes[0, 1], tot, "total recurrent excitation $R$", off_b, ha_b)):
         for i, r in enumerate(rows):
             ax.plot(x[i], pct[i], marker="o" if cons[i] else "s", ms=5, linestyle="none",
                     mfc=K_BLUE if cons[i] else "white",
@@ -190,83 +123,65 @@ def figure2():
         ax.set_ylim(-14, 118)
         ax.set_ylabel("certified (% of oracle)")
 
-    axes[0].set_xscale("log")
-    axes[0].set_xlim(0.19, 11)
-    axes[0].axvline(BUDGET, color=K_RED, lw=0.8, ls=(0, (4, 2)), zorder=2)
-    axes[0].text(0.355, 60, "budget", fontsize=6.4, color=K_RED, ha="right", rotation=90,
-                 va="center")
-    axes[1].set_xlim(3.2, 17.6)
+    ax = axes[0, 0]
+    ax.set_xscale("log")
+    ax.set_xlim(0.19, 11)
+    ax.axvline(BUDGET, color=K_RED, lw=0.8, ls=(0, (4, 2)), zorder=2)
+    ax.text(0.355, 58, "budget", fontsize=6.4, color=K_RED, ha="right", rotation=90, va="center")
+    panel_label(ax, "(a)", dx=-0.20)
 
+    ax = axes[0, 1]
+    ax.set_xlim(3.2, 17.6)
     leg = [Line2D([], [], marker="s", ls="none", ms=5, mfc="white", mec=K_BLACK, mew=0.8,
                   label="no certificate penalty"),
            Line2D([], [], marker="o", ls="none", ms=5, mfc=K_BLUE, mec=K_BLUE,
                   label="certificate penalty")]
-    axes[1].legend(handles=leg, loc="center left", bbox_to_anchor=(0.02, 0.52),
-                   handletextpad=0.4, labelspacing=0.3)
-    panel_label(axes[0], "(a)", dx=-0.20)
-    panel_label(axes[1], "(b)", dx=-0.20)
+    ax.legend(handles=leg, loc="center left", bbox_to_anchor=(0.02, 0.50),
+              handletextpad=0.4, labelspacing=0.3)
+    panel_label(ax, "(b)", dx=-0.20)
 
-    save(fig, "fig2_governing")
-
-
-# ---------------------------------------------------------------------------------------------
-# Figure 3. The constraint relocates excitation in time.
-#   Manuscript table 3 (tab:mech). The SSC points are the four individual test seeds.
-# ---------------------------------------------------------------------------------------------
-def figure3():
-    shd_c = np.array([4.97, 4.90, 5.40])
-    shd_k = np.array([0.28, 6.03, 6.46])
-    ssc_c = np.array([5.73, 6.12, 7.19])
-    ssc_seeds = np.array([[0.29, 8.56, 9.98],     # seed 1
-                          [0.29, 8.54, 9.84],     # seed 2
-                          [0.30, 7.65, 8.89],     # seed 3
-                          [0.29, 8.21, 9.42]])    # seed 4
-    ssc_k = ssc_seeds.mean(axis=0)
-
-    fig, axes = plt.subplots(1, 2, figsize=(6.3, 2.5), gridspec_kw={"wspace": 0.26})
+    # ---- (c,d) the mechanism ----------------------------------------------------------------
     w = 0.34
-    x = np.arange(3)
-
-    for ax, ctrl, cons, seeds, head in (
-            (axes[0], shd_c, shd_k, None,
-             "SHD    total $15.27 \\rightarrow 12.76$  ($-16$%)"),
-            (axes[1], ssc_c, ssc_k, ssc_seeds,
-             "SSC    total $19.04 \\rightarrow 18.83$  ($-1$%)")):
-        ax.bar(x - w / 2, ctrl, w, color="white", edgecolor=K_BLACK, lw=0.7,
+    xs = np.arange(3)
+    for ax, ctrl, cons_r, seeds, head, lab in (
+            (axes[1, 0], shd_c, shd_k, None,
+             "SHD    total $15.27 \\rightarrow 12.76$  ($-16$%)", "(c)"),
+            (axes[1, 1], ssc_c, ssc_k, ssc_seeds,
+             "SSC    total $19.04 \\rightarrow 18.83$  ($-1$%)", "(d)")):
+        ax.bar(xs - w / 2, ctrl, w, color="white", edgecolor=K_BLACK, lw=0.7,
                label="control", zorder=3)
-        ax.bar(x + w / 2, cons, w, color=K_GREY, edgecolor=K_BLACK, lw=0.7,
+        ax.bar(xs + w / 2, cons_r, w, color=K_GREY, edgecolor=K_BLACK, lw=0.7,
                label="constrained", zorder=3)
         if seeds is not None:
             for s in seeds:
-                ax.plot(x + w / 2, s, marker="o", ms=2.6, mfc=K_BLACK, mec="none",
+                ax.plot(xs + w / 2, s, marker="o", ms=2.6, mfc=K_BLACK, mec="none",
                         linestyle="none", zorder=5)
         ax.axhline(BUDGET, color=K_RED, lw=0.8, ls=(0, (4, 2)), zorder=4)
-        ax.annotate("", xy=(w / 2, cons[0] + 1.3), xytext=(-w / 2, ctrl[0] + 0.35),
+        ax.annotate("", xy=(w / 2, cons_r[0] + 1.3), xytext=(-w / 2, ctrl[0] + 0.35),
                     arrowprops=dict(arrowstyle="->", lw=0.8, color=K_RED,
                                     connectionstyle="arc3,rad=-0.3"), zorder=6)
         ax.text(0.30, ctrl[0] + 1.9, "$-94$%", fontsize=7, color=K_RED, ha="center")
         ax.text(2.46, BUDGET + 0.30, "budget 0.394", fontsize=6.3, color=K_RED, ha="right")
-        ax.set_xticks(x)
+        ax.set_xticks(xs)
         ax.set_xticklabels(["$d=2$", "$d=4$", "$d=8$"])
         ax.set_ylabel("excitatory drive $R^{(d)}$")
         ax.set_ylim(0, 11.6)
         ax.set_title(head, fontsize=7, color=K_DARK, pad=4)
+        panel_label(ax, lab, dx=-0.20, dy=1.14)
 
-    axes[0].legend(loc="upper left", bbox_to_anchor=(0.02, 0.97), handletextpad=0.5,
-                   labelspacing=0.3, handlelength=1.3)
-    panel_label(axes[0], "(a)", dx=-0.17, dy=1.11)
-    panel_label(axes[1], "(b)", dx=-0.17, dy=1.11)
+    axes[1, 0].legend(loc="upper left", bbox_to_anchor=(0.02, 0.97), handletextpad=0.5,
+                      labelspacing=0.3, handlelength=1.3)
 
-    save(fig, "fig3_reallocation")
+    save(fig, "fig1_governing")
 
 
 # ---------------------------------------------------------------------------------------------
-# Figure 4. Where barrier-free execution pays.
-#   (a) manuscript table 4 (tab:speed), shared-memory engine, 80/80 runs bit-identical.
-#   (b,c) manuscript table 5 (tab:tcp), two-process TCP engine, 3 repeats, 54/54 bit-identical.
+# Figure 2. Where barrier-free execution pays.
+#   (a) manuscript table 5 (tab:speed), shared-memory engine, 80/80 runs bit-identical.
+#   (b,c) manuscript table 6 (tab:tcp), two-process TCP engine, 3 repeats, 54/54 bit-identical.
 #   Panel (b) is the ratio of the table's medians, so both speed panels share one axis meaning.
 # ---------------------------------------------------------------------------------------------
-def figure4():
+def figure2():
     cores = np.array([4, 8, 16, 32])
     lats = [0, 5, 20, 100, 500]
     sm = {0:   [0.93, 0.90, 0.79, 1.44],
@@ -341,12 +256,10 @@ def figure4():
               fontsize=6.5)
     panel_label(ax, "(c)", dx=-0.34)
 
-    save(fig, "fig4_execution")
+    save(fig, "fig2_execution")
 
 
 if __name__ == "__main__":
     figure1()
     figure2()
-    figure3()
-    figure4()
     print("\nfigures in " + os.path.relpath(OUT))
