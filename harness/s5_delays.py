@@ -30,7 +30,7 @@ if DATASET == "ssc":
     NOUT = 35                                     # Spiking Speech Commands has 35 classes
 
 dev = "cuda"
-H = int(os.environ.get("H", "512")); CPC = 32; NPC = H // CPC
+H = int(os.environ.get("H", "512")); CPC = int(os.environ.get("CPC", "32")); NPC = H // CPC
 TAUM = float(os.environ.get("TAUM", "2.0"))
 BETA = float(np.exp(-1.0 / TAUM)); THETA = 1.0
 BETA_OUT = float(np.exp(-0.5))
@@ -39,7 +39,7 @@ DELAYS = sorted({int(d) for d in os.environ.get("DELAYS", "1").split(",")})
 assert min(DELAYS) >= 1, "delays must be >= 1 step"
 DMAX = max(DELAYS)
 LAM = float(os.environ.get("CERT_LAMBDA", "0")); SEED = int(os.environ.get("SEED", "1"))
-EPOCHS = int(os.environ.get("EPOCHS", "40")); K = 4
+EPOCHS = int(os.environ.get("EPOCHS", "40")); K = int(os.environ.get("K", "4"))
 LOCAL = os.environ.get("LOCAL", "0") == "1"; LOCAL_R = int(os.environ.get("LOCAL_R", "1"))
 AUG = int(os.environ.get("AUG", "1"))
 TEST = os.environ.get("TEST", "0") == "1"; TAG = os.environ.get("TAG", "cfg")
@@ -265,8 +265,13 @@ def main():
         print("INIT load:", m.load_state_dict(sd, strict=False), flush=True)
     opt = torch.optim.AdamW(m.parameters(), LR, weight_decay=1e-4)
     steps = EPOCHS * ((len(ytr) + 127) // 128)
-    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, steps)
+    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, max(1, steps))
     t0 = time.time()
+    def valacc():
+        if vsel is None: return evaluate(m, Xva, yva)
+        return float((np.concatenate([m(torch.tensor(batch(Xva, vsel[i:i + 256]), dtype=torch.float32,
+                    device=dev))[0].argmax(1).cpu().numpy() for i in range(0, len(vsel), 256)]) == yva).mean())
+
     for ep in range(EPOCHS):
         perm = tidx[np.random.permutation(len(tidx))]
         for b in range(0, len(perm), 128):
@@ -279,10 +284,6 @@ def main():
                 lam_eff = LAM * (min(1.0, (ep + 1) / max(1, EPOCHS // 2)) if RAMP else 1.0)
                 loss = loss + lam_eff * cert_penalty(m, V, S, iext)
             opt.zero_grad(); loss.backward(); opt.step(); sched.step()
-        def valacc():
-            if vsel is None: return evaluate(m, Xva, yva)
-            return float((np.concatenate([m(torch.tensor(batch(Xva, vsel[i:i + 256]), dtype=torch.float32,
-                        device=dev))[0].argmax(1).cpu().numpy() for i in range(0, len(vsel), 256)]) == yva).mean())
         if ep % 5 == 4 or ep == EPOCHS - 1:
             print(f"epoch {ep} val acc {valacc():.4f} ({(time.time()-t0)/(ep+1):.0f}s/epoch)", flush=True)
     acc_val = valacc()
@@ -293,7 +294,7 @@ def main():
         cert = certify(m, batch(Xva, vsel[:300]))
     acc = evaluate(m, Xte, yte) if TEST else float('nan')
     cert_test = certify(m, batch(Xte, np.random.default_rng(1).choice(len(yte), 300, replace=False))) if TEST else {}
-    res = dict(tag=TAG, dataset=DATASET, seed=SEED, epochs=EPOCHS, H=H, taum=TAUM, local=int(LOCAL),
+    res = dict(tag=TAG, dataset=DATASET, seed=SEED, epochs=EPOCHS, H=H, K=K, cpc=CPC, taum=TAUM, local=int(LOCAL),
                local_r=LOCAL_R, aug=AUG, lam=LAM, acc_val=float(acc_val), acc=float(acc),
                test=({'acc': float(acc), **{('test_' + k): v for k, v in cert_test.items()}} if TEST else None),
                **cert)

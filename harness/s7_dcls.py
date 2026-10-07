@@ -44,7 +44,7 @@ if DATASET == "ssc":
     NOUT = 35
 
 dev = "cuda"
-H = int(os.environ.get("H", "512")); CPC = 32; NPC = H // CPC
+H = int(os.environ.get("H", "512")); CPC = int(os.environ.get("CPC", "32")); NPC = H // CPC
 TAUM = float(os.environ.get("TAUM", "2.0"))
 BETA = float(np.exp(-1.0 / TAUM)); THETA = 1.0
 BETA_OUT = float(np.exp(-0.5))
@@ -54,7 +54,7 @@ DMAX = int(os.environ.get("DMAX", "8"))
 assert 1 <= DMIN <= DMAX
 DEL = list(range(DMIN, DMAX + 1))
 LAM = float(os.environ.get("CERT_LAMBDA", "0")); SEED = int(os.environ.get("SEED", "1"))
-EPOCHS = int(os.environ.get("EPOCHS", "150")); K = 4
+EPOCHS = int(os.environ.get("EPOCHS", "150")); K = int(os.environ.get("K", "4"))
 AUG = int(os.environ.get("AUG", "2"))
 TEST = os.environ.get("TEST", "0") == "1"; TAG = os.environ.get("TAG", "cfg")
 VALSPK = [int(s) for s in os.environ.get("VALSPK", "3,6").split(",")]
@@ -260,7 +260,7 @@ def main():
         sd = {k: v for k, v in torch.load(os.path.expanduser(INIT), map_location=dev).items() if k != 'quiet'}
         print("INIT load:", m.load_state_dict(sd, strict=False), flush=True)
     opt = torch.optim.AdamW(m.parameters(), LR, weight_decay=1e-4)
-    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, EPOCHS * ((len(tidx) + 127) // 128))
+    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, max(1, EPOCHS * ((len(tidx) + 127) // 128)))
     t0 = time.time()
 
     def valacc():
@@ -292,7 +292,7 @@ def main():
         cert = certify(m, batch(Xva, vsel[:300]))
     acc = evaluate(m, Xte, yte) if TEST else float('nan')
     cert_test = certify(m, batch(Xte, np.random.default_rng(1).choice(len(yte), 300, replace=False))) if TEST else {}
-    res = dict(tag=TAG, dataset=DATASET, seed=SEED, epochs=EPOCHS, H=H, taum=TAUM, aug=AUG, lam=LAM,
+    res = dict(tag=TAG, dataset=DATASET, seed=SEED, epochs=EPOCHS, H=H, K=K, cpc=CPC, taum=TAUM, aug=AUG, lam=LAM,
                dmin=DMIN, dmax=DMAX, acc_val=float(acc_val), acc=float(acc),
                test=({'acc': float(acc), **{('test_' + k): v for k, v in cert_test.items()}} if TEST else None),
                **cert)

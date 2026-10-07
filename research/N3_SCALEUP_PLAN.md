@@ -1795,3 +1795,49 @@ distributed case is **unproven and, as measured, negative**.
 **What this does NOT affect:** the certification result itself. Free/beneficial certification on SHD and
 SSC is a training-and-architecture result measured against matched controls, entirely independent of
 execution speed.
+
+## RECERT-001 — RESULT (2026-10-07): the horizon is forced by the delay set, and core size costs opportunity rather than tightness
+
+Re-certification of **existing checkpoints** (EPOCHS=0, identical weights throughout); only the
+certificate horizon K and the neurons-per-core partition CPC change. 18 runs, **0 violations**.
+
+### (a) Why K = 4 is not arbitrary
+
+| horizon | binding taps (d < K) | R_short | certified | % oracle |
+|---|---|---|---|---|
+| K = 2 | **none** | **0.000** | 63.85% | **99.2%** |
+| K = 4 | [2] | 0.275 | 56.28% | 94.9% |
+| K = 8 | [2, 4] | **6.307** | **0.13%** | 0.2% |
+
+With delays {2, 4, 8}, a horizon of 4 binds only the d = 2 tap. At K = 8 the **d = 4 tap enters the
+binding set** and R_short jumps 23-fold, collapsing certification to 0.13%. This yields a sharper form
+of the design rule: **the usable certificate horizon is bounded by the second-smallest synaptic delay.**
+K = 4 is therefore the largest horizon this delay set supports, and at K = 2 the binding set is empty
+so R_short is exactly zero and certification is free by construction (99.2% of oracle).
+
+### (b) Core size costs opportunity, not certificate tightness
+
+| neurons per core | certified | % of oracle | oracle |
+|---|---|---|---|
+| 32 | 56.28% | 94.9% | 59.3% |
+| 64 | 47.53% | 94.2% | 50.4% |
+| 128 | 39.92% | **94.7%** | 42.1% |
+
+Absolute certification falls as cores grow, but the **fraction of the achievable maximum stays flat at
+~95%**. The decline is therefore entirely attributable to larger cores being *actually* silent less
+often (oracle 59.3% -> 42.1%), **not** to the certificate becoming looser. This answers the realism
+objection directly: at 128 neurons per core the method still certifies 39.9% of core-steps, and it
+continues to capture ~95% of whatever whole-core silence exists. Extrapolation to Loihi-class cores
+(~1k neurons) should expect the *opportunity* to shrink while the method's efficiency holds.
+
+### (c) The learnable-delay model tracks the penalised model at every setting
+Without any certificate penalty it reaches 98.9% of oracle at K = 2, **97.4% at K = 4** (above the
+penalised model's 94.9%) and 97.6% at CPC = 128, confirming section DCLS-001 across the whole grid
+rather than at a single operating point.
+
+### Code change and a bug found
+`K` and `CPC` are now environment variables in `s5_delays.py` and `s7_dcls.py`, and `EPOCHS=0` is a
+legal evaluate-only mode (the LR schedule is guarded against T_max = 0). Doing this exposed a latent
+bug: `valacc()` was defined *inside* the epoch loop in `s5_delays.py`, so with `EPOCHS=0` the loop body
+never ran and the name was unbound. Hoisted above the loop. `s7_dcls.py` was already correct, which is
+why its nine runs succeeded while the first nine failed.
