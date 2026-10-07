@@ -1,10 +1,16 @@
 # Short-Delay Excitatory Drive Governs Provable Silence in Recurrent Spiking Networks
 
-**Authors:** [AUTHOR NAME(S)]
+**Authors:** [FIRST AUTHOR]^1,*^, [SECOND AUTHOR]^2^ and [THIRD AUTHOR]^1^
 
-**Affiliation:** [AFFILIATION]
+^1^ [DEPARTMENT, INSTITUTION, CITY, COUNTRY]
 
-**Corresponding author:** [EMAIL]
+^2^ [SECOND INSTITUTION, CITY, COUNTRY]
+
+^*^ Author to whom any correspondence should be addressed.
+
+**E-mail:** [CORRESPONDING EMAIL]
+
+*Note: NCE displays ORCID iDs; supply one per author at submission.*
 
 ## Abstract
 
@@ -40,6 +46,8 @@ Our contributions are:
 **Bounding spiking network dynamics.** Interval-propagation bounds on spiking network state have been used to certify robustness to input perturbation [11]. We use the same family of bounds for a different property — future silence over a horizon under recurrent input — and for a different purpose, namely making a runtime scheduling decision safe. The technical difference is that the quantity to be bounded is a temporal reach rather than an output margin, which is what gives rise to the delay decomposition in section 3.3.
 
 **Synaptic delays in trained spiking networks.** Delays are an established route to accuracy on temporal benchmarks; methods that learn a delay per synapse reach the strongest reported results on the Heidelberg datasets [12]. Our interest in delays is different: they change *what the certificate must bound*. We find they also make networks certifiable without a dedicated objective, which to our knowledge has not been reported.
+
+**Event-driven reformulation of sparse spiking workloads.** A complementary line of work rewrites time-driven spiking computations in event-driven form, so that work scales with activity rather than with time steps; a recent example reformulates eligibility propagation this way and reports exact reductions in computation for sparse networks, with a reference implementation in NEST [16]. That approach reduces the work done *given* the dependency structure; ours changes the dependency structure itself, by making a neighbour's silence provable so that the dependency need not be waited on at all. The two are orthogonal and could compose.
 
 **Activity sparsity is not provability.** Firing-rate penalties are the standard route to sparse spiking activity. We find that sparsity and certifiability are close to orthogonal: the networks with the lowest firing rates in our sweeps are not the certifiable ones, and a strong rate penalty produces sparse networks that certify under 1% of core-steps. The quantity that matters is the worst-case drive through short delays, not the mean activity.
 
@@ -303,5 +311,7 @@ All training, certification and execution code, the complete experimental record
 [13] B Cramer, Y Stradmann, J Schemmel and F Zenke, "The Heidelberg spiking data sets for the systematic evaluation of spiking neural networks", *IEEE Trans. Neural Netw. Learn. Syst.* **33** 2744 (2022).
 
 [14] G Bellec, D Salaj, A Subramoney, R Legenstein and W Maass, "Long short-term memory and learning-to-learn in networks of spiking neurons", *Advances in Neural Information Processing Systems* **31** (2018).
+
+[16] A Korcsak-Gorzo, J A Espinoza-Valverde, J Stapmanns, H E Plesser, D Dahmen, M Bolten, S J van Albada and M Diesmann, "Event-driven eligibility propagation in large sparse networks", *Neuromorph. Comput. Eng.* **6** 034024 (2026).
 
 [15] B Yin, F Corradi and S M Bohté, "Accurate and efficient time-domain classification with adaptive spiking recurrent neural networks", *Nat. Mach. Intell.* **3** 905 (2021).
