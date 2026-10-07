@@ -2100,3 +2100,27 @@ Three seeds, control and constrained, test set touched once per run.
 
 **Bars carry over unchanged from DVS-001:** 0 soundness violations (absolute); certified silence
 >= 85% of oracle; accuracy cost <= 3 points against the matched control. Reported either way.
+
+### Infrastructure incident 2026-10-07 17:30 — host disk exhaustion, full recovery
+
+**Cause (mine).** `df` inside WSL reported 924 GB free; that is the ext4 VHD's *virtual* capacity,
+not the host drive behind it, which was at **0 bytes**. Writing ~3.7 GB of N-MNIST into the WSL
+filesystem stopped the dynamically-expanding VHD from growing, ext4 took I/O errors and remounted
+`emergency_ro`, running training died, and the distro then would not boot
+(`Wsl/Service/CreateInstance/E_FAIL`).
+
+**Recovery.** `wsl --manage Ubuntu --move "G:\WSL"` relocated the 37.8 GB VHD from the full drive to
+one with 487 GB free. Non-destructive: **102 checkpoints, 154 logs, all datasets and the venv
+survived**. Lost: the three GOVERN-002 runs in flight (m4_s2, t3c_s2, dcc_s2), all re-runnable, and
+`nmnist_train.h5`, whose write was still buffered and reached disk truncated at 570 of 2101 MB.
+
+**Two rules adopted.**
+1. Check the **host** drive before writing data, never `df` inside the VM.
+2. Verify a derived artifact by reopening it and reading its last record before deleting the source.
+   The converter printed "wrote 2101 MB" and a 200-record spot check passed while the file was in
+   fact truncated; the raw data was deleted on the strength of that and had to be re-downloaded.
+
+**Also measured and acted on.** Three concurrent training processes ran at 10-15 s/epoch against
+4 s/epoch solo, so aggregate throughput was unchanged while the critical path lengthened. GPU
+utilisation rose 25% -> 82% but the workload is kernel-launch bound, so that headroom is not usable.
+All remaining experiments run **serially**, which is also the lower-risk configuration.
