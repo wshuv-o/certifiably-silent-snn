@@ -2124,3 +2124,54 @@ survived**. Lost: the three GOVERN-002 runs in flight (m4_s2, t3c_s2, dcc_s2), a
 4 s/epoch solo, so aggregate throughput was unchanged while the critical path lengthened. GPU
 utilisation rose 25% -> 82% but the workload is kernel-launch bound, so that headroom is not usable.
 All remaining experiments run **serially**, which is also the lower-risk configuration.
+
+### SCALE-LOCAL-001 RESULT — 2026-10-07: all bars PASS, the size limitation was misattributed
+
+7 runs, 0 soundness violations. Validation, 150 epochs, seed 1, ring fan-in = 96 at every width.
+
+| connectivity | H | acc | R_short | certified | % oracle |
+|---|---|---|---|---|---|
+| dense | 2048 | 74.25 | **25.007** | **0.00%** | 0.2% |
+| local, control | 512 | 84.09 | 1.221 | 20.44% | 34.6% |
+| local, control | 1024 | 83.92 | 1.006 | 52.69% | 84.9% |
+| local, control | 2048 | 83.75 | 0.877 | 61.07% | 90.0% |
+| local, constrained | 512 | 86.23 | 0.260 | 56.99% | **97.4%** |
+| local, constrained | 1024 | 85.12 | 0.294 | 59.25% | **96.3%** |
+| local, constrained | 2048 | **86.48** | 0.297 | 66.36% | **98.5%** |
+
+**Bar 1 PASS** (the decisive one): constrained certifies **98.5%** of oracle at H=2048 against a
+required 90%. **Bar 2 PASS:** accuracy 86.48 against the dense H=512 control's 86.80, a cost of
+0.32 points against a permitted 3. **Bar 3 PASS:** 0 violations.
+
+**Prediction 1 MISSED, favourably.** Control R_short was declared to stay within +/-25% of its
+H=512 value; it is -17.6% at H=1024 and **-28.2% at H=2048**, outside the declared band in the
+direction of lower drive. Reported as declared-and-missed rather than widening the band after the
+fact.
+
+**What it overturns.** The manuscript's "accuracy cost grows with size" limitation rested on the
+H=1024 dense failure and attributed it to width. The attribution was wrong. R_i sums over fan-in,
+which dense recurrence ties to H; hold fan-in at 96 and R_short *falls* as H quadruples
+(1.221 -> 0.877) while dense at the same H=2048 reaches **25.007**, sixty-four times the budget.
+Certification also *improves* with width at fixed fan-in (34.6% -> 90.0% for the control), and at
+H=2048 the **unconstrained control alone** reaches 90.0% of oracle, extending the architectural
+result from the delay distribution to the connectivity structure.
+
+### NMNIST-001 RESULT — 2026-10-07: all bars PASS, the mechanism is not specific to audio
+
+6 runs, 3 seeds, recipe transferred unchanged, 0 soundness violations.
+
+| arm | test acc | certified | % oracle | R^(2) | total R |
+|---|---|---|---|---|---|
+| control | 98.55 | 21.53% | 29.2% | 3.75 | 11.82 |
+| constrained | **98.64** | **75.10%** | **97.7%** | **0.13** | 10.16 |
+
+**Bars: 0 violations PASS; >= 85% of oracle -> 97.7% PASS; cost <= 3 points -> +0.08 PASS.**
+
+The reallocation signature reproduces on event-camera vision: the binding d = 2 tap falls
+**96.5%** (3.75 -> 0.13, landing at 0.13 on all three seeds) while total excitatory mass falls only
+14%. The same signature now holds on spoken digits, spoken commands and vision, so the generality
+claim is no longer confined to one modality or one generating pipeline.
+
+**Caveat retained from the amendment:** N-MNIST has simpler temporal structure than DVS128 Gesture,
+which was the intended target and is not obtainable. This tests a change of modality and input
+statistics, not a harder temporal task.

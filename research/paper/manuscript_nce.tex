@@ -30,7 +30,7 @@
 \keywords{spiking neural networks, neuromorphic computing, synchronisation, synaptic delays, formal guarantees, parallel discrete-event simulation}
 
 \begin{abstract}
-Cortical neurons are silent most of the time, and the axonal delays that connect them span more than two orders of magnitude. Multi-core neuromorphic systems inherit the sparse activity but not its benefit: a core may skip waiting for a neighbour only when that neighbour's silence is established \emph{in advance}, and observed silence carries no such guarantee. We show that provable silence in a recurrent spiking network is governed by where excitation sits in time. Writing the certificate for a horizon of $K$ steps makes the dependence explicit: a synapse of delay $d$ supplies the step under test from a time step that is already computed whenever $d \geq K$, so only synapses with $d < K$ require a worst-case bound. The binding quantity is $R_{\mathrm{short}}$, the excitatory drive carried by short delays, and not total recurrent excitation. Across six architectures spanning a thirty-fold range of $R_{\mathrm{short}}$, measured over three seeds each, certified silence separates without overlap: every network below $R_{\mathrm{short}}=1.61$ reaches 95--98\% of the achievable maximum and every network above 4.81 reaches 0--6\%, while the same networks ordered by total excitation show no such separation. Two consequences follow. A network with multi-tap delays can satisfy a given $R_{\mathrm{short}}$ by relocating excitation into longer delays: training with a certificate penalty cuts drive on the binding tap by 94\% while total excitatory mass changes by 1--16\%, and the resulting networks certify 56.0\% of core-steps on the Heidelberg Spiking Digits at an accuracy change of $+0.24$ points against matched controls over three test seeds, and 61.5\% on Spiking Speech Commands at $+3.03$ points over four test seeds with the recipe transferred unchanged. No soundness violation occurred in any run. Because the quantity is a property of the delay distribution, an architecture that already places little mass at short lags is certifiable with no training objective at all: with per-synapse learnable delays the \emph{unconstrained} network certifies 97.4\% of its achievable maximum. Certificates license barrier-free execution that is bit-identical to lock-step, which runs 1.25--1.49$\times$ faster than lookahead-aware handshaking across 32 shared-memory cores, and across two processes pays once per-message latency exceeds roughly $350\,\mu$s.
+Cortical neurons are silent most of the time, and the axonal delays that connect them span more than two orders of magnitude. Multi-core neuromorphic systems inherit the sparse activity but not its benefit: a core may skip waiting for a neighbour only when that neighbour's silence is established \emph{in advance}, and observed silence carries no such guarantee. We show that provable silence in a recurrent spiking network is governed by where excitation sits in time. Writing the certificate for a horizon of $K$ steps makes the dependence explicit: a synapse of delay $d$ supplies the step under test from a time step that is already computed whenever $d \geq K$, so only synapses with $d < K$ require a worst-case bound. The binding quantity is $R_{\mathrm{short}}$, the excitatory drive carried by short delays, and not total recurrent excitation. Across six architectures spanning a thirty-fold range of $R_{\mathrm{short}}$, measured over three seeds each, certified silence separates without overlap: every network below $R_{\mathrm{short}}=1.61$ reaches 95--98\% of the achievable maximum and every network above 4.81 reaches 0--6\%, while the same networks ordered by total excitation show no such separation. Two consequences follow. A network with multi-tap delays can satisfy a given $R_{\mathrm{short}}$ by relocating excitation into longer delays: training with a certificate penalty cuts drive on the binding tap by 94\% while total excitatory mass changes by 1--16\%, and the resulting networks certify 56.0\% of core-steps on the Heidelberg Spiking Digits at an accuracy change of $+0.24$ points against matched controls over three test seeds, and 61.5\% on Spiking Speech Commands at $+3.03$ points over four test seeds with the recipe transferred unchanged. No soundness violation occurred in any run. Because the quantity is a property of the delay distribution, an architecture that already places little mass at short lags is certifiable with no training objective at all: with per-synapse learnable delays the \emph{unconstrained} network certifies 97.4\% of its achievable maximum. The property is governed by fan-in rather than by network size: with fan-in held at 96 inputs, certification holds from 512 to 2048 neurons and improves with width, while dense recurrence at 2048 neurons drives $R_{\mathrm{short}}$ to 25 and certifies nothing. The same mechanism appears on a third dataset in a different modality, event-camera vision, where the binding tap falls by 96\% and 97.7\% of the achievable maximum is certified at an accuracy change of $+0.08$ points. Certificates license barrier-free execution that is bit-identical to lock-step, which runs 1.25--1.49$\times$ faster than lookahead-aware handshaking across 32 shared-memory cores, and across two processes pays once per-message latency exceeds roughly $350\,\mu$s.
 \end{abstract}
 
 \section{Introduction}
@@ -53,6 +53,8 @@ Our contributions are:
 \item \textbf{Reallocation of excitation in time.} Training reduces drive on the binding short-delay tap by 94\% while total excitatory mass changes by 1--16\%, with the same signature on both datasets and every seed (section~\ref{sec:mechanism}).
 \item \textbf{Certifiability as a property of the delay distribution.} With per-synapse learnable delays the \emph{unconstrained} network certifies 97.4\% of its achievable maximum; a certificate penalty is required only where the architecture does not already supply the margin (section~\ref{sec:architectural}).
 \item \textbf{Exact barrier-free execution and its operating regime.} Certificates permit execution that is bit-identical to lock-step. In a shared-memory engine this runs 1.25--1.49$\times$ faster than lookahead-aware local handshaking at 32 cores and slower below 16; across two processes it runs 1.13--1.18$\times$ faster once per-message latency exceeds roughly 350\,$\mu$s and slower below it, a boundary set by the waiting it removes against the computation it adds (section~\ref{sec:execution}).
+\item \textbf{Scaling with bounded fan-in.} Certifiability is governed by fan-in rather than by neuron count: holding fan-in at 96 inputs, certified silence stays at 96--98\% of the achievable maximum from 512 to 2048 neurons, while dense recurrence at 2048 certifies nothing (section~\ref{sec:scale}).
+\item \textbf{Generality across modality.} On event-camera vision the same reallocation occurs --- the binding tap falls 96\% --- and 97.7\% of the achievable maximum is certified at an accuracy change of $+0.08$ points over three seeds (section~\ref{sec:nmnist}).
 \item \textbf{Boundary conditions.} Activity-cap bounds, faster membrane leak, restricted fan-in, increased width, and learnable per-synapse delays each leave the accuracy--certifiability frontier unimproved, which delimits where the governing relation can be acted on (section~\ref{sec:negative}).
 \end{enumerate}
 
@@ -159,6 +161,44 @@ All six architectures of table~\ref{tab:governing} are trained at a common budge
 \subsection{Certification measurement}
 
 We report the \textbf{certified core fraction}: the proportion of core-steps for which a whole core is provably silent over the next $K=4$ steps. The natural ceiling is the \textbf{oracle fraction}, the proportion of core-steps in which the core is \emph{actually} silent over the same window; a certified fraction cannot exceed it. We therefore report certification both absolutely and as a percentage of oracle. A \textbf{violation} is a certified window in which some neuron does in fact fire; violations are counted exhaustively on every evaluation and any non-zero count invalidates the corresponding result.
+
+\subsection{Certifiability is set by fan-in, not by width}
+\label{sec:scale}
+
+$R_i$ sums the positive recurrent weights into neuron $i$, so it scales with the number of inputs that neuron receives. Under dense recurrence that number is $H$, and $R$ therefore grows with width: the control's mean rises from 4.78 at $H=512$ to 8.72 at $H=1024$ against a budget fixed at 0.3935 by the neuron model. This predicts that certifiability degrades with width under dense recurrence and is \emph{independent} of width whenever fan-in is bounded. We test that with a ring connectivity in which each core reads only its immediate neighbours, holding fan-in at $(2r+1)C = 96$ neurons at every width.
+
+\begin{table}
+\caption{\label{tab:scale}Width scaling at fixed fan-in. Ring-local connectivity with radius one core holds fan-in at 96 neurons for every $H$; the dense row at $H=2048$ has fan-in 2048. Speaker-disjoint validation, 150 epochs, seed 1. No run produced a soundness violation.}
+\centering
+\begin{tabular}{llrrrr}
+\hline
+connectivity & $H$ & accuracy & $R_{\mathrm{short}}$ & certified & \% oracle \\
+\hline
+dense                & 2048 & 74.25 & \textbf{25.007} & \textbf{0.00\%}  & 0.2\% \\
+\hline
+local, control       &  512 & 84.09 & 1.221 & 20.44\% & 34.6\% \\
+local, control       & 1024 & 83.92 & 1.006 & 52.69\% & 84.9\% \\
+local, control       & 2048 & 83.75 & 0.877 & 61.07\% & 90.0\% \\
+\hline
+local, constrained   &  512 & 86.23 & 0.260 & 56.99\% & \textbf{97.4\%} \\
+local, constrained   & 1024 & 85.12 & 0.294 & 59.25\% & \textbf{96.3\%} \\
+local, constrained   & 2048 & \textbf{86.48} & 0.297 & 66.36\% & \textbf{98.5\%} \\
+\hline
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:scale} separates the two. Under bounded fan-in, $R_{\mathrm{short}}$ does not grow with width --- it falls, from 1.221 to 0.877 as $H$ quadruples --- and certification holds at 96.3--98.5\% of oracle at every width, with accuracy between 85.1 and 86.5. Under dense recurrence at the same $H=2048$, $R_{\mathrm{short}}$ reaches 25.007, sixty-four times the budget, nothing certifies, and accuracy falls to 74.25.
+
+Two further points follow from the control rows. Certification \emph{improves} with width at fixed fan-in, from 34.6\% to 90.0\% of oracle, because wider networks at constant fan-in are quieter. And at $H=2048$ the unconstrained control already reaches 90.0\% of oracle with no certificate penalty applied, which extends the architectural result of section~\ref{sec:architectural} from the delay distribution to the connectivity structure.
+
+The declared prediction that control $R_{\mathrm{short}}$ would stay within $\pm25$\% of its $H=512$ value holds at $H=1024$ ($-17.6$\%) and is missed at $H=2048$ ($-28.2$\%), in the direction of lower drive and therefore easier certification. We report the miss as declared.
+
+\subsection{A third modality}
+\label{sec:nmnist}
+
+The Heidelberg datasets are both audio and share a generating pipeline, so the transfer in section~\ref{sec:ssc} does not test a change of modality. We therefore repeated the procedure on N-MNIST, an event-camera recording of handwritten digits through three saccades, with the recipe transferred unchanged and epochs matched by gradient steps as before. Across three seeds the control certifies 29.2\% of oracle and the constrained networks 97.7\%, at test accuracies of 98.55\% and 98.64\% respectively --- an accuracy change of $+0.08$ points --- with no soundness violation.
+
+The mechanism is the same one. Drive on the binding $d=2$ tap falls from 3.75 to 0.13, a reduction of 96.5\%, while total excitatory mass changes from 11.82 to 10.16, a reduction of 14\%; the binding tap lands at 0.13 on all three seeds. The signature that appears on spoken digits and spoken commands appears unchanged on event-camera vision.
 
 \subsection{Exact multi-core execution}
 \label{sec:engines}
@@ -385,7 +425,7 @@ The regime in which the method works is the one cortex appears to occupy. Certif
 
 \textbf{Latency in the shared-memory engine is emulated}, and no neuromorphic hardware was used. The TCP engine removes the emulation at the cost of supporting only two ranks.
 
-\textbf{Scale.} Experiments use 512 recurrent neurons and up to 32 cores. The core-granularity effect in table~\ref{tab:speed} indicates that systems with far more neurons per core, as in current neuromorphic processors, certify whole cores less often; the regime in which the method pays is many fine-grained cores.
+\textbf{Scale is bounded by fan-in, not by neuron count.} An earlier version of this work reported that certifiability degrades with network size, on the evidence of a failure at $H=1024$ under dense recurrence. Section~\ref{sec:scale} shows that attribution was wrong: the governing quantity scales with fan-in, which dense recurrence ties to $H$, and once fan-in is bounded certification holds to 2048 neurons and improves with width. The correct statement of the limit is therefore architectural rather than numerical --- the method requires bounded fan-in, which is also the regime with the largest measured speed-ups --- and the untested region is large fan-in, not large networks. Execution experiments remain at up to 32 cores, and the core-granularity effect in table~\ref{tab:speed} still indicates that systems with many neurons per core certify whole cores less often.
 
 \textbf{Statistical scope.} Headline results rest on three (SHD) and four (SSC) test seeds. The architecture comparison of table~\ref{tab:governing} rests on three seeds per architecture, all trained at a common budget, and the separation it reports exceeds the seed spread by an order of magnitude; $R_{\mathrm{short}}$ itself reproduces to about $\pm0.01$.
 
