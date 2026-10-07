@@ -188,7 +188,23 @@ datacentre fabric, where microsecond round-trips place the configuration on the 
 break-even depends on certificate computation, which scales with cores per rank.
 
 **Manuscript:** section 5.6 rewritten with a new Table 3 (the latency sweep), plus the contributions
-bullet, design rule (new item 5), Limitations and Conclusion. Compiles clean via Tectonic, 10 pages.
+bullet, design rule (new item 5), Limitations and Conclusion.
+
+**Four figures added (2026-10-07), closing the largest remaining gap.** Built by
+`harness/make_figures.py` from the recorded tables, every value traceable to the run that produced
+it; journal line-art style, vector PDF, Type 42 fonts, greyscale-safe markers.
+1. **Delay decomposition and the horizon** -- the condition `d >= k` evaluated exactly, plus the
+   RECERT-001 horizon sweep.
+2. **R_short governs certifiability** -- six architectures against R_short, and against total
+   excitation as the control showing no relation.
+3. **Reallocation** -- per-tap drive before/after, both datasets, SSC seeds shown individually.
+4. **Execution** -- shared-memory speed-up vs cores, TCP speed-up vs latency with the break-even,
+   and blocked time as the mechanism.
+
+Adding them also brought **two previously unreported results into the text**: the horizon sweep
+(the usable horizon is bounded by the second-smallest delay) and the core-size sweep (32/64/128
+neurons per core certify 56.28/47.53/39.92%, flat at ~95% of oracle). Compiles clean via Tectonic,
+**12 pages**.
 
 **Infrastructure hazard found:** WSL cold-restarts frequently on this machine (`uptime` resets to
 0 min between calls), which silently truncates long loops and **lost a g++ output as a 0-byte

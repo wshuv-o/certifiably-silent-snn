@@ -11,6 +11,7 @@
 \usepackage{lmodern}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\graphicspath{{figs/}}
 
 \begin{document}
 
@@ -159,6 +160,16 @@ Both engines verify spike trains \textbf{bit-for-bit against a single-threaded r
 \subsection{$R_{\mathrm{short}}$ governs certifiability}
 \label{sec:governing}
 
+The decomposition fixes, for a given horizon, exactly which synapses constrain a certificate: a tap of delay $d$ contributes to certificate step $k$ from time step $t+1+k-d$, which is already computed whenever $d \geq k$. Figure~\ref{fig:decomp}(a) evaluates that condition for $\mathcal{D}=\{2,4,8\}$. A horizon of 4 binds the $d=2$ tap alone, and a horizon of 8 brings $d=4$ into the binding set as well.
+
+Re-certifying one set of trained weights at three horizons, with the weights and every other setting held fixed, follows that prediction (figure~\ref{fig:decomp}b,c). At $K=2$ the binding set is empty, $R_{\mathrm{short}}$ is exactly zero, and 99.2\% of the oracle fraction is certified by construction. At $K=4$ only the $d=2$ tap binds, $R_{\mathrm{short}}=0.275$, and certification reaches 94.9\% of oracle. At $K=8$ the $d=4$ tap enters the binding set, $R_{\mathrm{short}}$ rises 23-fold to 6.307, and certification falls to 0.2\% of oracle. The usable horizon is therefore bounded by the \textbf{second-smallest synaptic delay}, which makes $K=4$ the largest horizon this delay set supports. None of the 18 runs produced a soundness violation.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{fig1_decomposition.pdf}
+\caption{\label{fig:decomp}The delay decomposition and the horizon it permits. (a) For $\mathcal{D}=\{2,4,8\}$, a synapse of delay $d$ supplies certificate step $k$ from a time step that is already computed whenever $d \geq k$ (open squares); only $d<k$ must be bounded (filled). The staircase is the line $d=k$ and the dashed rules mark three horizons. (b) Worst-case short-delay drive and (c) certified silence as a fraction of the oracle, for identical weights re-certified at each horizon; labels in (b) name the binding tap set. The collapse at $K=8$ occurs as the $d=4$ tap enters that set.}
+\end{figure}
+
 Table~\ref{tab:governing} compares six networks spanning a twenty-fold range of $R_{\mathrm{short}}$ on the speaker-disjoint validation set.
 
 \begin{table}
@@ -178,7 +189,15 @@ learnable delays, constrained         & 85.63 & 55.63\% & 56.79\% & 98.0\% & 0.3
 \end{tabular}
 \end{table}
 
-Certification is monotone in $R_{\mathrm{short}}$ and unrelated to total excitation: the two networks with the largest total drive (15.27 and 12.76) sit at opposite ends of the certification range, while the pair differing only in $R_{\mathrm{short}}$ (4.968 versus 0.275) differ by a factor of sixteen in certified fraction. Near-oracle certification appears once $R_{\mathrm{short}}$ falls to roughly 1.6, about four times the budget; the finite-horizon certificate is thus more permissive than the unbounded-horizon condition (\ref{eq:budget}), as expected, since it starts from the measured membrane potential.
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{fig2_governing.pdf}
+\caption{\label{fig:governing}Certified silence is governed by short-delay drive (a) and is unrelated to total recurrent excitation (b). Six architectures on the speaker-disjoint validation set: 1, unit delay $\mathcal{D}=\{1\}$; 2, $\mathcal{D}=\{1,2,4,8\}$; 3, $\mathcal{D}=\{2,4,8\}$ control; 4, $\mathcal{D}=\{2,4,8\}$ constrained; 5, learnable delays, control; 6, learnable delays, constrained. Near-oracle certification appears once $R_{\mathrm{short}}$ falls to roughly 1.6 (network 5), which is reached with and without a certificate penalty.}
+\end{figure}
+
+Certification is monotone in $R_{\mathrm{short}}$ and unrelated to total excitation (figure~\ref{fig:governing}): the two networks with the largest total drive (15.27 and 12.76) sit at opposite ends of the certification range, while the pair differing only in $R_{\mathrm{short}}$ (4.968 versus 0.275) differ by a factor of sixteen in certified fraction. Near-oracle certification appears once $R_{\mathrm{short}}$ falls to roughly 1.6, about four times the budget; the finite-horizon certificate is thus more permissive than the unbounded-horizon condition (\ref{eq:budget}), as expected, since it starts from the measured membrane potential.
+
+Core size sets how much silence is available to certify and leaves the certificate's tightness intact. Partitioning the same network into 32, 64 and 128 neurons per core certifies 56.28\%, 47.53\% and 39.92\% of core-steps against oracle fractions of 59.3\%, 50.4\% and 42.1\% --- 94.9\%, 94.2\% and 94.7\% of what is achievable. Larger cores are \emph{actually} silent less often, since certification requires every neuron in a core to be quiet; the gap between certificate and oracle does not widen.
 
 \subsection{Certification at no accuracy cost on SHD}
 \label{sec:shd}
@@ -250,7 +269,13 @@ SSC constrained, seed 4  & \textbf{0.29} & 8.21 & 9.42 & --- \\
 \end{tabular}
 \end{table}
 
-The binding $d=2$ tap falls by 94\% while the unconstrained $d=4$ and $d=8$ taps \emph{grow}, so total excitatory mass changes by only 1\% on SSC and 16\% on SHD. Across four SSC seeds the $d=2$ drive lands at 0.29, 0.29, 0.30 and 0.29, and on three SHD test seeds $R_{\mathrm{short}}$ lands at 0.253, 0.253 and 0.260 --- a reproducibility of about $\pm0.01$ in the governing quantity. The constraint is satisfied by \textbf{relocating} excitation in time, which is why it costs no accuracy.
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{fig3_reallocation.pdf}
+\caption{\label{fig:mech}Constrained training relocates excitatory drive into longer delays. Per-tap worst-case drive before and after constrained fine-tuning on (a) SHD and (b) SSC. The binding $d=2$ tap falls below the excitatory budget while the unconstrained $d=4$ and $d=8$ taps grow, leaving total excitation nearly unchanged. Points in (b) are the four individual SSC test seeds.}
+\end{figure}
+
+The binding $d=2$ tap falls by 94\% while the unconstrained $d=4$ and $d=8$ taps \emph{grow}, so total excitatory mass changes by only 1\% on SSC and 16\% on SHD (figure~\ref{fig:mech}). Across four SSC seeds the $d=2$ drive lands at 0.29, 0.29, 0.30 and 0.29, and on three SHD test seeds $R_{\mathrm{short}}$ lands at 0.253, 0.253 and 0.260 --- a reproducibility of about $\pm0.01$ in the governing quantity. The constraint is satisfied by \textbf{relocating} excitation in time, which is why it costs no accuracy.
 
 A unit-delay network shows what happens without that freedom. No longer-delay tap exists to absorb the mass, and the same budget can be met only by eliminating excitation: positive recurrent weight mass falls from 2385 to 199 (a factor of twelve) and the excitation-to-inhibition ratio from 0.650 to 0.045. Ablating recurrence in that network shows what this costs --- removing recurrent excitation costs 17.8 accuracy points in the control, while removing recurrent inhibition causes runaway firing (rate rising to 71\%) and collapse to chance. Delays give the network somewhere to put its excitation; without them, the constraint must destroy it.
 
@@ -284,9 +309,15 @@ cores & coverage & $L=0$ & $L=5$\,$\mu$s & $L=20$\,$\mu$s & $L=100$\,$\mu$s & $L
 \end{tabular}
 \end{table}
 
-Certificate coverage rises with core count (44.5\% to 71.0\%), because certification requires a \emph{whole} core to be silent and smaller cores qualify more often; the design implication favours fine-grained many-core architectures. The unconstrained control gains nothing at any core count, which attributes the effect to training. Below 32 cores at low latency certificates \textbf{lose}: their computational cost exceeds their benefit once the handshake already holds a free step from $d_{\min}=2$.
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{fig4_execution.pdf}
+\caption{\label{fig:exec}Where barrier-free execution pays. (a) Shared-memory engine: speed-up over lookahead-aware local handshaking against core count, at five emulated latencies; the unconstrained control (crosses, 32 cores) gains nothing at any latency. (b) Two-process TCP engine: speed-up against per-message latency $L$. Certificates cross unity near the break-even latency at which the waiting they remove equals the computation they add. (c) Time the main loop spends blocked on its peer, the quantity a certificate acts on. Omitting frames from certified-silent ranks stalls \emph{longer} than transmitting every step, which is why it is slower in (b) despite sending 28\% fewer frames.}
+\end{figure}
 
-Across two processes the outcome is set by what a message costs. The engine prices messages explicitly: each frame carries its send time and becomes observable to the receiver only after a per-message latency $L$; a frame that is never sent therefore costs nothing, and $L$ prices communication while leaving computation untouched. We also record the time the main loop spends stalled on its peer. Table~\ref{tab:tcp} reports both over a range of $L$ covering loopback to $1.6$\,ms, three repeats each.
+Certificate coverage rises with core count (44.5\% to 71.0\%), because certification requires a \emph{whole} core to be silent and smaller cores qualify more often; the design implication favours fine-grained many-core architectures. The unconstrained control gains nothing at any core count, which attributes the effect to training. Below 32 cores at low latency certificates \textbf{lose} (figure~\ref{fig:exec}a): their computational cost exceeds their benefit once the handshake already holds a free step from $d_{\min}=2$.
+
+Across two processes the outcome is set by what a message costs. The engine prices messages explicitly: each frame carries its send time and becomes observable to the receiver only after a per-message latency $L$; a frame that is never sent therefore costs nothing, and $L$ prices communication while leaving computation untouched. We also record the time the main loop spends stalled on its peer. Table~\ref{tab:tcp} and figure~\ref{fig:exec}(b,c) report both over a range of $L$ covering loopback to $1.6$\,ms, three repeats each.
 
 The measured computation term is independent of $L$ --- $12.9$--$14.6$\,ms for the handshake and $17.5$--$18.8$\,ms with certificates across the whole range --- which confirms that $L$ prices only communication. Certificates cost $5.1$\,ms per sample of computation at 32 cores and remove waiting that grows with $L$: $2.6$, $5.9$, $9.7$ and $18.3$\,ms at $L=200$, $400$, $800$ and $1600\,\mu$s. They pay once the waiting they remove exceeds the computation they add, which places break-even at $L\approx348\,\mu$s and matches the crossover observed between $200$ and $400\,\mu$s. Above it the advantage grows: $1.13\times$ at $L=800\,\mu$s, with min--max ranges over three repeats that do not overlap ($41.1$--$42.6$ against $46.2$--$47.3$\,ms), and $1.18\times$ at $L=1600\,\mu$s. On loopback the handshake wins by $1.35\times$, and the blocked-time measurement says why: it waits only $0.13$\,ms per sample, because $d_{\min}=2$ already supplies the lookahead it needs. Both terms of the comparison can be measured before any execution experiment, so the boundary is predictable.
 
