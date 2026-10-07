@@ -213,12 +213,12 @@ def figure1():
 # =============================================================================================
 def figure2():
     rows = [
-        (1,  0.0, 4.840,  4.84, False),   # unit delay {1}
-        (2,  2.7, 5.983, 12.30, False),   # {1,2,4,8}
-        (3,  6.0, 4.968, 15.27, False),   # {2,4,8} control
-        (4, 94.9, 0.275, 12.76, True),    # {2,4,8} constrained
-        (5, 97.4, 1.595,  7.48, False),   # learnable delays, control
-        (6, 98.0, 0.392,  7.00, True),    # learnable delays, constrained
+        (1,  0.0, 7.905,  7.91, False),   # unit delay {1}
+        (2,  3.8, 8.741, 18.40, False),   # {1,2,4,8}
+        (3,  6.3, 4.813, 14.98, False),   # {2,4,8} control
+        (4, 95.0, 0.261, 12.64, True),    # {2,4,8} constrained
+        (5, 97.0, 1.611,  7.70, False),   # learnable delays, control
+        (6, 97.6, 0.375,  7.22, True),    # learnable delays, constrained
     ]
     pct = np.array([r[1] for r in rows])
     rs = np.array([r[2] for r in rows])
