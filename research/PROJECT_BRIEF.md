@@ -32,6 +32,32 @@ not just 6 processes. At 2-3 processes we saw `CUDA_ERROR_UNKNOWN` *and* a bogus
 faster in expectation. Long jobs are launched detached (`setsid nohup`) because session restarts twice
 killed running work.
 
+## TITLE v5 (adopted 2026-10-07) and NCE manuscript drafted
+
+**Title v5:** *Short-Delay Excitatory Drive Governs Provable Silence in Recurrent Spiking Networks*
+
+Why revised from v4 (*Certifiably Silent Spiking Networks: Bounding Excitation Makes Recurrent SNN
+Silence Provable and Reduces Synchronization in Exact Multi-Core Execution*):
+- **"Bounding Excitation" was wrong.** DCLS-001 showed the *unconstrained* learnable-delay model
+  certifies 55.88% at 97.4% of oracle. The governing factor is not how much excitation there is but
+  **which delays carry it** -- R_short, the drive through synapses with delay below the horizon.
+- **"Reduces Synchronization" overclaimed.** That is a shared-memory many-core result (1.25-1.49x at
+  32 cores); the real two-process TCP configuration was **1.37x slower**. It cannot sit in the title.
+- v5 names the governing quantity, which is the paper's actual contribution and what the NCE
+  readership will judge.
+
+**Target venue: Neuromorphic Computing and Engineering (IOP Publishing).** Chosen over Neural Networks
+/ Neurocomputing because that readership judges the execution contribution rather than benchmark
+accuracy, treats emulated and simulated execution as normal, and values exactness guarantees. Quartile
+to be verified on Scimago/JCR before submission.
+
+**Manuscript drafted:** `research/paper/manuscript_nce.md` (source), `manuscript_nce.docx` (built),
+`manuscript_nce.tex` (iopart format). **The IOP template is NOT on this machine** -- only IEEEtran.cls
+and an Elsevier kit were found, and no TeX distribution is installed, so the .tex has **not been
+compiled**. It needs `iopart.cls` from IOP's author site, or Overleaf's IOP template. Placeholders
+remain for authors, affiliation, email, acknowledgements, repository URL and the AI-use declaration,
+and twelve references are marked [verify].
+
 ## STATUS 2026-10-07 05:40 — CONFIRMED on test with fresh seeds AND out-of-sample. Morning summary: `research/paper/README_MORNING_2.md`
 
 **All overnight work complete.** The 03:20 status below was seed-1 validation; it is now confirmed.
