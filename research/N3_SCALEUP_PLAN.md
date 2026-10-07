@@ -1969,3 +1969,46 @@ execution experiment, so the boundary is predictable rather than empirical.
 
 **Status of message skipping: closed, negative.** Sound and it does cut frames 1.39x, but it is
 slower than transmitting every step at every latency tested. Not pursued further.
+
+## GOVERN-002 — pre-registered 2026-10-07, before any run
+
+**Defect found in table 1 (the governing relation).** Inspecting the source logs shows the six rows
+were not trained at a common budget:
+
+| row | tag | epochs | aug | acc_val | certified | R_short |
+|---|---|---|---|---|---|---|
+| unit delay {1} | D0_d1 | **40** | **1** | 75.19 | 0.00% | 4.840 |
+| {1,2,4,8} | D1_d1248 | **40** | **1** | 81.61 | 1.63% | 5.983 |
+| {2,4,8} control | E3_mindelay2_long | 150 | 2 | 87.25 | 3.54% | 4.968 |
+| {2,4,8} constrained | F2_cert10 | 150 | 2 | 87.85 | 56.28% | 0.275 |
+| learnable control | DC1_ctrl | 150 | 2 | 85.54 | 55.88% | 1.595 |
+| learnable constrained | DC1_cert | 150 | 2 | 85.63 | 55.63% | 0.392 |
+
+The two rows with the highest R_short are also the two trained for a quarter as long with weaker
+augmentation. **As it stands the table confounds delay structure with training budget**, and the
+obvious referee objection -- "the unit-delay network certifies nothing because it is undertrained"
+-- cannot be answered from the data. Every row is also a single seed.
+
+**Correction.** Retrain every architecture at the common budget (150 epochs, AUG=2) and on seeds
+1-3, then rebuild the table as mean and range over seeds. A matched {1,2,4,8} run already exists
+(`D2_d1248_long`: 150 epochs, AUG=2, acc 83.49, certified 1.36%, R_short 9.333) and replaces the
+40-epoch row directly.
+
+**Prediction.** The monotone relation between R_short and certified fraction survives the
+correction. Specifically, the unit-delay network at the full budget reaches higher accuracy and
+still certifies ~0% of core-steps, because its R_short remains an order of magnitude above the
+excitatory budget of 0.3935 and no longer-delay tap exists to absorb the mass.
+
+**Pre-registered bars.**
+1. Unit delay at 150 epochs AUG=2 certifies **< 10% of oracle** on all three seeds. Above that, the
+   relation is confounded with training budget and the claim must be weakened accordingly.
+2. The rank order of the six architectures by certified fraction is unchanged by the correction.
+3. Reported as mean and range over 3 seeds; no row may be dropped after the fact.
+
+**Falsification.** If the unit-delay or {1,2,4,8} networks certify substantially once trained to the
+full budget, then short-delay drive is not what governs certifiability and the paper's central claim
+fails. This is the experiment most able to break the result, which is why it is being run.
+
+**Runs.** 13 new: unit delay seeds 1-3; and seeds 2-3 for {1,2,4,8}, {2,4,8} control, {2,4,8}
+constrained, learnable control, learnable constrained. Constrained arms fine-tune from the matched
+control of the same seed. Serial, ~12.5 min each, ~2.7 h total.
