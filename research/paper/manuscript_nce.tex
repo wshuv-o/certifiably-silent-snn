@@ -13,6 +13,12 @@
 %
 \documentclass[12pt]{iopart}
 \usepackage{graphicx}
+% iopart already defines equation*/eqnarray*; undefine them before amsmath to avoid
+% "LaTeX Error: Command \equation* already defined."
+\expandafter\let\csname equation*\endcsname\relax
+\expandafter\let\csname endequation*\endcsname\relax
+\expandafter\let\csname eqnarray*\endcsname\relax
+\expandafter\let\csname endeqnarray*\endcsname\relax
 \usepackage{amsmath}
 \usepackage{amssymb}
 
@@ -37,7 +43,7 @@ Multi-core neuromorphic systems advance in discrete time steps, and before a cor
 \vspace{2pc}
 \noindent{\it Keywords}: spiking neural networks, neuromorphic computing, synchronisation, synaptic delays, formal guarantees, parallel discrete-event simulation
 
-\submitto{\NCE}
+\submitto{Neuromorphic Computing and Engineering}
 
 \maketitle
 

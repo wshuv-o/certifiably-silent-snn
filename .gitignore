@@ -10,3 +10,9 @@ __pycache__/
 results/engines_raw/
 # Word/Office lock files
 ~$*
+# LaTeX build artefacts
+*.aux
+*.out
+*.fls
+*.fdb_latexmk
+tec_out.txt
