@@ -20,8 +20,14 @@
 
 \title[Short-delay excitatory drive governs provable silence]{Short-Delay Excitatory Drive Governs Provable Silence in Recurrent Spiking Networks}
 
-\author{[AUTHOR NAME(S)]$^1$}
+% IOP style: superscript numerals keyed to a numbered \address list, with the corresponding author
+% marked $^*$ and declared below. NCE displays ORCID iDs, so supply one per author at submission.
+\author{[FIRST AUTHOR]$^{1,*}$, [SECOND AUTHOR]$^{2}$ and [THIRD AUTHOR]$^{1}$}
+
 \address{$^1$ [DEPARTMENT, INSTITUTION, CITY, COUNTRY]}
+\address{$^2$ [SECOND INSTITUTION, CITY, COUNTRY]}
+\address{$^*$ Author to whom any correspondence should be addressed.}
+
 \ead{[CORRESPONDING EMAIL]}
 
 \begin{abstract}
@@ -65,6 +71,14 @@ Our contributions are:
 \paragraph{Bounding spiking network dynamics.} Interval-propagation bounds on spiking network state have been used to certify robustness to input perturbation \cite{certsnn}. We use the same family of bounds for a different property --- future silence over a horizon under recurrent input --- and for a different purpose, namely making a runtime scheduling decision safe. The technical difference is that the quantity to be bounded is a temporal reach rather than an output margin, which is what gives rise to the delay decomposition in section~\ref{sec:decomposition}.
 
 \paragraph{Synaptic delays in trained spiking networks.} Delays are an established route to accuracy on temporal benchmarks; methods that learn a delay per synapse reach the strongest reported results on the Heidelberg datasets \cite{dcls}. Our interest in delays is different: they change \emph{what the certificate must bound}. We find they also make networks certifiable without a dedicated objective, which to our knowledge has not been reported.
+
+\paragraph{Event-driven reformulation of sparse spiking workloads.} A complementary line of work rewrites
+time-driven spiking computations in event-driven form, so that work scales with activity rather than with
+time steps; a recent example reformulates eligibility propagation this way and reports exact reductions in
+computation for sparse networks, with a reference implementation in NEST \cite{eprop}. That approach
+reduces the work done \emph{given} the dependency structure; ours changes the dependency structure itself,
+by making a neighbour's silence provable so that the dependency need not be waited on at all. The two are
+orthogonal and could compose.
 
 \paragraph{Activity sparsity is not provability.} Firing-rate penalties are the standard route to sparse spiking activity. We find that sparsity and certifiability are close to orthogonal: the networks with the lowest firing rates in our sweeps are not the certifiable ones, and a strong rate penalty produces sparse networks that certify under 1\% of core-steps. The quantity that matters is the worst-case drive through short delays, not the mean activity.
 
@@ -374,6 +388,8 @@ All training, certification and execution code, the complete experimental record
 \bibitem{certsnn} [verify] Certified robustness of spiking neural networks via interval bound propagation
 
 \bibitem{dcls} [verify] Hammouamri I, Khalfaoui-Hassani I and Masquelier T 2024 Learning delays in spiking neural networks using dilated convolutions with learnable spacings \textit{Int. Conf. on Learning Representations}
+
+\bibitem{eprop} Korcsak-Gorzo A, Espinoza-Valverde J A, Stapmanns J, Plesser H E, Dahmen D, Bolten M, van Albada S J and Diesmann M 2026 Event-driven eligibility propagation in large sparse networks \textit{Neuromorph. Comput. Eng.} \textbf{6} 034024
 
 \bibitem{shd} Cramer B, Stradmann Y, Schemmel J and Zenke F 2022 The Heidelberg spiking data sets for the systematic evaluation of spiking neural networks \textit{IEEE Trans. Neural Netw. Learn. Syst.} \textbf{33} 2744
 
