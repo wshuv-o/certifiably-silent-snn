@@ -37,6 +37,7 @@
 #include <chrono>
 #include <cstdint>
 #include <cstdio>
+#include <csignal>
 #include <cstring>
 #include <fstream>
 #include <netinet/in.h>
@@ -181,6 +182,10 @@ static bool recvall(int fd, void* p, size_t n) {
 
 int main(int argc, char** argv) {
   if (argc < 7) { fprintf(stderr, "usage: %s <dir> <tag> <mode> <rank> <nranks> <port> [peer_host]\n", argv[0]); return 1; }
+  // With message skipping the two ranks are less tightly coupled, so one can close its socket while
+  // the other is still sending its final sentinel. SIGPIPE would kill that process before it reports;
+  // ignoring it turns the condition into a harmless send error at shutdown.
+  signal(SIGPIPE, SIG_IGN);
   std::string dir = argv[1], tag = argv[2];
   int mode = atoi(argv[3]), rank = atoi(argv[4]), nranks = atoi(argv[5]), port = atoi(argv[6]);
   std::string peer = argc > 7 ? argv[7] : "127.0.0.1";
@@ -204,7 +209,13 @@ int main(int argc, char** argv) {
     }
   }
   const int cpr = P / 2, lo = rank * cpr, hi = lo + cpr, npr = cpr * C;
-  const size_t MSG = 8 + 4 * (size_t)cpr + (size_t)npr;   // +4 for the sample index
+  // Emulated per-message latency. Each frame carries its send time and is treated as
+  // unobservable until LAT_NS has elapsed, so L prices messages and not computation: a frame
+  // that is never sent costs nothing. This separates the two costs a certificate removes --
+  // waiting and message count.
+  const int64_t LAT_NS = (int64_t)atoll(getenv("LAT_US") ? getenv("LAT_US") : "0") * 1000;
+  const size_t MSG = 8 + 4 * (size_t)cpr + (size_t)npr + 8;  // +4 sample index, +8 send time
+  const size_t TSOFF = 8 + 4 * (size_t)cpr + (size_t)npr;
   std::vector<char> txbuf(MSG), rxbuf(MSG);
 
   int fd = (rank == 0) ? listen_accept(port) : dial(peer, port);
@@ -222,27 +233,43 @@ int main(int argc, char** argv) {
       if (!recvall(fd, rxbuf.data(), MSG)) break;
       int sb, st; std::memcpy(&sb, rxbuf.data(), 4); std::memcpy(&st, rxbuf.data() + 4, 4);
       if (st == -1) break;                                 // end-of-stream sentinel
+      if (LAT_NS) { int64_t ts; std::memcpy(&ts, rxbuf.data() + TSOFF, 8);
+        while (now_ns() - ts < LAT_NS) ; }           // frame not yet observable
       int pl = (rank == 0) ? cpr : 0;                       // peer owns the other half
       std::memcpy(&spk[((size_t)sb * (T + 1) + st) * H + pl * C], rxbuf.data() + 8 + 4 * cpr, npr);
+      int cov = 1 << 30;
       for (int c = 0; c < cpr; ++c) { int cv; std::memcpy(&cv, rxbuf.data() + 8 + 4 * c, 4);
-        peer_cert[(size_t)sb * cpr + c].store(cv, std::memory_order_release); }
-      peer_step[sb].store(st, std::memory_order_release);
+        peer_cert[(size_t)sb * cpr + c].store(cv, std::memory_order_release);
+        if (cv < cov) cov = cv; }
+      // Steps st+1..cov are provably silent for every peer core, and the spike buffer is already
+      // zero there, so they count as known without any frame arriving for them. This is what lets
+      // the sender skip transmitting in mode 2.
+      int known = st; if (cov > known) known = cov;
+      int prev = peer_step[sb].load(std::memory_order_relaxed);
+      if (known > prev) peer_step[sb].store(known, std::memory_order_release);
+      else peer_step[sb].store(prev, std::memory_order_release);
     }
   });
 
   std::vector<double> v(npr), a(npr);
   std::vector<int> myc(cpr, 0); FireLists F;
+  long long blocked_ns = 0;        // time the main loop is actually stalled on the peer:
+                                   // the dependency chain, measured rather than inferred
+  long long msgs_sent = 0;          // frames actually transmitted, the quantity mode 2 reduces
+  int last_sent_cov = -1;           // certificate horizon most recently published to the peer
   std::vector<double> ms(N);
   for (int b = 0; b < N; ++b) {
     std::fill(v.begin(), v.end(), 0.0); std::fill(a.begin(), a.end(), 0.0);
     std::fill(myc.begin(), myc.end(), 0);
+    last_sent_cov = -1;
     const double* I = &Iall[(size_t)b * T * H];
     uint8_t* sb_spk = &spk[(size_t)b * (T + 1) * H];
     int64_t t0 = now_ns();
     for (int t = 0; t < T - 1; ++t) {
       const int need = t + 1 - DMIN;
+      int64_t w0 = (peer_step[b].load(std::memory_order_acquire) < need) ? now_ns() : 0;
       while (peer_step[b].load(std::memory_order_acquire) < need) {
-        if (mode == 1) {
+        if (mode >= 1) {
           bool ok = true;
           for (int c = 0; c < cpr; ++c)
             if (peer_cert[(size_t)b * cpr + c].load(std::memory_order_acquire) < need) { ok = false; break; }
@@ -250,10 +277,11 @@ int main(int argc, char** argv) {
         }
         std::this_thread::yield();
       }
+      if (w0) blocked_ns += now_ns() - w0;
       for (int p = lo; p < hi; ++p)
         core_step(p, &v[(p - lo) * C], &a[(p - lo) * C], sb_spk, t, &I[(size_t)(t + 1) * H],
                   &sb_spk[(size_t)(t + 1) * H + p * C]);
-      if (mode == 1) {
+      if (mode >= 1) {
         int ps = peer_step[b].load(std::memory_order_acquire);
         bool any = false;
         for (int p = lo; p < hi && !any; ++p) {
@@ -268,15 +296,34 @@ int main(int argc, char** argv) {
             myc[p - lo] = t + 1 + cert_horizon(p, t, &v[(p - lo) * C], I, F, ps, lo, hi, 16);
         }
       }
-      int st = t + 1; std::memcpy(txbuf.data(), &b, 4); std::memcpy(txbuf.data() + 4, &st, 4);
-      for (int c = 0; c < cpr; ++c) std::memcpy(txbuf.data() + 8 + 4 * c, &myc[c], 4);
-      std::memcpy(txbuf.data() + 8 + 4 * cpr, &sb_spk[(size_t)(t + 1) * H + lo * C], npr);
-      if (!sendall(fd, txbuf.data(), MSG)) { fprintf(stderr, "send failed\n"); return 1; }
+      int st = t + 1;
+      bool must_send = true;
+      if (mode == 2) {
+        bool any_spike = false;
+        for (int p = lo; p < hi && !any_spike; ++p)
+          for (int ii = 0; ii < C; ++ii) if (sb_spk[(size_t)(t + 1) * H + p * C + ii]) { any_spike = true; break; }
+        int my_cov = 1 << 30;
+        for (int c = 0; c < cpr; ++c) if (myc[c] < my_cov) my_cov = myc[c];
+        // Transmit when there is a spike to report, when the previously published certificate no
+        // longer covers this step, or on the final step so the peer can complete the sample.
+        must_send = any_spike || (st > last_sent_cov) || (t == T - 2);
+        if (must_send) last_sent_cov = my_cov;
+      }
+      if (must_send) {
+        std::memcpy(txbuf.data(), &b, 4); std::memcpy(txbuf.data() + 4, &st, 4);
+        for (int c = 0; c < cpr; ++c) std::memcpy(txbuf.data() + 8 + 4 * c, &myc[c], 4);
+        std::memcpy(txbuf.data() + 8 + 4 * cpr, &sb_spk[(size_t)(t + 1) * H + lo * C], npr);
+        int64_t ts = now_ns(); std::memcpy(txbuf.data() + TSOFF, &ts, 8);
+        if (!sendall(fd, txbuf.data(), MSG)) { fprintf(stderr, "send failed\n"); return 1; }
+        ++msgs_sent;
+      }
     }
     // No barrier and no reset are needed: each sample has its own buffer slot, so a frame that
     // arrives early simply lands in the slot it belongs to. Still wait for the peer to finish this
     // sample so the per-sample timing is comparable between ranks.
+    int64_t d0 = (peer_step[b].load(std::memory_order_acquire) < T - 1) ? now_ns() : 0;
     while (peer_step[b].load(std::memory_order_acquire) < T - 1) std::this_thread::yield();
+    if (d0) blocked_ns += now_ns() - d0;
     ms[b] = (now_ns() - t0) / 1e6;
   }
   int zero = 0, sentinel = -1;
@@ -294,8 +341,10 @@ int main(int argc, char** argv) {
     for (int t = 0; t < T - 1; ++t) for (int p = 0; p < P; ++p)
       core_step(p, &rv[p * C], &ra[p * C], ref.data(), t, &I[(size_t)(t + 1) * H], &ref[(size_t)(t + 1) * H + p * C]);
     bool exact = (std::memcmp(ref.data(), &spk[(size_t)(N - 1) * (T + 1) * H], ref.size()) == 0);
-    printf("NETRESULT tag=%s mode=%s ranks=%d cores=%d median_ms=%.4f exact=%d\n",
-           tag.c_str(), mode == 0 ? "handshake" : "cert", nranks, P, ms[N / 2], (int)exact);
+    printf("NETRESULT tag=%s mode=%s ranks=%d cores=%d lat_us=%lld median_ms=%.4f exact=%d msgs_per_sample=%.1f blocked_ms=%.3f\n",
+           tag.c_str(), mode == 0 ? "handshake" : (mode == 1 ? "cert" : "cert_skip"),
+           nranks, P, (long long)(LAT_NS / 1000), ms[N / 2], (int)exact,
+           (double)msgs_sent / N, (double)blocked_ns / N / 1e6);
   }
   fflush(stdout);
   return 0;

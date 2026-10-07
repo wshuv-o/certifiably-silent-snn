@@ -1841,3 +1841,131 @@ legal evaluate-only mode (the LR schedule is guarded against T_max = 0). Doing t
 bug: `valacc()` was defined *inside* the epoch loop in `s5_delays.py`, so with `EPOCHS=0` the loop body
 never ran and the name was unbound. Hoisted above the loop. `s7_dcls.py` was already correct, which is
 why its nine runs succeeded while the first nine failed.
+
+## NETSKIP-001 — pre-registered 2026-10-07: does the message reduction pay when messages cost something?
+
+**Measured first (and already logged below):** mode 2 (certificate + message skipping) is sound
+(`exact=1`) and transmits **71.1 frames per sample against 99.0** for both the handshake and the
+always-transmitting certificate mode — a 1.39x reduction. Wall-clock did **not** improve
+(cert 18.55 ms, cert_skip 18.94 ms, handshake 13.28 ms at 32 cores across 2 processes).
+The skip fraction is flat across rank granularity (68.7 / 71.3 / 71.4 frames at 4 / 8 / 16 cores per
+rank), so certified silence is network-wide and temporally clustered, not scattered across cores.
+
+**Hypothesis.** Certificates reduce two separable costs: *waiting* and *message count*. Over loopback
+with non-blocking sends on a reader thread, per-message cost is near zero and never on the critical
+path, so a 28% message reduction buys nothing. If message count is the term that matters, wall-clock
+should separate as an emulated per-message latency L rises.
+
+**Instrument.** Each frame carries its send timestamp; the receiver treats it as unobservable until
+L has elapsed. A skipped frame costs nothing, so L prices messages and not computation. This is the
+same emulated-latency methodology already used for the shared-memory engine (S1c, L >= 20 us).
+
+**Quantitative prediction.** Per sample, handshake pays 99L and cert_skip pays 71L, so
+cert_skip - handshake ~ 5.3 ms - 28L, giving a crossover at **L ~ 190 us**.
+
+**Pre-registered bars.**
+1. `exact=1` in every run, every mode, every L. A single violation invalidates the experiment.
+2. cert_skip must beat handshake by **>= 1.1x at some L <= 500 us**.
+3. The crossover must fall **within 2x of the predicted 190 us** for the message-count decomposition
+   to count as confirmed.
+
+**Falsification.** If cert_skip never beats handshake at L <= 500 us, or the gap does not grow
+roughly linearly in L, the message-count explanation is wrong and the distributed result stands as a
+plain negative: certificates do not pay across processes under any pricing of messages we can reach.
+
+**Sweep.** L in {0, 50, 100, 200, 400, 800} us, modes {handshake, cert, cert_skip}, 32 cores, 2 ranks,
+100 samples, idle CPU, median over samples.
+
+### NETSKIP-001 RESULT — 2026-10-07: FAILS its pre-registered bars
+
+All 18 runs sound (`exact=1`). Median ms per sample, 32 cores, 2 ranks, 100 samples:
+
+| L (us) | handshake | cert | cert+skip | frames/sample (skip) |
+|---|---|---|---|---|
+| 0   | **13.98** | 18.74 | 19.07 | 70.6 |
+| 50  | **14.32** | 21.48 | 18.42 | 69.1 |
+| 100 | **15.21** | 20.51 | 18.72 | 70.2 |
+| 200 | **18.16** | 20.08 | 22.12 | 70.8 |
+| 400 | 27.10 | **26.03** | 27.66 | 71.9 |
+| 800 | 47.66 | **41.90** | 47.20 | 71.9 |
+
+- **Bar 2 FAILED:** cert_skip never beats the handshake at any L. 
+- **Bar 3 FAILED:** the predicted L ~ 190 us crossover for skipping does not exist.
+- The prediction was wrong in an informative direction: at L >= 200 us, skipping is **worse** than
+  transmitting every step (22.12 vs 20.08; 47.20 vs 41.90) while sending 28% fewer frames. Message
+  count is therefore not the binding resource.
+- **Unregistered observation, not yet a result:** `cert`, which transmits every step, overtakes the
+  handshake between L = 200 and 400 us and leads by 1.14x at L = 800 us.
+
+## CONFIRM-NETSKIP-002 — pre-registered 2026-10-07, before any repeat runs
+
+**Hypothesis.** Continuous transmission keeps several frames in flight, so per-message latency is
+*pipelined* behind local computation. Skipping empties that pipeline: when a spike eventually forces
+a frame, the peer blocks on a full, un-overlapped L. The binding resource is the dependency chain,
+not the message count, so a certificate pays by shortening the chain (removing waiting) and not by
+removing frames.
+
+**Instrument.** Accumulate the time the main loop actually spends blocked on the peer, per sample,
+covering both the step wait and the end-of-sample drain, and report it beside the median time. This
+measures the dependency chain directly instead of inferring it.
+
+**Predictions.**
+1. Blocked time, not frame count, orders the modes the same way wall-clock does.
+2. At L >= 200 us, cert_skip is blocked **more** than cert despite sending 28% fewer frames.
+3. cert beats handshake at L = 800 us, with the margin growing in L.
+
+**Pre-registered bars.**
+1. `exact=1` in every run. 
+2. Prediction 3 counts as confirmed only if cert beats handshake at L = 800 us with
+   **non-overlapping min-max ranges over 3 repeats**.
+3. Prediction 2 counts as confirmed only if the blocked-time ordering holds in all 3 repeats.
+
+**Falsification.** If blocked time does not order the modes as wall-clock does, the dependency-chain
+explanation is wrong and both the skipping and the certificate results stand as unexplained.
+
+**Sweep.** L in {200, 400, 800, 1600} us, modes {handshake, cert, cert_skip}, 3 repeats, idle CPU.
+
+### CONFIRM-NETSKIP-002 RESULT — 2026-10-07: bars 1-3 PASS, prediction 1 falsified as stated
+
+36 runs (4 latencies x 3 modes x 3 repeats), **`exact=1` in all 36**, idle CPU, 32 cores, 2 ranks,
+100 samples. Median ms per sample; `blocked` is time the main loop is stalled on the peer;
+`compute` = median - blocked.
+
+| L (us) | mode | median | min-max | blocked | compute |
+|---|---|---|---|---|---|
+| 200 | handshake | **17.22** | 16.79-17.25 | 3.70 | 13.56 |
+| 200 | cert | 19.73 | 19.52-20.06 | 1.12 | 18.40 |
+| 200 | cert+skip | 19.71 | 19.55-21.71 | 1.94 | 17.76 |
+| 400 | handshake | 26.71 | 26.44-27.28 | 13.35 | 13.28 |
+| 400 | cert | **26.03** | 25.64-27.11 | 7.43 | 18.61 |
+| 400 | cert+skip | 28.01 | 27.13-28.07 | 8.82 | 19.18 |
+| 800 | handshake | 47.09 | 46.17-47.32 | 32.53 | 14.56 |
+| 800 | cert | **41.67** | 41.05-42.61 | 22.85 | 18.82 |
+| 800 | cert+skip | 45.03 | 44.79-45.08 | 26.59 | 18.50 |
+| 1600 | handshake | 86.50 | 86.46-86.55 | 73.15 | 13.32 |
+| 1600 | cert | **73.44** | 73.02-73.77 | 54.85 | 18.59 |
+| 1600 | cert+skip | 79.28 | 77.78-79.45 | 60.92 | 18.43 |
+
+**Bar 2 PASS.** At L = 800 us, cert [41.05, 42.61] and handshake [46.17, 47.32] do not overlap:
+**1.13x**, rising to **1.18x** at L = 1600 us.
+
+**Bar 3 PASS, 12/12.** cert_skip is blocked *more* than cert at every latency and in every repeat,
+while sending 28% fewer frames. Skipping empties the transmission pipeline, so when a spike finally
+forces a frame the peer stalls on a full, un-overlapped latency. Message count is not the binding
+resource; the dependency chain is.
+
+**Prediction 1 FALSIFIED as stated.** Blocked time does not order the modes the way wall-clock does:
+the handshake is blocked most at every latency yet is fastest at L <= 200 us. The relation the data
+support is additive, `time = compute + blocked`, with the certificate raising the compute term.
+
+**The instrument validates itself:** the compute term is latency-independent (13.3-14.6 ms handshake,
+18.4-18.8 ms cert across a factor of 8 in L), so L prices messages and waiting but not computation.
+
+**Quantitative law.** The certificate costs **5.06 ms/sample** of computation at 32 cores and removes
+waiting that grows with per-message latency (2.57, 5.92, 9.68, 18.30 ms at L = 200, 400, 800, 1600).
+It pays once the waiting removed exceeds the computation added, i.e. **break-even at L ~ 348 us**,
+which matches the measured crossover between 200 and 400 us. Both terms are measurable before any
+execution experiment, so the boundary is predictable rather than empirical.
+
+**Status of message skipping: closed, negative.** Sound and it does cut frames 1.39x, but it is
+slower than transmitting every step at every latency tested. Not pursued further.

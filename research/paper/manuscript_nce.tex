@@ -49,7 +49,7 @@ Our contributions are:
 \item \textbf{Certification at no accuracy cost.} On the Heidelberg Spiking Digits, networks trained with a certificate penalty certify 56.0\% of core-steps at an accuracy change of $+0.24$ points relative to matched controls over three held-out test seeds; the recipe transferred to Spiking Speech Commands without retuning certifies 61.5\% at $+3.03$ points over four test seeds (sections~\ref{sec:shd}, \ref{sec:ssc}).
 \item \textbf{Reallocation of excitation in time.} Training reduces drive on the binding short-delay tap by 94\% while total excitatory mass changes by 1--16\%, with the same signature on both datasets and every seed (section~\ref{sec:mechanism}).
 \item \textbf{Certifiability as a property of the delay distribution.} With per-synapse learnable delays the \emph{unconstrained} network certifies 97.4\% of its achievable maximum; a certificate penalty is required only where the architecture does not already supply the margin (section~\ref{sec:architectural}).
-\item \textbf{Exact barrier-free execution and its operating regime.} Certificates permit execution that is bit-identical to lock-step. In a shared-memory engine this runs 1.25--1.49$\times$ faster than lookahead-aware local handshaking at 32 cores and slower below 16; in a two-process TCP configuration it runs 1.37$\times$ slower, where message count dominates the step time (section~\ref{sec:execution}).
+\item \textbf{Exact barrier-free execution and its operating regime.} Certificates permit execution that is bit-identical to lock-step. In a shared-memory engine this runs 1.25--1.49$\times$ faster than lookahead-aware local handshaking at 32 cores and slower below 16; across two processes it runs 1.13--1.18$\times$ faster once per-message latency exceeds roughly 350\,$\mu$s and slower below it, a boundary set by the waiting it removes against the computation it adds (section~\ref{sec:execution}).
 \item \textbf{Boundary conditions.} Activity-cap bounds, faster membrane leak, restricted fan-in, increased width, and learnable per-synapse delays each leave the accuracy--certifiability frontier unimproved, which delimits where the governing relation can be acted on (section~\ref{sec:negative}).
 \end{enumerate}
 
@@ -266,7 +266,7 @@ Certifiability is therefore a property of \textbf{where synaptic delays sit}, an
 \subsection{Exact multi-core execution}
 \label{sec:execution}
 
-Certificates permit a core to advance without waiting for a neighbour whose certificate covers the required step. Spike trains are bit-identical to lock-step execution; this was verified against a single-threaded reference in every configuration reported below, 80 of 80 in the shared-memory engine and 36 of 36 in the TCP engine.
+Certificates permit a core to advance without waiting for a neighbour whose certificate covers the required step. Spike trains are bit-identical to lock-step execution; this was verified against a single-threaded reference in every configuration reported below, 80 of 80 in the shared-memory engine and 54 of 54 in the TCP engine.
 
 \begin{table}
 \caption{\label{tab:speed}Speed-up of certificate-based over lookahead-aware local handshaking, shared-memory engine, idle machine. Values above 1 favour certificates. The unconstrained control gains nothing at any core count.}
@@ -286,7 +286,28 @@ cores & coverage & $L=0$ & $L=5$\,$\mu$s & $L=20$\,$\mu$s & $L=100$\,$\mu$s & $L
 
 Certificate coverage rises with core count (44.5\% to 71.0\%), because certification requires a \emph{whole} core to be silent and smaller cores qualify more often; the design implication favours fine-grained many-core architectures. The unconstrained control gains nothing at any core count, which attributes the effect to training. Below 32 cores at low latency certificates \textbf{lose}: their computational cost exceeds their benefit once the handshake already holds a free step from $d_{\min}=2$.
 
-In the two-process TCP configuration, certificates were \textbf{1.37$\times$ slower} than the handshake (13.4--14.4\,ms against 18.7--19.4\,ms per sample), consistently at 8, 16 and 32 cores. The explanation is visible in the absolute figures: approximately 140\,$\mu$s per step is dominated by the network round-trip, and each rank transmits a frame every step regardless of mode. Certificates reduce \emph{waiting}, of which little remains, and their computation adds cost. \textbf{In this configuration the distributed case does not favour certificates.} Over a network the available benefit lies in \emph{sending fewer messages}: a certified-silent core need not transmit at all. That is a different mechanism from the one implemented here, and we have not evaluated it.
+Across two processes the outcome is set by what a message costs. The engine prices messages explicitly: each frame carries its send time and becomes observable to the receiver only after a per-message latency $L$; a frame that is never sent therefore costs nothing, and $L$ prices communication while leaving computation untouched. We also record the time the main loop spends stalled on its peer. Table~\ref{tab:tcp} reports both over a range of $L$ covering loopback to $1.6$\,ms, three repeats each.
+
+The measured computation term is independent of $L$ --- $12.9$--$14.6$\,ms for the handshake and $17.5$--$18.8$\,ms with certificates across the whole range --- which confirms that $L$ prices only communication. Certificates cost $5.1$\,ms per sample of computation at 32 cores and remove waiting that grows with $L$: $2.6$, $5.9$, $9.7$ and $18.3$\,ms at $L=200$, $400$, $800$ and $1600\,\mu$s. They pay once the waiting they remove exceeds the computation they add, which places break-even at $L\approx348\,\mu$s and matches the crossover observed between $200$ and $400\,\mu$s. Above it the advantage grows: $1.13\times$ at $L=800\,\mu$s, with min--max ranges over three repeats that do not overlap ($41.1$--$42.6$ against $46.2$--$47.3$\,ms), and $1.18\times$ at $L=1600\,\mu$s. On loopback the handshake wins by $1.35\times$, and the blocked-time measurement says why: it waits only $0.13$\,ms per sample, because $d_{\min}=2$ already supplies the lookahead it needs. Both terms of the comparison can be measured before any execution experiment, so the boundary is predictable.
+
+A certificate also licenses a rank to stop transmitting, since a published certificate already proves the omitted steps silent. This is sound and it does reduce traffic, from $99.0$ to $71.1$ frames per sample ($1.39\times$), and it was slower than transmitting every step at every latency tested. The blocked-time measurement locates the cause: a skipping rank stalls \emph{longer} than one that transmits continuously ($26.6$ against $22.8$\,ms at $L=800\,\mu$s, in 12 of 12 repeats across four latencies). Continuous transmission keeps several frames in flight, so per-message latency overlaps local computation; omitting frames drains that pipeline, and the peer then stalls on a full latency once a spike forces a frame. The step time is set by the dependency chain, and reducing message count does not shorten it.
+
+\begin{table}
+\caption{\label{tab:tcp}Two-process TCP engine at 32 cores, median ms per sample over 100 samples, three repeats, idle machine. $L$ is the emulated per-message latency. \emph{blocked} is the time the main loop is stalled on its peer. Bold marks the faster protocol at each $L$. All 54 runs were bit-identical to the single-threaded reference.}
+\centering
+\begin{tabular}{rrrrrrr}
+\hline
+ & \multicolumn{3}{c}{total} & \multicolumn{3}{c}{blocked} \\
+$L$ ($\mu$s) & handshake & cert & cert+skip & handshake & cert & cert+skip \\
+\hline
+0    & \textbf{13.08} & 17.59 & 17.57 & 0.13 & 0.10 & 0.10 \\
+200  & \textbf{17.22} & 19.73 & 19.71 & 3.70 & 1.12 & 1.94 \\
+400  & 26.71 & \textbf{26.03} & 28.01 & 13.35 & 7.43 & 8.82 \\
+800  & 47.09 & \textbf{41.67} & 45.03 & 32.53 & 22.85 & 26.59 \\
+1600 & 86.50 & \textbf{73.44} & 79.28 & 73.15 & 54.85 & 60.92 \\
+\hline
+\end{tabular}
+\end{table}
 
 \subsection{Boundary conditions}
 \label{sec:negative}
@@ -312,6 +333,7 @@ The results support a concrete rule. Certifiability is governed by $R_{\mathrm{s
 \item \textbf{Spread delays away from short lags.} If the delay distribution already places little excitatory mass below the horizon, certification follows with no training objective at all (section~\ref{sec:architectural}).
 \item \textbf{Where a penalty is needed, expect reallocation.} Networks satisfy the constraint by moving excitation into longer delays; total excitatory mass need not fall and accuracy need not suffer.
 \item \textbf{For hardware, prefer fine-grained cores.} Certification requires a whole core to be silent, so coverage rises as cores shrink (44.5\% at 4 cores to 71.0\% at 32).
+\item \textbf{Compare the waiting removed against the certificate's computation.} Both are measurable, and their crossing predicts whether barrier-free execution pays on a given interconnect: at 32 cores the certificate costs $5.1$\,ms per sample and wins once per-message latency exceeds roughly $350\,\mu$s (section~\ref{sec:execution}).
 \end{enumerate}
 
 Since $R$ is linear in fan-in with a measurable coefficient, the maximum affordable fan-in for a target certification level can be computed in advance.
@@ -320,7 +342,7 @@ Since $R$ is linear in fan-in with a measurable coefficient, the maximum afforda
 
 \textbf{Absolute accuracy is below the state of the art.} Our strongest network reaches 87.59\% on SHD against roughly 96\% for the best reported architectures, and 68.20\% on SSC. The route indicated by the parameter-count evidence --- per-synapse learnable delays --- was tested and did not close it (section~\ref{sec:negative}). Depth, time resolution and training protocol were held fixed, so the remaining gap is attributable to those and is unresolved here. The evidence therefore establishes the relation over the accuracy range 85--88\% on SHD, and its behaviour at state-of-the-art accuracy would require an architecture we did not evaluate. Within the range tested the trend is favourable: the better of our two delay architectures is also the more certifiable.
 
-\textbf{The distributed speed result is negative.} Certificates were slower than a lookahead-aware handshake in a real two-process TCP configuration (section~\ref{sec:execution}). Two processes is the weakest distributed configuration and the engine supports no more, so the measurement establishes the result for that configuration alone. The shared-memory speed-up (1.25--1.49$\times$ at 32 cores) is a many-core shared-memory result, and the two should be quoted separately.
+\textbf{The distributed speed-up holds only above a latency threshold, measured on one configuration.} Across two processes certificates win by 1.13--1.18$\times$ above a per-message latency of roughly $350\,\mu$s and lose below it (section~\ref{sec:execution}). Two processes is the weakest distributed configuration and the engine supports no more, so both the threshold and the speed-up are established for that configuration alone; the break-even latency in particular depends on the certificate's computational cost, which scales with the number of cores per rank. Latencies above $350\,\mu$s describe commodity networked hosts and not a datacentre fabric, where microsecond round-trips would place the configuration on the losing side. The shared-memory speed-up (1.25--1.49$\times$ at 32 cores) is a separate many-core result and the two should be quoted separately. Message skipping was implemented and measured, and it does not help (section~\ref{sec:execution}).
 
 \textbf{Latency in the shared-memory engine is emulated}, and no neuromorphic hardware was used. The TCP engine removes the emulation at the cost of supporting only two ranks.
 
@@ -336,7 +358,7 @@ This study establishes an operating relation between the temporal distribution o
 
 The relation is actionable because the horizon partitions the synapses. Delays at or beyond the horizon arrive from steps already computed, so they carry no constraint, and a network can satisfy a given $R_{\mathrm{short}}$ by redistributing excitation in time. Trained networks do so: drive on the binding tap falls by 94\% while total excitatory mass changes by 1--16\%, with the same signature on both datasets and every seed, and the resulting networks certify 56\% of core-steps on SHD and 61\% on SSC with no soundness violation in any run. Where a delay distribution already places little mass below the horizon, the property holds with no training objective at all.
 
-Two boundaries delimit the result. The relation was established over an accuracy range of 85--88\% on SHD, and its behaviour in networks at the reported state of the art remains open. The execution benefit is conditional on where synchronisation cost dominates: barrier-free execution runs faster than lookahead-aware handshaking across 32 shared-memory cores and slower in a two-process network configuration, where per-step message cost, not waiting, sets the step time. The quantity that governs provability is measurable before any execution experiment is run, which allows a target certification level to be converted into a constraint on fan-in and delay structure at design time.
+Two boundaries delimit the result. The relation was established over an accuracy range of 85--88\% on SHD, and its behaviour in networks at the reported state of the art remains open. The execution benefit is conditional, and the condition is quantitative: barrier-free execution runs faster than lookahead-aware handshaking across 32 shared-memory cores, and across two processes it wins once the waiting a certificate removes exceeds the $5.1$\,ms it costs to compute, which occurs above a per-message latency of roughly $350\,\mu$s. The quantity that governs provability is measurable before any execution experiment is run, which allows a target certification level to be converted into a constraint on fan-in and delay structure at design time.
 
 \ack{[ACKNOWLEDGEMENTS]}
 

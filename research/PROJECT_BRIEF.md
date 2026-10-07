@@ -1,6 +1,6 @@
 # Project Brief (Layer 2)
 
-Last updated: 2026-10-06
+Last updated: 2026-10-07
 
 ## STATUS 2026-10-06 17:00 — six-seed result: the accuracy cost is ~0.9 points, not ~0
 
@@ -151,6 +151,51 @@ Base model 77.42 -> **87.25** validation on SHD (~90% test) from stronger augmen
    it is a negative result for the certificate contribution and will be reported as one.
 3. **No real hardware.** Latency is still emulated.
 4. **Sub-SOTA accuracy.** ~90% test on SHD vs ~96%; 68.66% on SSC vs ~80%.
+
+## STATUS 2026-10-07 — the distributed execution result is a measured boundary, not a flat negative
+
+**CONFIRM-NETSKIP-002** (36 runs, `exact=1` in all 36, 3 repeats per point, idle CPU) replaces
+"certificates lose across processes" with a quantitative break-even.
+
+- Certificates cost **5.1 ms/sample** of computation at 32 cores and remove waiting that grows with
+  per-message latency L: 2.6 / 5.9 / 9.7 / 18.3 ms at L = 200 / 400 / 800 / 1600 us.
+- They pay once the waiting removed exceeds the computation added, placing **break-even at L ~ 348 us**,
+  which matches the crossover observed between 200 and 400 us. **1.13x at 800 us** (min-max over 3
+  repeats non-overlapping: 41.1-42.6 vs 46.2-47.3 ms) and **1.18x at 1600 us**.
+- On loopback the handshake wins 1.35x, and blocked time says why: it waits only **0.13 ms/sample**,
+  because d_min = 2 already supplies the lookahead it needs.
+- The compute term is latency-independent (12.9-14.6 handshake, 17.5-18.8 cert across a factor of 8
+  in L), which validates the instrument: L prices communication and leaves computation untouched.
+
+**Message skipping: implemented, sound, closed negative.** A certified-silent rank can omit frames
+entirely. This cut traffic **1.39x** (99.0 -> 71.1 frames/sample) and was slower at every latency
+tested. Blocked time locates the cause: a skipping rank stalls **longer** than one transmitting
+continuously (26.6 vs 22.8 ms at L = 800 us, 12/12 repeats). Continuous transmission keeps several
+frames in flight so latency overlaps computation; omitting frames drains that pipeline and the peer
+then stalls on a full, un-overlapped L. The step time is set by the dependency chain, and reducing
+message count does not shorten it. The skip fraction is also flat across rank granularity (68.7 /
+71.3 / 71.4 frames at 4 / 8 / 16 cores per rank), so certified silence is network-wide and temporally
+clustered.
+
+**Two of my earlier manuscript statements were wrong and are corrected:** that "message count
+dominates the step time" across processes (it does not), and that message skipping "we have not
+evaluated" (now evaluated, and it does not help).
+
+**Reviewer-attack list changes.** "The distributed speed result is negative" becomes "the distributed
+speed-up holds above roughly 350 us per-message latency, on a two-process configuration". New
+exposure, now stated in Limitations: that threshold describes commodity networked hosts and not a
+datacentre fabric, where microsecond round-trips place the configuration on the losing side; and the
+break-even depends on certificate computation, which scales with cores per rank.
+
+**Manuscript:** section 5.6 rewritten with a new Table 3 (the latency sweep), plus the contributions
+bullet, design rule (new item 5), Limitations and Conclusion. Compiles clean via Tectonic, 10 pages.
+
+**Infrastructure hazard found:** WSL cold-restarts frequently on this machine (`uptime` resets to
+0 min between calls), which silently truncates long loops and **lost a g++ output as a 0-byte
+binary that still reported exit 0**. Verify artifact size after every compile; keep each run short
+and self-contained. Also: `g++ ... | head && echo ok` reports success even when g++ fails, because
+the pipeline status comes from `head` -- the same failure-hiding pattern already documented for the
+training harness.
 
 ## STATUS 2026-10-06 13:30 — the fine-tuning fix does NOT generalize to 1,024 neurons
 
