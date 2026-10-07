@@ -2012,3 +2012,91 @@ fails. This is the experiment most able to break the result, which is why it is 
 **Runs.** 13 new: unit delay seeds 1-3; and seeds 2-3 for {1,2,4,8}, {2,4,8} control, {2,4,8}
 constrained, learnable control, learnable constrained. Constrained arms fine-tune from the matched
 control of the same seed. Serial, ~12.5 min each, ~2.7 h total.
+
+## SCALE-LOCAL-001 — pre-registered 2026-10-07, before any run
+
+**The claim under test.** $R_i$ is the sum of positive recurrent weights into neuron $i$, so it
+scales with fan-in, and we measured `R ~ 0.0098 x fan-in` linear across a tenfold range. Under
+*dense* recurrence fan-in equals H, so R grows with width: control R_mean rises 4.78 (H=512) to
+**8.72** (H=1024), 1.83x for 2x width, against a fixed budget of 0.3935. That is why SCALE-FT-001
+failed at H=1024 (0.40% certified). Under *ring-local* recurrence with radius `LOCAL_R` cores and
+`CPC` neurons per core, fan-in is `(2*LOCAL_R+1)*CPC` and does **not** depend on H.
+
+**Hypothesis.** Certifiability is governed by fan-in, not by width. Under local connectivity it
+should therefore be width-independent, and the manuscript's "degrades with size" limitation becomes
+a scoping statement: the method scales with bounded fan-in, which is also the regime with the
+largest measured speed-ups.
+
+**Design.** DELAYS=2,4,8, CPC=32, LOCAL=1, LOCAL_R=1 (fan-in 96 regardless of H),
+H in {512, 1024, 2048}, control and constrained at each width; plus a dense control at H=2048 for
+contrast. 150 epochs, AUG=2, seed 1. Seven runs.
+
+**Predictions.**
+1. Control `R_short` under local connectivity is approximately constant across the three widths
+   (within +/-25% of its H=512 value), while the dense control's rises with H.
+2. The constrained arm certifies **>= 90% of oracle at every width**.
+3. The dense control at H=2048 certifies near zero, extending the H=1024 result.
+
+**Pre-registered bars.**
+1. Prediction 2 must hold at **H=2048**, the hardest case. If certification there is below 50% of
+   oracle, width-independence fails and the existing limitation stands unchanged in the manuscript.
+2. Accuracy is reported alongside at every width. Local connectivity may cost accuracy; if it costs
+   more than 3 points against the dense control at H=512, the scoping statement must say so, since
+   a width-independent method that is substantially less accurate is a weaker result.
+3. 0 soundness violations, as everywhere else.
+
+**Falsification.** If local connectivity does not preserve certification as width grows, the
+fan-in explanation for the size effect is wrong and the limitation is reported as measured.
+
+## DVS-001 — pre-registered 2026-10-07, before any run
+
+**Why.** SHD and SSC are both audio and come from the same generating pipeline, so the existing
+out-of-sample confirmation never changes modality. A referee can fairly say the generality claim is
+untested. DVS128 Gesture is event-camera vision, 11 classes, entirely different input statistics,
+and is used in this target journal by BAM-SLDK, which gives an in-venue comparison point.
+
+**Protocol.** The frozen SHD recipe is transferred with no tuning, using the same step-matched
+epoch rule already applied to SSC. Events are downsampled spatially from 128x128 to 32x32 with both
+polarities (NIN = 2048) and binned to T = 100 steps, so the temporal protocol matches SHD exactly.
+Declared before any run: the spatial downsampling factor and the bin count are the only two choices
+made for this dataset, and neither is tuned.
+
+**Predictions.** The reallocation signature reproduces on a different modality: the binding $d=2$
+tap falls far below the budget while the $d=4$ and $d=8$ taps grow, and total excitatory mass
+changes little.
+
+**Pre-registered bars.**
+1. **0 soundness violations.** Absolute.
+2. Certified silence **>= 85% of oracle**.
+3. Accuracy cost **<= 3 points** against the matched control.
+
+**Falsification.** If the signature does not reproduce, the mechanism is specific to the audio
+datasets tested and the generality claim in the abstract must be narrowed to that modality. This is
+reported either way.
+
+### DVS-001 AMENDED to NMNIST-001 — 2026-10-07, before any run on either dataset
+
+**DVS128 Gesture is not obtainable.** Both figshare files the standard loader points at return
+HTTP 202 with zero bytes, and a direct fetch with retries returns nothing; the figshare article API
+lists only an unrelated PDF. The dataset is effectively offline.
+
+**Substitute: N-MNIST.** Event-camera vision (a DVS viewing MNIST digits through three saccades),
+34x34 pixels, two polarities, ten classes, served over Mendeley and verified reachable. It is also
+the dataset ParaLIF reports in this target journal, so the in-venue comparison point survives the
+substitution.
+
+**Declared weakness, before seeing any result.** N-MNIST has simpler temporal structure than
+DVS128 Gesture: the informative variation is saccadic motion over a static digit, not a gesture
+unfolding over seconds. It is therefore a weaker test of temporal mechanism than DVS Gesture would
+have been, and the manuscript will say so. What it does test, and what the audio pair cannot, is
+whether the reallocation signature survives a change of **modality and input statistics**.
+
+**Protocol, fixed now.** Events are written as (times, units) spike lists in the SHD/SSC layout, so
+the loader, binning and whole training path are unchanged and nothing dataset-specific enters
+training. `unit = (y*34 + x)*2 + p`, NIN = 2312; times normalised to [0,1] per sample; T = 100 bins,
+identical to the audio sets. Epochs matched by **gradient steps** as for SSC: 58500 training samples
+after the monitor split give 457 steps per epoch, so **18 epochs = 8226 steps** against SSC's 8250.
+Three seeds, control and constrained, test set touched once per run.
+
+**Bars carry over unchanged from DVS-001:** 0 soundness violations (absolute); certified silence
+>= 85% of oracle; accuracy cost <= 3 points against the matched control. Reported either way.

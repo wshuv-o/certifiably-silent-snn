@@ -25,9 +25,12 @@ import torch
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pilot_silence import fetch, T, NIN, NOUT
 
-DATASET = os.environ.get("DATASET", "shd")        # shd | ssc
+DATASET = os.environ.get("DATASET", "shd")        # shd | ssc | nmnist
 if DATASET == "ssc":
     NOUT = 35                                     # Spiking Speech Commands has 35 classes
+elif DATASET == "nmnist":
+    # event-camera vision: 34x34 pixels, two polarities, ten digits
+    NIN, NOUT = 34 * 34 * 2, 10
 
 dev = "cuda"
 H = int(os.environ.get("H", "512")); CPC = int(os.environ.get("CPC", "32")); NPC = H // CPC
@@ -73,6 +76,14 @@ def fetch_ssc(split):
     d = os.path.expanduser("~/research/data/ssc")
     h5 = f"{d}/ssc_{split}.h5"
     assert os.path.exists(h5), f"missing {h5}; download it first"
+    D = LazySpikes(h5)
+    return D, D.labels
+
+
+def fetch_nmnist(split):
+    d = os.path.expanduser("~/research/data/nmnist")
+    h5 = f"{d}/nmnist_{split}.h5"
+    assert os.path.exists(h5), f"missing {h5}; run harness/make_nmnist_h5.py first"
     D = LazySpikes(h5)
     return D, D.labels
 
@@ -238,11 +249,12 @@ def certify(m, X):
 
 
 def main():
-    if DATASET == "ssc":
+    if DATASET in ("ssc", "nmnist"):
         # Out-of-sample architecture test: the recipe is FROZEN from SHD, so nothing is selected here.
-        # SSC has no speaker metadata, so a small random slice of train is held out for PROGRESS
+        # Neither set has speaker metadata, so a small random slice of train is held out for PROGRESS
         # MONITORING ONLY -- it is never used to choose anything. The test set is touched once.
-        Xtr, ytr = fetch_ssc("train"); Xte, yte = fetch_ssc("test")
+        _fetch = fetch_ssc if DATASET == "ssc" else fetch_nmnist
+        Xtr, ytr = _fetch("train"); Xte, yte = _fetch("test")
         rng = np.random.default_rng(12345)
         mon = rng.choice(len(ytr), min(1500, len(ytr) // 20), replace=False)
         Xva, yva = Xtr, ytr[mon]          # lazy dataset: index via batch() at use sites
