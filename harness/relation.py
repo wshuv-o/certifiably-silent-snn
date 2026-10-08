@@ -14,6 +14,7 @@ import sys
 
 # (R_short, % of oracle certified, label, provenance)
 POINTS = [
+    (0.222, 95.8, "learnable d<=25, constrained",    "dx_c_wide_cert"),
     (0.243, 95.7, "learnable delays, constrained",   "dx_b_fix_cert (2 seeds)"),
     (0.260, 97.4, "local H=512, constrained",        "SCALE-LOCAL-001"),
     (0.261, 95.0, "D={2,4,8}, constrained",          "GOVERN-002"),
