@@ -2431,3 +2431,30 @@ Declaring `tau` inactive on a single-rate run would repeat the error I have just
 
 **Note on cost.** Runs after SPEED-DIAG-001, not before it: the execution claim is worth more than
 one more accuracy attempt, and the diagnostic needs an idle CPU.
+
+### ACC-002 stage 1 complete — prediction 3 passes, and the two failures are themselves a result
+
+| learned tau, SHD, seed 1 | acc | % oracle | R_short | tau |
+|---|---|---|---|---|
+| control | 86.83 | 6.1 | 5.122 | 2.04 +- 0.16 |
+| constrained | **87.08** | **94.7** | **0.265** | 2.05 +- 0.18 |
+
+**Prediction 3 passes:** per-neuron learnable time constants are fully compatible with the
+certificate -- 94.7% of oracle at **+0.25** accuracy points, 0 violations.
+
+**Predictions 1 and 2 fail, and the failure is informative.** The network had two routes to the
+budget: reduce recurrent excitation, or **leak faster and enlarge `(1-beta_i) theta` itself**. It took
+the first almost exclusively. `R_short` fell 19-fold while `tau` moved 0.5%. Offered a dynamics knob
+aimed directly at the constraint, training did not use it.
+
+**This answers a question the paper could not previously ask: the budget is spent uniformly, not
+unevenly, even when unevenness is free.** It is also the second independent confirmation tonight that
+the penalty acts on **weights rather than dynamics** -- the delay learner reweighted synapses instead
+of relocating delays, and the tau model reweights instead of re-leaking. Two different free
+parameters, pointed at the same constraint, both left alone in favour of the weights.
+
+**Caveat that ACC-002b tests:** `tau` was trained at the weight learning rate, so "did not use the
+knob" and "could not move the knob" are not yet separated. ACC-002b at 100x decides it. If `tau`
+spreads there and the network still does not trade leak for excitation, the result stands as a
+genuine preference; if `tau` only spreads at 100x and then is used, the stage-1 reading is wrong and
+must be withdrawn.

@@ -18,6 +18,7 @@ POINTS = [
     (0.243, 95.7, "learnable delays, constrained",   "dx_b_fix_cert (2 seeds)"),
     (0.260, 97.4, "local H=512, constrained",        "SCALE-LOCAL-001"),
     (0.261, 95.0, "D={2,4,8}, constrained",          "GOVERN-002"),
+    (0.265, 94.7, "learned tau, constrained",        "ac_t_cert"),
     (0.294, 96.3, "local H=1024, constrained",       "SCALE-LOCAL-001"),
     (0.297, 98.5, "local H=2048, constrained",       "SCALE-LOCAL-001"),
     (0.877, 90.0, "local H=2048, control",           "SCALE-LOCAL-001"),
