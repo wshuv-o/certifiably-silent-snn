@@ -130,24 +130,35 @@ def figure1():
     panel_label(ax, "(a)", dx=-0.012, dy=1.12)
 
     # ---------------------------------------------------------------- (b) learned delays -----
-    # excitatory mass over delay, measured from the learned-delay checkpoint dc_DC1_ctrl.pt:
-    # D = 2 + 6 sigmoid(draw), binned and weighted by max(0, w)
+    # Excitatory mass over delay, from the corrected learnable-delay checkpoints dx_b_fix_{ctrl,cert}:
+    # D = 2 + 6 sigmoid(draw), binned in 24 bins and weighted by max(0, w). A working learner
+    # saturates both rails of the sigmoid; the penalty evacuates the short one.
     edges = np.linspace(2.0, 8.0, 25)
-    mass = np.array([0.0, 0.00081, 0.01826, 0.07317, 0.06781, 0.05777, 0.04981, 0.04991,
-                     0.04896, 0.04094, 0.04, 0.04409, 0.04234, 0.04014, 0.0408, 0.0472,
-                     0.04943, 0.0491, 0.058, 0.07229, 0.08269, 0.02422, 0.00225, 0.0])
+    mass_ctrl = np.array([0.33306, 0.02929, 0.01741, 0.01551, 0.01286, 0.00918, 0.00848, 0.00954,
+                          0.00988, 0.00805, 0.00819, 0.00952, 0.00909, 0.00757, 0.00762, 0.00996,
+                          0.00975, 0.00894, 0.01015, 0.01447, 0.01844, 0.01994, 0.03204, 0.38106])
+    mass_cert = np.array([0.03726, 0.00325, 0.00169, 0.00207, 0.00167, 0.00248, 0.00249, 0.00805,
+                          0.01761, 0.01856, 0.01773, 0.02399, 0.01855, 0.01442, 0.01400, 0.01598,
+                          0.01556, 0.01219, 0.01359, 0.02397, 0.02595, 0.03039, 0.05135, 0.62721])
     ax = ax_b
     centres = 0.5 * (edges[:-1] + edges[1:])
-    ax.bar(centres, mass * 100.0, width=0.24, color=K_GREY, edgecolor="none", zorder=3)
-    ax.axvspan(1.9, 4.0, color=K_RED, alpha=0.10, lw=0, zorder=1)
-    ax.axvline(4.0, color=K_RED, lw=0.9, ls=(0, (4, 2)), zorder=4)
-    ax.text(3.88, 8.6, "32%", fontsize=6.6, color=K_RED, ha="right", va="top")
-    ax.text(4.16, 8.6, "68%", fontsize=6.6, color=K_DARK, ha="left", va="top")
+    ax.axvspan(1.9, 4.0, color=K_RED, alpha=0.09, lw=0, zorder=1)
+    ax.step(centres, mass_ctrl * 100.0, where="mid", color=K_BLACK, lw=0.9,
+            label="control", zorder=3)
+    ax.step(centres, mass_cert * 100.0, where="mid", color=K_BLUE, lw=0.9,
+            ls=(0, (3, 1.4)), label="constrained", zorder=4)
+    ax.axvline(4.0, color=K_RED, lw=0.9, ls=(0, (4, 2)), zorder=5)
+    ax.text(3.88, 0.30, "$d<K$", fontsize=6.4, color=K_RED, ha="right", va="center")
+    ax.set_yscale("log")
     ax.set_xlim(1.9, 8.1)
-    ax.set_ylim(0, 9.4)
+    ax.set_ylim(0.1, 160)
     ax.set_xticks([2, 4, 6, 8])
+    ax.set_yticks([0.1, 1, 10, 100])
+    ax.set_yticklabels(["0.1", "1", "10", "100"])
     ax.set_xlabel("learned delay $d$")
     ax.set_ylabel("excitatory mass (%)")
+    ax.legend(loc="upper center", bbox_to_anchor=(0.52, 1.06), handletextpad=0.35,
+              labelspacing=0.15, handlelength=1.3, fontsize=6.2, borderpad=0.25)
     panel_label(ax, "(b)", dx=-0.36)
 
     # ---------------------------------------------------------------- (c) the budget ---------
@@ -217,8 +228,8 @@ def figure2():
         (2,  3.8, 8.741, 18.40, False),   # {1,2,4,8}
         (3,  6.3, 4.813, 14.98, False),   # {2,4,8} control
         (4, 95.0, 0.261, 12.64, True),    # {2,4,8} constrained
-        (5, 97.0, 1.611,  7.70, False),   # learnable delays, control
-        (6, 97.6, 0.375,  7.22, True),    # learnable delays, constrained
+        (5,  1.9, 3.058,  7.36, False),   # learnable delays, control (corrected learner, DCLS-002)
+        (6, 95.5, 0.246,  4.85, True),    # learnable delays, constrained
     ]
     pct = np.array([r[1] for r in rows])
     rs = np.array([r[2] for r in rows])
