@@ -2400,3 +2400,34 @@ jobs: they occupy CPU for data loading and would reproduce the original contamin
 **Blocked on:** the GPU training queue draining, since a loaded CPU is the very confound being
 tested. Do not run this concurrently with training -- that is how the first two attempts to measure
 the delay engine were lost.
+
+## ACC-002 stage 1 RESULT and ACC-002b — pre-registered 2026-10-08
+
+**Stage 1 control: predictions 1 and 2 both fail.** Learned `tau` gives **86.83%** against the
+anchor's 87.25%, and `tau` barely moved: mean 2.04 +- 0.16 from an initialisation of 2.00, range
+[1.70, 4.13]. Under pre-registered bar 2 the mechanism is not claimed.
+
+**But there is a specific, already-demonstrated reason to suspect under-training rather than an
+inactive lever.** `traw` was given the same learning rate as the weights. That is exactly the defect
+DCLS-002 found in the delay learner tonight, where positions needed **100x** the weight rate before
+they moved at all; the delay mean there also sat at its initialisation and looked like a result.
+Declaring `tau` inactive on a single-rate run would repeat the error I have just finished correcting.
+
+**ACC-002b: one arm, `LR_TAU_MULT=100`, matching the ratio the delay learner required.**
+
+**Predictions.**
+1. `tau` spreads materially: standard deviation above 0.5, against 0.16 at the single rate.
+2. Accuracy exceeds 87.25.
+
+**Pre-registered bars.**
+1. If `tau` spreads but accuracy does not improve, the lever is **active and does not help**:
+   neuron-level heterogeneity of the membrane time constant is not what separates our architecture
+   from the recurrent state of the art, and ACC-002 is closed as falsified.
+2. If `tau` still does not spread at 100x, the parameterisation itself is at fault rather than the
+   rate, and ACC-002 is closed without further arms. **No third learning rate will be tried** -- that
+   is the point at which this becomes fishing.
+3. Either way this is the **last** accuracy arm. If it fails, the recommendation is to stop and
+   submit on the mechanism, with sub-SOTA accuracy as the limitation already written.
+
+**Note on cost.** Runs after SPEED-DIAG-001, not before it: the execution claim is worth more than
+one more accuracy attempt, and the diagnostic needs an idle CPU.

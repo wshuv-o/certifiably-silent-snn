@@ -63,6 +63,10 @@ FT_EP = int(os.environ.get("FT_EP", "0"))        # reference +30 epochs at a ten
 # --- by a sigmoid, so beta_i = exp(-1/tau_i) stays strictly inside (0,1) and every neuron keeps a
 # --- non-zero excitatory budget (1 - beta_i) theta. Default off; off reproduces the scalar model.
 TAU_LEARN = os.environ.get("TAU_LEARN", "0") == "1"
+# Time constants move on a different scale from weights. The delay learner in s7_dcls.py failed for
+# exactly this reason -- one learning rate for positions and weights -- so it is a knob here too
+# rather than an assumption. 1.0 reproduces the single-rate behaviour.
+LR_TAU_MULT = float(os.environ.get("LR_TAU_MULT", "1"))
 TAU_MIN = float(os.environ.get("TAU_MIN", "1.0"))
 TAU_MAX = float(os.environ.get("TAU_MAX", "8.0"))
 assert 0 < TAU_MIN < TAU_MAX, "need 0 < TAU_MIN < TAU_MAX"
@@ -344,7 +348,14 @@ def main():
         sd = {k: v for k, v in torch.load(os.path.expanduser(INIT), map_location=dev).items()
               if k not in ('mask', 'quiet')}
         print("INIT load:", m.load_state_dict(sd, strict=False), flush=True)
-    opt = torch.optim.AdamW(m.parameters(), LR, weight_decay=1e-4)
+    if TAU_LEARN and LR_TAU_MULT != 1.0:
+        tp = [p for n, p in m.named_parameters() if n == "traw"]
+        rest = [p for n, p in m.named_parameters() if n != "traw"]
+        opt = torch.optim.AdamW([{"params": rest, "lr": LR},
+                                 {"params": tp, "lr": LR * LR_TAU_MULT}], LR, weight_decay=1e-4)
+        print("tau learning rate %g (%gx weights)" % (LR * LR_TAU_MULT, LR_TAU_MULT), flush=True)
+    else:
+        opt = torch.optim.AdamW(m.parameters(), LR, weight_decay=1e-4)
     spe = max(1, (len(ytr) + BS - 1) // BS)
     steps = EPOCHS * spe
     sched = (torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=LR, total_steps=max(1, steps))

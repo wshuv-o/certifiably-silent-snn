@@ -29,6 +29,7 @@ POINTS = [
     (3.028,  2.4, "learnable delays, control",       "dx_b_fix_ctrl (2 seeds)"),
     (4.795,  0.5, "recipe minus batch norm",         "ac_r_nobn"),
     (4.813,  6.3, "D={2,4,8}, control",              "GOVERN-002"),
+    (5.122,  6.1, "learned tau, control",            "ac_t_ctrl"),
     (5.631, 10.8, "arctangent surrogate only",       "ac_r_atan"),
     (7.905,  0.0, "unit delay D={1}",                "GOVERN-002"),
     (8.741,  3.8, "D={1,2,4,8}",                     "GOVERN-002"),
