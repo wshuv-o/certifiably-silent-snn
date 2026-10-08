@@ -9,7 +9,7 @@ cd "$(dirname "$0")"
 LOG=~/research/logs
 busy() {
   pgrep -f "run_acc002.s[h]|run_dcls002.s[h]|run_acc_ladder.s[h]|run_queue4.s[h]" > /dev/null && return 0
-  [ "$(pgrep -fc "python -u s[57]_" 2>/dev/null || echo 0)" -gt 0 ] && return 0
+  [ "$(pgrep -fc "python -u s[57]_" 2>/dev/null; true)" -gt 0 ] && return 0
   return 1
 }
 while busy; do sleep 60; done

@@ -18,7 +18,7 @@ WORK=~/research/speeddiag
 BIN=$WORK/s6_engine_delays
 REPEATS=${REPEATS:-3}
 
-busy=$(pgrep -fc "python -u s[57]_" 2>/dev/null || echo 0)
+busy=$(pgrep -fc "python -u s[57]_" 2>/dev/null; true)
 if [ "$busy" -gt 0 ]; then
   echo "REFUSING: $busy training process(es) still on the CPU. A loaded machine is the confound."
   exit 1

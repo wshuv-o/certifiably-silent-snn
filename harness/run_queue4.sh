@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 LOG=~/research/logs
 while pgrep -f "run_queue3.s[h]" > /dev/null; do sleep 30; done
 echo "$(date +%H:%M:%S) queue3 done submitting; queue4 starting"
-running() { pgrep -fc "python -u s[57]_" 2>/dev/null || echo 0; }
+running() { pgrep -fc "python -u s[57]_" 2>/dev/null; true; }
 launch() {
   local name=$1; shift
   while [ "$(running)" -ge 3 ]; do sleep 30; done

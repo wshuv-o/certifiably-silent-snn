@@ -10,7 +10,7 @@ set -u
 cd "$(dirname "$0")"
 LOG=~/research/logs
 
-running() { pgrep -fc "python -u s[57]_" 2>/dev/null || echo 0; }
+running() { pgrep -fc "python -u s[57]_" 2>/dev/null; true; }
 
 waitslot() {
   while [ "$(running)" -ge 3 ]; do sleep 30; done
