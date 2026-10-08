@@ -348,6 +348,19 @@ This is the sharpest available separation of the architecture's contribution fro
 Certificates permit a core to advance without waiting for a neighbour whose certificate covers the required step. Spike trains are bit-identical to lock-step execution; this was verified against a single-threaded reference in every configuration reported below, 80 of 80 in the shared-memory engine and 54 of 54 in the TCP engine.
 
 \begin{table}
+% =====================================================================================
+% UNRESOLVED BEFORE SUBMISSION -- DO NOT SHIP THIS TABLE AS IT STANDS.
+% The 32-core row does not reproduce on this machine. A rerun of the same configuration
+% measured 2.66 ms/sample against the recorded 48.04, with identical cert_coverage and
+% nproc; the 4-core numbers agree (6.48 vs 6.23), so the discrepancy is specific to 32.
+% Suspected cause: 32 cores on a 32-thread host leaves no slack, so any background
+% activity stalls the barrier and penalises the handshake baseline hardest, which would
+% make the 1.44x a saturation artifact rather than a certificate benefit.
+% Resolution: rerun on the 192-vCPU host (harness/aws_bench.sh, bundle snn_bench.tgz),
+% where 32 cores no longer saturates. Until then this row is unverified. If it is an
+% artifact, the execution claim narrows to the two-process latency result of table 3 and
+% the contributions list and title framing both need revisiting.
+% =====================================================================================
 \caption{\label{tab:speed}Speed-up of certificate-based over lookahead-aware local handshaking, shared-memory engine, idle machine. Values above 1 favour certificates. The unconstrained control gains nothing at any core count.}
 \centering
 \begin{tabular}{lrrrrrr}
