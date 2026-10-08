@@ -82,6 +82,7 @@ struct Shared {
   std::unique_ptr<std::atomic<int64_t>[]> pub;    // [N][P][T+1] publication timestamps
   std::vector<int32_t> cert;                      // [N][P][T+1] "silent through step c"
   std::vector<int64_t> tstart, tend;              // [N][P]
+  std::vector<int64_t> wait_ns, comp_ns;          // [P] per-core totals, summed over all samples
 };
 
 // --- certificate cost optimisation -------------------------------------------------------------
@@ -148,6 +149,7 @@ static void worker(int p, int mode, int64_t L, Shared& S, std::barrier<>& bar) {
   std::vector<double> v(C), a(C); std::vector<uint8_t> s(C);
   std::vector<int> seen(P); FireLists F;
   auto PUB = [&](int b, int q, int k) -> std::atomic<int64_t>& { return S.pub[((size_t)b * P + q) * (T + 1) + k]; };
+  int64_t wait_acc = 0, comp_acc = 0;
   for (int b = 0; b < N; ++b) {
     bar.arrive_and_wait();
     S.tstart[b * P + p] = now_ns();
@@ -159,6 +161,7 @@ static void worker(int p, int mode, int64_t L, Shared& S, std::barrier<>& bar) {
       // To compute step t+1 we need neighbour spikes only up to t+1-DMIN: that is the free lookahead
       // the minimum synaptic delay provides, and mode 0 gets it too.
       const int need = t + 1 - DMIN;
+      const int64_t w0 = now_ns();
       for (int q = 0; q < P; ++q) {
         if (q == p || !conn[p * P + q]) continue;
         for (;;) {
@@ -172,6 +175,8 @@ static void worker(int p, int mode, int64_t L, Shared& S, std::barrier<>& bar) {
           if (mode == 1 && S.cert[((size_t)b * P + q) * (T + 1) + k] >= need) break;
         }
       }
+      const int64_t w1 = now_ns();
+      wait_acc += w1 - w0;
       core_step(p, v.data(), a.data(), spk, t, &I[(size_t)(t + 1) * H], s.data());
       std::memcpy(&spk[(size_t)(t + 1) * H + p * C], s.data(), C);
       if (mode >= 1) {
@@ -183,9 +188,12 @@ static void worker(int p, int mode, int64_t L, Shared& S, std::barrier<>& bar) {
         S.cert[((size_t)b * P + p) * (T + 1) + t + 1] = last_c;
       }
       PUB(b, p, t + 1).store(now_ns(), std::memory_order_release);
+      comp_acc += now_ns() - w1;
     }
     S.tend[b * P + p] = now_ns();
   }
+  S.wait_ns[p] = wait_acc;
+  S.comp_ns[p] = comp_acc;
 }
 
 int main(int argc, char** argv) {
@@ -234,6 +242,7 @@ int main(int argc, char** argv) {
     S.pub.reset(new std::atomic<int64_t>[(size_t)N * P * (T + 1)]);
     for (size_t i = 0; i < (size_t)N * P * (T + 1); ++i) S.pub[i].store(i % (T + 1) == 0 ? 1 : 0);
     S.cert.assign((size_t)N * P * (T + 1), 0); S.tstart.assign(N * P, 0); S.tend.assign(N * P, 0);
+    S.wait_ns.assign(P, 0); S.comp_ns.assign(P, 0);
     std::barrier bar(P);
     std::vector<std::thread> th;
     for (int p = 0; p < P; ++p) th.emplace_back(worker, p, mode, (int64_t)Ls[li] * 1000, std::ref(S), std::ref(bar));
@@ -248,8 +257,14 @@ int main(int argc, char** argv) {
     size_t cov = 0, tot = 0;
     if (mode >= 1) for (int b = 0; b < N; ++b) for (int p = 0; p < P; ++p) for (int t = 1; t < T; ++t) {
       ++tot; cov += S.cert[((size_t)b * P + p) * (T + 1) + t] > t; }
-    printf("RESULT model=%s L_us=%d mode=%s median_ms=%.4f exact=%d cert_coverage=%.3f\n", tag.c_str(), Ls[li],
-           mode == 0 ? "handshake" : "cert", ms[N / 2], (int)(S.spk == ref), tot ? (double)cov / tot : 0.0);
+    // per-core means over the whole run, in ms per sample, so they are comparable with median_ms
+    double wsum = 0, csum = 0;
+    for (int p = 0; p < P; ++p) { wsum += S.wait_ns[p]; csum += S.comp_ns[p]; }
+    const double wms = wsum / P / N / 1e6, cms = csum / P / N / 1e6;
+    printf("RESULT model=%s L_us=%d mode=%s median_ms=%.4f exact=%d cert_coverage=%.3f "
+           "wait_ms=%.4f comp_ms=%.4f\n", tag.c_str(), Ls[li],
+           mode == 0 ? "handshake" : "cert", ms[N / 2], (int)(S.spk == ref), tot ? (double)cov / tot : 0.0,
+           wms, cms);
     fflush(stdout);
   }
 }
