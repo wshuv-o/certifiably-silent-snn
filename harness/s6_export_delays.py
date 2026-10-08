@@ -40,6 +40,17 @@ for item in os.environ["MODELS"].split(","):
     H = Ws[0].shape[0]; P = CORES; C = H // P
     assert H % P == 0, f"H={H} not divisible by CORES={P}"
     Win = sd["win.weight"].numpy().astype(np.float64)
+    # This recomputes the feedforward current instead of calling the model, so any transform the
+    # model applies to it must be replicated here. ACC-001 can add input binning and feedforward
+    # batch normalisation; neither is implemented below, so refuse rather than export a current the
+    # network never saw.
+    assert not any(k.startswith("bn.") for k in sd), (
+        "checkpoint was trained with feedforward batch normalisation (BN=1); the export does not "
+        "replicate it. Fold the eval-mode affine into win.weight before exporting.")
+    assert Win.shape[1] == X.shape[2], (
+        f"win expects {Win.shape[1]} inputs but the data has {X.shape[2]}; the checkpoint was "
+        f"trained with input binning (NBINS={X.shape[2] // Win.shape[1]}), which the export does "
+        f"not replicate.")
     I = np.einsum("btn,hn->bth", X, Win)
     delays = [int(d) for d in os.environ.get("DELAYS", "2,4,8").split(",")]
     assert len(delays) == len(Ws), f"DELAYS has {len(delays)} entries but checkpoint has {len(Ws)} taps"

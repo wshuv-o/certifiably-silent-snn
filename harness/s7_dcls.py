@@ -54,6 +54,12 @@ DMAX = int(os.environ.get("DMAX", "8"))
 assert 1 <= DMIN <= DMAX
 DEL = list(range(DMIN, DMAX + 1))
 LAM = float(os.environ.get("CERT_LAMBDA", "0")); SEED = int(os.environ.get("SEED", "1"))
+# --- reference-matched delay learning (Hammouamri et al. 2024). DCLS_FIX=0 reproduces the
+# --- original behaviour exactly: one learning rate for everything, fixed triangular kernel.
+DCLS_FIX = os.environ.get("DCLS_FIX", "1") == "1"
+LR_POS_MULT = float(os.environ.get("LR_POS_MULT", "100"))   # reference: lr_pos = 100 * lr_w
+SIG_FINAL = float(os.environ.get("SIG_FINAL", "0.5"))       # narrow enough to pick a single tap
+_sigma = [1.0]                                              # annealed in the epoch loop
 EPOCHS = int(os.environ.get("EPOCHS", "150")); K = int(os.environ.get("K", "4"))
 AUG = int(os.environ.get("AUG", "2"))
 TEST = os.environ.get("TEST", "0") == "1"; TAG = os.environ.get("TAG", "cfg")
@@ -120,9 +126,20 @@ class DCLSNet(torch.nn.Module):
         return DMIN + (DMAX - DMIN) * torch.sigmoid(self.draw)
 
     def taps(self):
-        """Effective weight matrix per integer tap. Triangular interpolation; kernel sums to 1."""
+        """Effective weight matrix per integer tap.
+
+        With DCLS_FIX the kernel is a Gaussian of width sigma, normalised across taps so total
+        synaptic strength is preserved. sigma starts wide, so a delay receives gradient from every
+        tap and can travel the whole range, and is annealed so it ends up selecting one tap. The
+        original fixed triangular kernel (half-width 1) is kept for reproducibility.
+        """
         D = self.delays()
-        return [self.w * torch.relu(1.0 - (D - float(k)).abs()) for k in DEL]
+        if not DCLS_FIX:
+            return [self.w * torch.relu(1.0 - (D - float(k)).abs()) for k in DEL]
+        sig = max(_sigma[0], 1e-3)
+        g = torch.stack([torch.exp(-((D - float(k)) ** 2) / (2.0 * sig * sig)) for k in DEL])
+        g = g / g.sum(0, keepdim=True).clamp_min(1e-8)
+        return [self.w * g[i] for i in range(len(DEL))]
 
     def forward(self, x):
         Bsz = x.shape[0]
@@ -259,7 +276,17 @@ def main():
     if INIT:
         sd = {k: v for k, v in torch.load(os.path.expanduser(INIT), map_location=dev).items() if k != 'quiet'}
         print("INIT load:", m.load_state_dict(sd, strict=False), flush=True)
-    opt = torch.optim.AdamW(m.parameters(), LR, weight_decay=1e-4)
+    if DCLS_FIX:
+        # delay positions move on a much larger scale than weights; the reference uses 100x
+        pos = [p for n, p in m.named_parameters() if n == "draw"]
+        rest = [p for n, p in m.named_parameters() if n != "draw"]
+        opt = torch.optim.AdamW([{"params": rest, "lr": LR},
+                                 {"params": pos, "lr": LR * LR_POS_MULT}], LR, weight_decay=1e-4)
+        print("DCLS_FIX on: lr_w=%g lr_pos=%g, gaussian kernel annealed %0.2f -> %0.2f over the "
+              "first quarter of training" % (LR, LR * LR_POS_MULT, (DMAX - DMIN) / 2.0, SIG_FINAL),
+              flush=True)
+    else:
+        opt = torch.optim.AdamW(m.parameters(), LR, weight_decay=1e-4)
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, max(1, EPOCHS * ((len(tidx) + 127) // 128)))
     t0 = time.time()
 
@@ -270,7 +297,11 @@ def main():
                   .argmax(1).cpu().numpy() for i in range(0, len(vsel), 256)]
         return float((np.concatenate(pr) == yva).mean())
 
+    sig0, ep_anneal = (DMAX - DMIN) / 2.0, max(1, EPOCHS // 4)
     for ep in range(EPOCHS):
+        # exponential anneal of the Gaussian width over the first quarter of training, as in the
+        # reference: wide early so delays can travel, narrow later so they commit to a tap
+        _sigma[0] = (sig0 * (SIG_FINAL / sig0) ** min(1.0, ep / ep_anneal)) if DCLS_FIX else 1.0
         perm = tidx[np.random.permutation(len(tidx))]
         for b in range(0, len(perm), 128):
             idx = perm[b:b + 128]

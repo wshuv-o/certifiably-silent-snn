@@ -49,6 +49,18 @@ TEST = os.environ.get("TEST", "0") == "1"; TAG = os.environ.get("TAG", "cfg")
 VALSPK = [int(s) for s in os.environ.get("VALSPK", "3,6").split(",")]
 INIT = os.environ.get("INIT", "")
 LR = float(os.environ.get("LR", "2e-3")); RAMP = os.environ.get("RAMP", "0") == "1"
+# --- ACC-001 recipe knobs, from best_config_SHD.py (Hammouamri et al. 2024). Every default below is
+# --- the pre-ACC-001 behaviour, so earlier results reproduce from this same file.
+DROP = float(os.environ.get("DROP", "0"))        # reference 0.4; on the feedforward current only
+BN = os.environ.get("BN", "0") == "1"            # reference True; feedforward current only (see note)
+ONECYCLE = os.environ.get("ONECYCLE", "0") == "1"   # reference one_cycle; we had cosine
+BS = int(os.environ.get("BS", "128"))            # reference 256
+SURR = os.environ.get("SURR", "fs")              # fs = fast sigmoid squared (ours) | atan (reference)
+ATAN_A = float(os.environ.get("ATAN_A", "5.0"))  # reference alpha
+NBINS = int(os.environ.get("NBINS", "1"))        # reference 5: sum groups of adjacent input channels
+FT_EP = int(os.environ.get("FT_EP", "0"))        # reference +30 epochs at a tenth of the LR
+assert NIN % NBINS == 0, f"NIN={NIN} not divisible by NBINS={NBINS}"
+NIN_EFF = NIN // NBINS
 torch.manual_seed(SEED); np.random.seed(SEED)
 
 
@@ -99,7 +111,11 @@ class Spike(torch.autograd.Function):
 
     @staticmethod
     def backward(ctx, g):
-        x, = ctx.saved_tensors; return g / (1 + 10 * x.abs()) ** 2
+        x, = ctx.saved_tensors
+        if SURR == "atan":
+            # arctan surrogate, d/dx (1/pi) atan(pi/2 * a * x), as used by the reference via SpikingJelly
+            return g * (ATAN_A / 2.0) / (1.0 + (np.pi / 2.0 * ATAN_A * x) ** 2)
+        return g / (1 + 10 * x.abs()) ** 2
 
 
 class DelayNet(torch.nn.Module):
@@ -110,7 +126,7 @@ class DelayNet(torch.nn.Module):
         # init order matches s4_improve.py (win, wrec, wout) so DELAYS=1 is as close to it as possible.
         # Exact bitwise reproduction is NOT expected: nn.Linear's default init consumes RNG that a raw
         # Parameter does not, so the equivalence check below is statistical, not bit-for-bit.
-        self.win = torch.nn.Linear(NIN, H, bias=False)
+        self.win = torch.nn.Linear(NIN_EFF, H, bias=False)
         torch.nn.init.normal_(self.win.weight, 0, 0.05)
         # one weight matrix per delay tap; variance split across taps so total initial drive matches a 1-tap net
         self.wrec = torch.nn.ParameterList()
@@ -126,6 +142,12 @@ class DelayNet(torch.nn.Module):
             M = M * torch.tensor(((d <= LOCAL_R) | (d >= NPC - LOCAL_R)).astype(np.float32))
         self.register_buffer("mask", M)
         self.register_buffer("quiet", torch.ones(H))
+        # Normalisation and dropout act on the FEEDFORWARD current only. The certificate bounds the
+        # recurrent drive by sum_j max(0, W_ij), which holds only because that drive is linear in the
+        # spikes; normalising it would rescale it by gamma/sigma and break the bound. The feedforward
+        # current is exactly known to the certificate, so transforming it costs nothing.
+        self.bn = torch.nn.BatchNorm1d(H) if BN else None
+        self.drop = torch.nn.Dropout(DROP) if DROP > 0 else None
 
     def masked(self):
         return [w * self.mask for w in self.wrec]
@@ -134,7 +156,16 @@ class DelayNet(torch.nn.Module):
         Bsz = x.shape[0]
         v = torch.zeros(Bsz, H, device=x.device); s = torch.zeros_like(v); a = torch.zeros_like(v)
         u = torch.zeros(Bsz, NOUT, device=x.device)
-        iext = self.win(x); out = 0; V, S = [], []
+        if NBINS > 1:
+            # sum groups of adjacent input channels, as the reference's n_bins does
+            x = x.reshape(Bsz, x.shape[1], NIN_EFF, NBINS).sum(-1)
+        iext = self.win(x)
+        if self.bn is not None:
+            # normalise each hidden unit's current over the batch and over time together
+            iext = self.bn(iext.reshape(-1, H)).reshape(Bsz, -1, H)
+        if self.drop is not None:
+            iext = self.drop(iext)
+        out = 0; V, S = [], []
         hist = [torch.zeros_like(v) for _ in range(DMAX)]     # hist[j] = s(t-1-j)
         Wm = self.masked()
         for t in range(T):
@@ -199,7 +230,7 @@ def augment(x):
 
 @torch.no_grad()
 def evaluate(m, X, y):
-    c = 0
+    m.eval(); c = 0
     for i in range(0, len(y), 256):
         xb = torch.tensor(batch(X, range(i, min(i + 256, len(y)))), dtype=torch.float32, device=dev)
         c += (m(xb)[0].argmax(1).cpu().numpy() == y[i:i + 256]).sum()
@@ -209,6 +240,7 @@ def evaluate(m, X, y):
 @torch.no_grad()
 def certify(m, X):
     """Lemma-2 fixed-point certificate, generalised to delayed synapses."""
+    m.eval()
     Wm = m.masked(); Wp = [torch.relu(w) for w in Wm]
     res = {"core_cert": 0.0, "core_oracle": 0.0, "violations": 0, "neuron_cert": 0.0, "allcore_cert": 0.0}
     n = 0
@@ -276,18 +308,30 @@ def main():
               if k not in ('mask', 'quiet')}
         print("INIT load:", m.load_state_dict(sd, strict=False), flush=True)
     opt = torch.optim.AdamW(m.parameters(), LR, weight_decay=1e-4)
-    steps = EPOCHS * ((len(ytr) + 127) // 128)
-    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, max(1, steps))
+    spe = max(1, (len(ytr) + BS - 1) // BS)
+    steps = EPOCHS * spe
+    sched = (torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=LR, total_steps=max(1, steps))
+             if ONECYCLE else torch.optim.lr_scheduler.CosineAnnealingLR(opt, max(1, steps)))
     t0 = time.time()
     def valacc():
-        if vsel is None: return evaluate(m, Xva, yva)
-        return float((np.concatenate([m(torch.tensor(batch(Xva, vsel[i:i + 256]), dtype=torch.float32,
-                    device=dev))[0].argmax(1).cpu().numpy() for i in range(0, len(vsel), 256)]) == yva).mean())
+        m.eval()
+        if vsel is None:
+            a = evaluate(m, Xva, yva); m.train(); return a
+        with torch.no_grad():
+            a = float((np.concatenate([m(torch.tensor(batch(Xva, vsel[i:i + 256]), dtype=torch.float32,
+                      device=dev))[0].argmax(1).cpu().numpy() for i in range(0, len(vsel), 256)]) == yva).mean())
+        m.train(); return a
 
-    for ep in range(EPOCHS):
+    m.train()
+    for ep in range(EPOCHS + FT_EP):
+        if ep == EPOCHS and FT_EP:
+            # fine-tuning tail at a tenth of the learning rate, constant, as the reference does
+            for gp in opt.param_groups: gp["lr"] = LR / 10.0
+            sched = None
+            print(f"fine-tuning tail: {FT_EP} epochs at lr {LR / 10.0:g}", flush=True)
         perm = tidx[np.random.permutation(len(tidx))]
-        for b in range(0, len(perm), 128):
-            idx = perm[b:b + 128]
+        for b in range(0, len(perm), BS):
+            idx = perm[b:b + BS]
             x = augment(torch.tensor(batch(Xtr, idx), dtype=torch.float32, device=dev))
             yb = torch.tensor(ytr[idx], device=dev)
             out, iext, V, S = m(x)
@@ -295,8 +339,9 @@ def main():
             if LAM > 0:
                 lam_eff = LAM * (min(1.0, (ep + 1) / max(1, EPOCHS // 2)) if RAMP else 1.0)
                 loss = loss + lam_eff * cert_penalty(m, V, S, iext)
-            opt.zero_grad(); loss.backward(); opt.step(); sched.step()
-        if ep % 5 == 4 or ep == EPOCHS - 1:
+            opt.zero_grad(); loss.backward(); opt.step()
+            if sched is not None: sched.step()
+        if ep % 5 == 4 or ep == EPOCHS + FT_EP - 1:
             print(f"epoch {ep} val acc {valacc():.4f} ({(time.time()-t0)/(ep+1):.0f}s/epoch)", flush=True)
     acc_val = valacc()
     if vsel is None:
@@ -308,6 +353,8 @@ def main():
     cert_test = certify(m, batch(Xte, np.random.default_rng(1).choice(len(yte), 300, replace=False))) if TEST else {}
     res = dict(tag=TAG, dataset=DATASET, seed=SEED, epochs=EPOCHS, H=H, K=K, cpc=CPC, taum=TAUM, local=int(LOCAL),
                local_r=LOCAL_R, aug=AUG, lam=LAM, acc_val=float(acc_val), acc=float(acc),
+               recipe=dict(drop=DROP, bn=int(BN), onecycle=int(ONECYCLE), bs=BS, surr=SURR,
+                           nbins=NBINS, ft_ep=FT_EP, lr=LR),
                test=({'acc': float(acc), **{('test_' + k): v for k, v in cert_test.items()}} if TEST else None),
                **cert)
     print("RESULT", json.dumps(res), flush=True)

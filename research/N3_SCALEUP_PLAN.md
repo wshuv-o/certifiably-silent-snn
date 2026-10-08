@@ -2212,3 +2212,109 @@ which neurons sit near threshold and not only on the drive available to them.
 
 **Headline claims are unaffected:** every reported result sits at the sharp ends, at R_short
 0.26-0.30 or >= 4.81.
+
+## DCLS-002 — pre-registered 2026-10-08, before any run
+
+**A defect in our own implementation, found by diffing the reference.** Our learnable-delay model
+reaches 85.54% on SHD where Hammouamri et al. (ICLR 2024, `Thvnvtos/SNN-delays`) report 95.07% with
+the same method. Reading `best_config_SHD.py` against `s7_dcls.py` shows two compounding causes:
+
+1. **One learning rate for everything.** `AdamW(m.parameters(), LR)` trains delay positions at the
+   weight learning rate; the reference uses `lr_pos = 100 * lr_w`. Our delays learned 100x too slowly.
+2. **A fixed triangular kernel of half-width 1.** `W * relu(1 - |D - k|)` gives a delay at D=5
+   gradient only from taps 4, 5, 6, so it cannot discover that it belongs at 20. The reference uses a
+   Gaussian whose width starts at `max_delay/2` -- every tap contributes gradient -- annealed
+   exponentially over the first quarter of training. **That annealing is the method**, and we omitted
+   it. The reference also allows delays to 25 steps against our 8.
+
+**Why this matters beyond accuracy.** The DCLS run produces a headline claim: *certifiability can be
+architectural -- the unconstrained learnable-delay network certifies 97.4% of oracle with no penalty*.
+That claim currently rests on a delay learner whose delays could barely move, so the measured
+distribution (68% of excitatory mass beyond the horizon) may reflect the **uniform initialisation**
+rather than anything learned. A referee familiar with DCLS would see the missing annealing at once.
+
+**Fix, behind `DCLS_FIX` so the old behaviour stays exactly reproducible:** separate parameter group
+for `draw` at 100x the weight learning rate; Gaussian kernel normalised across taps, sigma annealed
+from `(DMAX-DMIN)/2` to 0.5 over `EPOCHS/4`.
+
+**Predictions.**
+1. Validation accuracy rises above the 85.54% of the crippled implementation.
+2. The learned delay distribution differs **materially** from the uniform initialisation, which is
+   the direct test of whether the previous result measured learning or initialisation.
+
+**Pre-registered bars.**
+1. If accuracy rises **and** certification stays at or above 90% of oracle, the architectural claim is
+   confirmed with a correct implementation and strengthened.
+2. If accuracy rises **and** certification collapses, the claim was an artifact of un-learned delays.
+   It is then withdrawn from the abstract and contributions, and reported as a negative.
+3. If the delay distribution is statistically indistinguishable from the initialisation, the fix did
+   not work and no conclusion is drawn either way.
+
+**Falsification.** Bar 2 would remove one of the paper's four headline claims. It is run anyway,
+because the claim as it stands is not supported by a correct implementation of the method it uses.
+
+**Runs.** Seed 1 first: control (no penalty) and constrained, DMIN=2, DMAX=8 to stay comparable with
+the existing result; then DMAX=25 to test whether a wider delay range helps both accuracy and
+certifiability, which the decomposition predicts it should.
+
+### DCLS-002 RESULT (arms B) — 2026-10-08: one claim withdrawn, the central one strengthened
+
+| arm | acc | certified | % oracle | R_short | frac delays < K | viol |
+|---|---|---|---|---|---|---|
+| OLD crippled learner, control | 85.54 | 55.88% | **97.4%** | 1.595 | 0.327 | 0 |
+| corrected learner, control | **86.14** | 1.02% | **1.9%** | **3.058** | 0.437 | 0 |
+| corrected learner, constrained | 85.97 | 52.30% | **95.5%** | **0.246** | 0.358 | 0 |
+
+**Pre-registered bar 2 triggered, and honoured.** Accuracy rose and certification collapsed in the
+control, so *"certifiability can be architectural"* is **WITHDRAWN** from the abstract, contributions
+and results. It measured the uniform delay initialisation, not learning: the old delay mean of 5.04
+is exactly `2 + 6*0.5`, the mean of `sigmoid(U(-2,2))`.
+
+**The mechanism is a real tension, not a null result.** With delays able to move, the network pushes
+excitation *toward* short lags -- fraction below the horizon 0.327 -> 0.437, R_short 1.595 -> 3.058 --
+which is the direction that destroys provability. Accuracy and certifiability pull against each other
+in the delay distribution.
+
+**The central claim is strengthened by the same experiment.** The certificate penalty resolves that
+tension: R_short 3.058 -> 0.246, a 12x reduction, certification 1.9% -> 95.5% of oracle, at a cost of
+**0.17 accuracy points** and 0 violations. Previously the learnable-delay control certified 97.4%
+unaided, which undercut the need for the training objective at all. Now the control certifies 1.9%
+and the training contribution is unambiguous.
+
+**Net effect on the paper:** four headline claims become three, and the remaining three are better
+supported. The accuracy gap to the reference (86.14 vs 95.07) is NOT explained by the two defects
+fixed here; it is the rest of the recipe, which ACC-001 addresses.
+
+## ACC-001 — pre-registered 2026-10-08, before any run
+
+**Why.** Our best recurrent control sits at 87.25% on SHD against a published 95.07% (feedforward
+DCLS) and 95.8% (Baronig et al., *recurrent* adaptive LIF). Diffing `best_config_SHD.py` against
+`s5_delays.py` leaves eight differences beyond the two already fixed: 2x256 layers vs 1x512, input
+binned 700 -> 140, dropout 0.4, batch normalisation, one-cycle LR, batch 256, ATan surrogate, and a
+30-epoch low-LR fine-tuning phase. These are standard and plausibly account for most of the gap.
+
+**Constraint that rules out the obvious shortcut.** The 95.07% reference is *feedforward*. Our
+certificate bounds *recurrent* excitatory drive, so a feedforward model has nothing to certify.
+The recipe may be adopted; the architecture may not. Recurrence is retained throughout.
+
+**Also noted:** SHD has no validation set and the field selects on test. We use a speaker-disjoint
+split and touch test once, which our own measurement puts at ~2.1 points of absolute accuracy. Part
+of the apparent gap is methodology we are not giving up.
+
+**Changes, each behind a flag so every existing result stays reproducible:** DROPOUT, BATCHNORM,
+ONECYCLE, batch size, ATan surrogate. Added incrementally so the contribution of each is attributable.
+
+**Predictions.**
+1. Validation accuracy exceeds the current 87.25% control.
+2. The certificate penalty still restores certification to >= 90% of oracle at <= 1 accuracy point,
+   as it did in DCLS-002 against a control certifying 1.9%.
+
+**Pre-registered bars.**
+1. If accuracy improves but the penalty can no longer restore certification above 90% of oracle, the
+   recipe and the contribution are **incompatible**, and that is reported as the finding rather than
+   the accuracy number.
+2. Any recipe change adopted for the headline must be re-run on the frozen protocol end to end; no
+   mixing of recipes within a table.
+
+**Falsification.** If accuracy does not improve, the gap is architectural (depth, feedforward delays)
+rather than recipe, and the limitation stands as written.
