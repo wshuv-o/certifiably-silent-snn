@@ -1,6 +1,57 @@
 # Project Brief (Layer 2)
 
-Last updated: 2026-10-08
+Last updated: 2026-10-08 (late)
+
+## STATUS 2026-10-08 23:10 — the 1.44x is WITHDRAWN; the execution story is smaller and now coherent
+
+**SPEED-DIAG-001: 240 runs, idle machine, `exact=1` in all 240, same checkpoint (coverage
+fingerprint 46.5/49.6/56.3/71.4 vs published 44.5/52.2/61.5/71.0).**
+
+| cores | L=0 | L=5 | L=20 | L=100 | L=500 |
+|---|---|---|---|---|---|
+| 4 | 0.93 | 0.94 | 0.95 | **1.06** | **1.11** |
+| 8 | 0.87 | 0.84 | 0.88 | **1.07** | **1.12** |
+| 16 | 0.81 | 0.81 | 0.81 | **1.05** | **1.11** |
+| 32 | **0.73** | 0.73 | 0.72 | **1.07** | **1.14** |
+| 32, control | 0.76 | 0.82 | 0.84 | 0.97 | 0.96 |
+
+**The published 1.44 at 32 cores measures 0.730.** Not a saturation artifact -- blocked time grows
+*smoothly* (0.19/0.64/1.04/3.26 ms), no discontinuity at 32, so the pre-registered saturation
+signature is absent. It was **external contention**: published handshake 48.04 ms vs 3.013 ms here,
+and contention penalises the handshake more than certificates, inverting the ratio.
+
+**Replacement claim, corroborated by two independent engines:** certificates buy lookahead by
+computing a certificate, so they pay only where waiting is expensive -- **1.05-1.14x in shared memory
+above L ~ 100 us, independent of core count**, and **1.13-1.18x across two processes above
+L ~ 350 us**. Below threshold they lose, by up to 27% at 32 cores. The control never wins anywhere
+(max 0.997), so the effect stays training-attributable. Coverage still rises with cores (46.5 ->
+71.4%) but that is now stated as a *coverage* result only.
+
+**MEASUREMENT PROTOCOL NOW MANDATORY:** every engine timing requires an idle machine with 1-minute
+load < 0.6. Three separate measurements of this engine have now been lost or corrupted by CPU
+contention. `harness/run_speed_diag.sh` enforces it and refuses otherwise.
+
+## Contribution list as it now stands
+
+1. **The governing quantity.** Delay decomposition; `R_short` governs certified silence across **22
+   networks, rho = -0.823**, spanning 113-fold; transition points ordered exactly. STRONG.
+2. **Training satisfies it by reallocation**, at no measurable accuracy cost: 2.4% -> 95.7% of oracle
+   over two seeds, 0 violations; holds on SHD, SSC and N-MNIST. STRONG.
+3. **Exact barrier-free execution**, bit-identical in 294/294 runs, paying above a measurable latency
+   threshold at ~1.1x. MODEST but internally consistent and corroborated across two engines.
+4. **Negatives, all pre-registered:** feedforward recipes do not transfer to recurrent SNNs (the
+   combination, not one ingredient); a wider delay range does not pay once the objective is applied;
+   learned per-neuron time constants are compatible with the certificate but unused by it; the
+   dispersion hypothesis; activity caps; faster leak.
+5. **Withdrawn tonight:** "certifiability can be architectural" (measured a crippled delay learner)
+   and the 1.44x many-core speed-up (measured a loaded machine).
+
+**Title v5 still fits** -- it names the governing quantity, not the speed-up, which is why the
+withdrawal does not touch it.
+
+**Open:** accuracy stuck at 87.25 validation (~90 test) vs ~96 SOTA, eight arms all negative, one
+final arm (ACC-002b) running; table 1 learnable rows at two seeds, third queued; no real hardware.
+
 
 ## STATUS 2026-10-08 20:20 — one claim withdrawn under its own pre-registered bar; the relation is tighter
 
