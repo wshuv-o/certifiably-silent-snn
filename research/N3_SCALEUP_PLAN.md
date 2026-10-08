@@ -2372,3 +2372,31 @@ scalar beta and the engine would otherwise simulate dynamics the network was not
 **Falsification.** If accuracy does not improve with learned `tau`, the remaining gap is depth or
 input resolution, both of which change the certificate's scope, and the sub-SOTA limitation stands as
 written in the manuscript.
+
+## SPEED-DIAG-001 — pre-registered 2026-10-08, to run on an idle machine
+
+**The question.** Table 5's 32-core row (1.44x at L=0) did not reproduce: a rerun of the same
+configuration measured 2.66 ms/sample against the recorded 48.04, with identical `cert_coverage` and
+`nproc`, while the 4-core numbers agree (6.48 vs 6.23). Either the original was contaminated, or the
+gain is real but specific to saturation.
+
+**The hypothesis is testable here, without the 192-vCPU host.** This machine has 32 threads, so 32
+cores saturates it exactly. `s6_engine_delays.cpp` already separates each step into time blocked on
+neighbours (`wait_ms`) and time computing (`comp_ms`) -- that instrumentation was added for this.
+
+**Pre-registered discriminator.**
+- If the certificate's advantage at 32 cores comes from **removing waiting**, then `comp_ms` is flat
+  across core counts for both modes and the handshake's `wait_ms` grows smoothly with cores. The
+  result is real and the 192-vCPU run should reproduce it.
+- If it comes from **saturation**, the handshake's `wait_ms` jumps discontinuously at 32 while
+  rising smoothly to 16, and `comp_ms` also inflates at 32 for both modes because threads are
+  descheduled mid-computation. The 1.44x is then an artifact of oversubscription and must be
+  withdrawn or restated as a saturation effect.
+
+**Protocol.** 4/8/16/32 cores, both modes, L=0, three repeats, machine otherwise idle (no training
+jobs: they occupy CPU for data loading and would reproduce the original contamination). Verify
+`exact=1` in every run. Record `wait_ms` and `comp_ms` per core count, not only `median_ms`.
+
+**Blocked on:** the GPU training queue draining, since a loaded CPU is the very confound being
+tested. Do not run this concurrently with training -- that is how the first two attempts to measure
+the delay engine were lost.
