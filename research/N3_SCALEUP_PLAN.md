@@ -2458,3 +2458,45 @@ knob" and "could not move the knob" are not yet separated. ACC-002b at 100x deci
 spreads there and the network still does not trade leak for excitation, the result stands as a
 genuine preference; if `tau` only spreads at 100x and then is used, the stage-1 reading is wrong and
 must be withdrawn.
+
+## SPEED-DIAG-001 RESULT — the 1.44x is withdrawn. It required a loaded machine to exist.
+
+**240 runs, `exact=1` in all 240, 3 repeats per point, idle machine (1-minute load below 0.6 before
+the first timing), same checkpoint as the published table.**
+
+| cores | coverage | L=0 | L=5 | L=20 | L=100 | L=500 |
+|---|---|---|---|---|---|---|
+| 4 | 46.5% | 0.932 | 0.938 | 0.946 | **1.061** | **1.113** |
+| 8 | 49.6% | 0.873 | 0.836 | 0.883 | **1.067** | **1.117** |
+| 16 | 56.3% | 0.808 | 0.805 | 0.809 | **1.050** | **1.114** |
+| 32 | 71.4% | **0.730** | 0.726 | 0.721 | **1.067** | **1.144** |
+| 32, control | 5.5% | 0.763 | 0.822 | 0.838 | 0.968 | 0.963 |
+
+**The published 1.44 at 32 cores, L=0, measures 0.730 here.** Certificates are 27% slower, not 44%
+faster. Per-repeat ranges are non-overlapping at every point except 8 cores at L=0.
+
+**It is not the saturation artifact I hypothesised.** Blocked time grows *smoothly* with core count
+for both modes (handshake 0.19 / 0.64 / 1.04 / 3.26 ms) with no discontinuity at 32, and compute
+falls smoothly as work divides. The pre-registered saturation signature does not appear.
+
+**It was external contention.** The model is confirmed identical by its coverage fingerprint
+(46.5/49.6/56.3/**71.4**% against the published 44.5/52.2/61.5/**71.0**%), but the published
+handshake time is **48.04 ms against 3.013 ms here**, a factor of sixteen. Contention did not scale
+both arms equally -- it penalises the handshake disproportionately, which inverted the ratio from
+0.73 to 1.44. The original measurement was taken on a machine that was not idle.
+
+**What survives, and it is more coherent than what it replaces.** Certificates buy lookahead at the
+cost of computing the certificate, so they pay exactly when waiting is expensive:
+- shared memory: **1.05-1.14x above L = 100 us**, essentially *independent of core count*;
+- two processes over TCP: break-even at **L ~ 348 us**, 1.13x at 800 us, 1.18x at 1600 us.
+
+Two independent engines now agree on both the mechanism and the magnitude (~1.1x). The previous
+story -- a lone 1.44x peak at 32 cores, unexplained and contradicting its own trend -- was anomalous.
+
+**The control never wins at any latency or core count (max 0.997), so the benefit remains entirely
+training-attributable.** Coverage still rises with core count (46.5% to 71.4%), so the
+fine-grained-many-core observation survives as a statement about *coverage*, but it no longer
+translates into a low-latency speed advantage and must not be presented as one.
+
+**Manuscript consequence:** table 5 replaced, and the 1.25-1.49x claim withdrawn from the abstract,
+contributions, two results paragraphs, the design rule, limitations and two conclusion sentences.

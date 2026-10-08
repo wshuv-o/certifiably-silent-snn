@@ -220,7 +220,7 @@ def figure1():
 #   (a,b) manuscript table 1 (tab:governing), speaker-disjoint validation.
 #   (c)   manuscript tables 2 and 3, held-out test seeds.
 #   (d,e) manuscript table 4 (tab:mech); points in (e) are the four SSC test seeds.
-#   (f)   manuscript table 5 (tab:speed), shared-memory engine, 80/80 bit-identical.
+#   (f)   manuscript table 5 (tab:speed), shared-memory engine, 240/240 bit-identical.
 # =============================================================================================
 def figure2():
     rows = [
@@ -248,9 +248,10 @@ def figure2():
     ssc_k = ssc_seeds.mean(axis=0)
 
     cores = np.array([4, 8, 16, 32])
-    sm = {0: [0.93, 0.90, 0.79, 1.44], 100: [1.07, 1.02, 1.05, 1.25],
-          500: [1.11, 1.11, 1.11, 1.49]}
-    ctrl32 = [0.99, 0.98, 0.83, 0.98, 0.99]
+    # SPEED-DIAG-001, idle machine, medians of three repeats (supersedes an earlier contaminated run)
+    sm = {0: [0.93, 0.87, 0.81, 0.73], 100: [1.06, 1.07, 1.05, 1.07],
+          500: [1.11, 1.12, 1.11, 1.14]}
+    ctrl32 = [0.76, 0.82, 0.84, 0.97, 0.96]   # SPEED-DIAG-001; control never exceeds 1.0
 
     fig, axes = plt.subplots(2, 3, figsize=(6.3, 4.2),
                              gridspec_kw={"wspace": 0.46, "hspace": 0.62})
