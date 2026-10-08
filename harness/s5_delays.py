@@ -59,6 +59,14 @@ SURR = os.environ.get("SURR", "fs")              # fs = fast sigmoid squared (ou
 ATAN_A = float(os.environ.get("ATAN_A", "5.0"))  # reference alpha
 NBINS = int(os.environ.get("NBINS", "1"))        # reference 5: sum groups of adjacent input channels
 FT_EP = int(os.environ.get("FT_EP", "0"))        # reference +30 epochs at a tenth of the LR
+# --- ACC-002: per-neuron learnable membrane time constant. tau_i is confined to [TAU_MIN, TAU_MAX]
+# --- by a sigmoid, so beta_i = exp(-1/tau_i) stays strictly inside (0,1) and every neuron keeps a
+# --- non-zero excitatory budget (1 - beta_i) theta. Default off; off reproduces the scalar model.
+TAU_LEARN = os.environ.get("TAU_LEARN", "0") == "1"
+TAU_MIN = float(os.environ.get("TAU_MIN", "1.0"))
+TAU_MAX = float(os.environ.get("TAU_MAX", "8.0"))
+assert 0 < TAU_MIN < TAU_MAX, "need 0 < TAU_MIN < TAU_MAX"
+assert TAU_MIN <= TAUM <= TAU_MAX, f"TAUM={TAUM} must lie inside [{TAU_MIN}, {TAU_MAX}] to initialise at it"
 assert NIN % NBINS == 0, f"NIN={NIN} not divisible by NBINS={NBINS}"
 NIN_EFF = NIN // NBINS
 torch.manual_seed(SEED); np.random.seed(SEED)
@@ -146,11 +154,27 @@ class DelayNet(torch.nn.Module):
         # recurrent drive by sum_j max(0, W_ij), which holds only because that drive is linear in the
         # spikes; normalising it would rescale it by gamma/sigma and break the bound. The feedforward
         # current is exactly known to the certificate, so transforming it costs nothing.
+        if TAU_LEARN:
+            # initialise every neuron at TAUM, with a small spread so they are not degenerate
+            p0 = min(max((TAUM - TAU_MIN) / (TAU_MAX - TAU_MIN), 1e-3), 1 - 1e-3)
+            self.traw = torch.nn.Parameter(
+                torch.full((H,), float(np.log(p0 / (1 - p0)))) + 0.01 * torch.randn(H))
         self.bn = torch.nn.BatchNorm1d(H) if BN else None
         self.drop = torch.nn.Dropout(DROP) if DROP > 0 else None
 
     def masked(self):
         return [w * self.mask for w in self.wrec]
+
+    def beta(self):
+        """Membrane decay, per neuron when learned and scalar otherwise.
+
+        Returned as a tensor of shape (H,) which broadcasts against v (B,H) and reach (B,tmax,H),
+        so the certificate arithmetic is unchanged apart from the budget becoming neuron-specific.
+        """
+        if not TAU_LEARN:
+            return BETA
+        tau = TAU_MIN + (TAU_MAX - TAU_MIN) * torch.sigmoid(self.traw)
+        return torch.exp(-1.0 / tau)
 
     def forward(self, x):
         Bsz = x.shape[0]
@@ -168,12 +192,13 @@ class DelayNet(torch.nn.Module):
         out = 0; V, S = [], []
         hist = [torch.zeros_like(v) for _ in range(DMAX)]     # hist[j] = s(t-1-j)
         Wm = self.masked()
+        bet = self.beta()
         for t in range(T):
             a = RHO * a + GAMMA * s
             rec = 0
             for wi, d in enumerate(DELAYS):
                 rec = rec + torch.nn.functional.linear(hist[d - 1], Wm[wi])
-            v = BETA * v + iext[:, t] + rec
+            v = bet * v + iext[:, t] + rec
             thr = THETA + a
             s = Spike.apply(v - thr)
             v = v - s * thr
@@ -204,6 +229,7 @@ def delay_terms(S, Wm, Wp, Sset_f, k, tmax, Bsz):
 def cert_penalty(m, V, S, iext):
     """Training penalty: push the worst-case K-step reach below threshold on genuinely silent windows."""
     Wm = m.masked(); Wp = [torch.relu(w) for w in Wm]
+    bet = m.beta()
     Bsz = V.shape[0]; tmax = T - K
     ones = torch.ones(Bsz, tmax, H, device=V.device)
     reach = V[:, :tmax]; worst = torch.full_like(reach, -1e9)
@@ -211,7 +237,7 @@ def cert_penalty(m, V, S, iext):
     for k in range(1, K + 1):
         silent = silent * (1 - S[:, k:tmax + k].detach())
         exact, bounded = delay_terms(S.detach(), Wm, Wp, ones, k, tmax, Bsz)
-        reach = BETA * reach + iext[:, k:tmax + k] + exact + bounded
+        reach = bet * reach + iext[:, k:tmax + k] + exact + bounded
         worst = torch.maximum(worst, reach)
     return (torch.relu(worst - THETA) * silent * m.quiet).mean()
 
@@ -242,6 +268,7 @@ def certify(m, X):
     """Lemma-2 fixed-point certificate, generalised to delayed synapses."""
     m.eval()
     Wm = m.masked(); Wp = [torch.relu(w) for w in Wm]
+    bet = m.beta()
     res = {"core_cert": 0.0, "core_oracle": 0.0, "violations": 0, "neuron_cert": 0.0, "allcore_cert": 0.0}
     n = 0
     for i in range(0, len(X), 100):
@@ -252,7 +279,7 @@ def certify(m, X):
             v = V[:, :tmax].clone(); fire = torch.zeros_like(v, dtype=torch.bool)
             for k in range(1, K + 1):
                 exact, bounded = delay_terms(S, Wm, Wp, Sset_f, k, tmax, Bsz)
-                v = BETA * v + iext[:, k:tmax + k] + exact + bounded
+                v = bet * v + iext[:, k:tmax + k] + exact + bounded
                 fire |= v >= THETA
             return fire
 
@@ -275,7 +302,17 @@ def certify(m, X):
     res["R_per_delay"] = Rd
     res["R_mean"] = float(sum(Rd))                                    # unbounded-horizon worst case
     res["R_short"] = float(sum(r for d, r in zip(DELAYS, Rd) if d < K))  # what binds a K-step certificate
-    res["budget"] = (1 - BETA) * THETA
+    if TAU_LEARN:
+        # the budget is now neuron-specific; report its distribution alongside the mean so a network
+        # that buys excitation by leaking faster is visible rather than averaged away
+        bud = (1 - bet) * THETA
+        res["budget"] = float(bud.mean())
+        res["budget_min"] = float(bud.min()); res["budget_max"] = float(bud.max())
+        tau = -1.0 / torch.log(bet)
+        res["tau_mean"] = float(tau.mean()); res["tau_min"] = float(tau.min())
+        res["tau_max"] = float(tau.max()); res["tau_std"] = float(tau.std())
+    else:
+        res["budget"] = (1 - BETA) * THETA
     res["delays"] = DELAYS
     return res
 

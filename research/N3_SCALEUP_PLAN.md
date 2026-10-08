@@ -2318,3 +2318,57 @@ ONECYCLE, batch size, ATan surrogate. Added incrementally so the contribution of
 
 **Falsification.** If accuracy does not improve, the gap is architectural (depth, feedforward delays)
 rather than recipe, and the limitation stands as written.
+
+## ACC-001 stage 1 RESULT and ACC-002 — pre-registered 2026-10-08, before any ACC-002 run
+
+**ACC-001 stage 1 is a negative, as pre-registered.** The reference's full recipe on our recurrent
+model: **76.13%** validation against the unchanged recipe's **87.25%** (which reproduced exactly,
+validating the anchor). Certification also fell, to 0.9% of oracle. Leave-one-out stage 2 running;
+first arm, removing input binning, recovers only 2.4 points (78.53%), so binning is not the cause.
+
+Falsification clause of ACC-001 therefore fires: **the gap is not explained by the training recipe.**
+The remaining candidates are architectural, and the one the literature supports for *recurrent*
+models is the neuron, not the schedule.
+
+## ACC-002 — per-neuron learnable membrane time constants
+
+**Why.** The 95.07% reference is feedforward and its recipe does not transfer. The strongest
+*recurrent* SHD results come from neurons with individually learned time constants (Baronig et al.,
+95.8% with adaptive LIF). That is a property of the neuron model, it is compatible with recurrence,
+and it extends our own theory instead of sitting beside it.
+
+**Theoretical content, not just an accuracy lever.** The excitatory budget is `(1-beta) theta`, so a
+per-neuron `beta_i` makes the budget per-neuron and the certifiability condition
+`R_i < (1-beta_i) theta - abar` neuron-specific. Learning then trades leak against excitation *within
+each unit*: a neuron that wants more recurrent drive can pay for it by leaking faster. BUDGET-001
+measured the aggregate version of this -- halving tau_m enlarges the budget 1.61x -- as a global
+hyperparameter. Here the network chooses it per neuron, which is a question the paper currently
+cannot answer: **is the budget better spent uniformly or unevenly?**
+
+**Implementation and its soundness surface.** `tau_i` is confined to `[TAU_MIN, TAU_MAX]` by a
+sigmoid, so `beta_i` is strictly inside (0,1) and no neuron can reach zero budget (no leak) or
+degenerate. `beta` enters the certificate in exactly five places and a shape-(H,) vector broadcasts
+correctly at all of them. The **adaptation variable is deliberately left fixed**: the certificate
+uses the resting threshold `theta` rather than `theta + a`, which is conservative only while
+`a >= 0`, and a learnable adaptation gain could change its sign. That is a separate experiment with
+its own guard. The engine export **refuses** a learned-tau checkpoint, because `dims.txt` carries one
+scalar beta and the engine would otherwise simulate dynamics the network was not trained with.
+
+**Predictions.**
+1. Validation accuracy exceeds 87.25%.
+2. Learned `tau` spreads rather than staying at its initialisation of 2.0; if it does not move, the
+   lever is inactive and prediction 1 cannot be attributed to it.
+3. The certificate penalty still reaches >= 90% of oracle, at <= 1 accuracy point.
+
+**Pre-registered bars.**
+1. If accuracy improves but certification cannot be recovered above 90% of oracle, report the
+   **incompatibility** as the finding; do not adopt the neuron model for the headline.
+2. If `tau` does not move, report prediction 2 as falsified and do not claim the mechanism.
+3. Any adopted change is re-run end to end on the frozen protocol; no mixing of neuron models within
+   a table.
+4. The engine comparison may not be run on a learned-tau checkpoint until `dims.txt` carries a beta
+   vector and the bit-exactness check passes again at 80/80.
+
+**Falsification.** If accuracy does not improve with learned `tau`, the remaining gap is depth or
+input resolution, both of which change the certificate's scope, and the sub-SOTA limitation stands as
+written in the manuscript.

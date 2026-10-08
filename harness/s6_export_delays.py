@@ -44,6 +44,10 @@ for item in os.environ["MODELS"].split(","):
     # model applies to it must be replicated here. ACC-001 can add input binning and feedforward
     # batch normalisation; neither is implemented below, so refuse rather than export a current the
     # network never saw.
+    assert "traw" not in sd, (
+        "checkpoint was trained with per-neuron learnable time constants (TAU_LEARN=1); dims.txt "
+        "carries a single scalar beta, so the engine would simulate different dynamics than the "
+        "network was trained with. Extend dims.txt to a beta vector before exporting.")
     assert not any(k.startswith("bn.") for k in sd), (
         "checkpoint was trained with feedforward batch normalisation (BN=1); the export does not "
         "replicate it. Fold the eval-mode affine into win.weight before exporting.")
