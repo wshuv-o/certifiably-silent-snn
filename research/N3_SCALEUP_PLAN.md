@@ -2500,3 +2500,50 @@ translates into a low-latency speed advantage and must not be presented as one.
 
 **Manuscript consequence:** table 5 replaced, and the 1.25-1.49x claim withdrawn from the abstract,
 contributions, two results paragraphs, the design rule, limitations and two conclusion sentences.
+
+### ACC-002b RESULT — tau moves, and moving it hurts. ACC-002 is CLOSED as falsified.
+
+At `LR_TAU_MULT=100`: accuracy **83.23** (anchor 87.25), `tau` mean 2.574, **sd 2.629**, range
+**[1.00, 7.99]**.
+
+- **Prediction 1 passes:** `tau` spreads, sd 2.629 against 0.16 at the single rate. The parameter is
+  trainable; stage 1 under-trained it, exactly as suspected.
+- **Prediction 2 fails:** accuracy falls 4.0 points.
+
+**Pre-registered bar 1 applies: the lever is active and does not help.** Per-neuron heterogeneity of
+the membrane time constant is not what separates this architecture from the recurrent state of the
+art. **No third learning rate is tried** -- that was written down in advance as the point at which
+this becomes fishing.
+
+**It also settles stage 1's ambiguity in the stronger direction.** At the weight rate the network
+left `tau` alone while cutting `R_short` 19-fold; forced to move `tau`, accuracy degrades. The
+network's preference for paying with weights rather than with leak was therefore a correct choice,
+not an inability. The claim that the budget is spent uniformly even when unevenness is free now
+stands on both arms rather than one.
+
+**A parallel worth recording.** `tau` saturated at **both rails** of its sigmoid, [1.00, 7.99],
+exactly as the learned delays saturated at [2, 8]. Two different bounded parameters under the same
+`min + range * sigmoid` parameterisation, both driven to the boundaries, both degenerate there. This
+is a property of the parameterisation rather than of either quantity, and anyone adopting it for
+delays or time constants should expect it.
+
+## ACCURACY PROGRAMME CLOSED — 9 arms, none beat the baseline
+
+| arm | val acc |
+|---|---|
+| **base recipe (anchor)** | **87.25** |
+| learned tau + certificate | 87.08 |
+| learned tau, control | 86.83 |
+| full recipe minus dropout | 86.23 |
+| full recipe minus batch norm | 85.20 |
+| arctangent surrogate alone | 83.92 |
+| learned tau at 100x | 83.23 |
+| full recipe minus one-cycle | 82.04 |
+| full recipe minus binning | 78.53 |
+| full reference recipe | 76.13 |
+
+**Recommendation: stop here and submit on the mechanism.** Remaining untested levers -- depth and
+input time resolution -- both change what the certificate covers, so each is a new method rather than
+a tuning pass, and neither is justified by the evidence. Sub-SOTA accuracy stays as the limitation
+already written, with the protocol caveat that our speaker-disjoint split costs about 2.1 points, so
+the comparable figure is ~90 against ~96 rather than 87 against 96.
