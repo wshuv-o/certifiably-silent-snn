@@ -1,6 +1,68 @@
 # Project Brief (Layer 2)
 
-Last updated: 2026-10-07
+Last updated: 2026-10-08
+
+## STATUS 2026-10-08 20:20 — one claim withdrawn under its own pre-registered bar; the relation is tighter
+
+**DCLS-002 fired pre-registered bar 2.** Diffing our delay learner against the reference
+(Hammouamri et al., ICLR 2024) found two defects: delay positions trained at the weight learning rate
+where the reference uses 100x, and a fixed triangular interpolation kernel of half-width 1 where the
+reference anneals a Gaussian from max_delay/2 over the first quarter of training. Under the triangular
+kernel a delay receives gradient only from the two adjacent taps and cannot traverse the range, so our
+delays never left their initialisation -- whose mean, 5.04, is exactly `2 + 6*0.5`.
+
+| learnable delays, SHD, seed 1 | acc | certified | % oracle | R_short | mass below horizon |
+|---|---|---|---|---|---|
+| OLD (crippled learner), control | 85.54 | 55.88% | **97.4%** | 1.595 | 32.7% |
+| corrected, control | 86.14 | 1.02% | **1.9%** | **3.058** | **43.5%** |
+| corrected, constrained | 85.97 | 52.30% | **95.5%** | **0.246** | **5.9%** |
+
+**WITHDRAWN: "certifiability can be architectural."** It measured the initialisation. A uniform delay
+distribution puts little mass at any one lag and is therefore easy to certify, so the defect presented
+as a favourable result.
+
+**STRENGTHENED: the training objective.** Delays free to move saturate *both* rails of the sigmoid --
+33.3% of excitatory mass on the shortest delay, 38.1% on the longest, interior ~30x lower. Training
+for accuracy *creates* the quantity the certificate must bound. The penalty then resolves it at a cost
+of **0.17 accuracy points**. Previously the learnable-delay control certified 97.4% unaided, which
+undercut the need for the objective; against a control at 1.9% the training contribution is
+unambiguous. Two networks sharing architecture, initialisation, seed and schedule, differing only in
+the penalty, differ **fiftyfold** in certified silence.
+
+**Mechanism corrected:** the penalty does **not** relocate delays (unweighted mean 5.00 -> 5.39); it
+**reweights synapses**, lifting the *excitation-weighted* mean delay 5.17 -> 7.07.
+
+**The governing relation improved.** The old boundary took its lower edge from the artifact, and the
+"loose middle" limitation existed only to explain the contradiction the artifact created (1.595 ->
+97.4% against a local net at the *lower* 1.221 -> 34.6%). At its corrected 3.058 it certifies 1.9%,
+which is in order. Across **13 networks spanning 0.246 to 25.0, Spearman rho = -0.879**; the three
+inside the transition certify 90.0 / 84.9 / 34.6% in **exact order** of R_short. Inversions occur only
+within the two flat plateaus. The limitation is now the honest one: the transition is sampled by three
+networks, all locally connected, so its **location** is established and its **shape** is not.
+
+**ACC-001 stage 1 (pre-registered): the reference recipe does NOT transfer.** Porting dropout 0.4,
+batch norm, one-cycle, batch 256, ATan surrogate, input binning 700->140 and a fine-tuning tail to our
+recurrent model *underperforms*: validation plateaus near 0.80 and drifts down over the last twenty
+epochs, against ~0.87 for the unchanged recipe. Stage 2 is a **leave-one-out** attribution (running).
+Suspect order: input binning (the reference affords it with two 256-unit layers and a feedforward
+delay stack; we have one recurrent layer), then dropout at 512 units, then batch norm interacting with
+a recurrence it cannot normalise.
+
+**Soundness constraint discovered while implementing it:** normalisation may be applied to the
+feedforward current but **not** the recurrent drive, because the certificate bounds that drive by
+`sum_j max(0, W_ij)`, which holds only because it is linear in the spikes. The engine export now
+refuses a batch-norm or binned-input checkpoint rather than silently writing an input current the
+network never saw.
+
+**Manuscript:** abstract, contributions, intro, method pointer, section 5.5 (rewritten and retitled
+*Training for accuracy concentrates excitation at short delays*), scale section, negative results,
+design rules, both figure captions, the cortex paragraph, the limitation and the conclusion all
+updated. Figure 1(b) plotted the artifact's histogram and is replaced; figure 2(a) rows corrected.
+Compiles clean, 0 undefined references, 16 pages.
+
+**Open:** learnable-delay rows in table 1 are seed 1 pending seeds 2-3 (queued); the wide-delay arm
+(DMAX=25) is running; the 1.44x many-core figure is still unreproducible and awaits the 192-vCPU run.
+
 
 ## STATUS 2026-10-06 17:00 — six-seed result: the accuracy cost is ~0.9 points, not ~0
 
