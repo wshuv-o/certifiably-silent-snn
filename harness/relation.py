@@ -14,7 +14,7 @@ import sys
 
 # (R_short, % of oracle certified, label, provenance)
 POINTS = [
-    (0.246, 95.5, "learnable delays, constrained",   "dx_b_fix_cert"),
+    (0.243, 95.7, "learnable delays, constrained",   "dx_b_fix_cert (2 seeds)"),
     (0.260, 97.4, "local H=512, constrained",        "SCALE-LOCAL-001"),
     (0.261, 95.0, "D={2,4,8}, constrained",          "GOVERN-002"),
     (0.294, 96.3, "local H=1024, constrained",       "SCALE-LOCAL-001"),
@@ -26,7 +26,7 @@ POINTS = [
     (2.773,  1.7, "recipe minus binning",            "ac_r_nobins"),
     (2.802, 15.5, "learnable delays d<=25, control", "dx_c_wide_ctrl"),
     (2.906,  0.9, "full reference recipe",           "ac_r_full"),
-    (3.058,  1.9, "learnable delays, control",       "dx_b_fix_ctrl"),
+    (3.028,  2.4, "learnable delays, control",       "dx_b_fix_ctrl (2 seeds)"),
     (4.795,  0.5, "recipe minus batch norm",         "ac_r_nobn"),
     (4.813,  6.3, "D={2,4,8}, control",              "GOVERN-002"),
     (5.631, 10.8, "arctangent surrogate only",       "ac_r_atan"),
