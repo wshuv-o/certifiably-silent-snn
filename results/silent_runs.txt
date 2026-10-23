@@ -1,0 +1,10 @@
+== cert
+RESULT model=cert samples=50 silent_frac=0.666 mean_run=14.53 median_run=4 share_in_runs_ge5=0.931 share_in_runs_ge9=0.880
+== lk4
+RESULT model=lk4 samples=50 silent_frac=0.662 mean_run=13.96 median_run=3 share_in_runs_ge5=0.923 share_in_runs_ge9=0.874
+== lk8
+RESULT model=lk8 samples=50 silent_frac=0.674 mean_run=15.13 median_run=3 share_in_runs_ge5=0.933 share_in_runs_ge9=0.884
+== hdcls
+RESULT model=hdcls samples=50 silent_frac=0.611 mean_run=5.94 median_run=2 share_in_runs_ge5=0.800 share_in_runs_ge9=0.674
+== hscmd
+RESULT model=hscmd samples=50 silent_frac=0.663 mean_run=6.12 median_run=2 share_in_runs_ge5=0.800 share_in_runs_ge9=0.678

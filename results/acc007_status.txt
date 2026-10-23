@@ -1,0 +1,10 @@
+=== ACC-007 START Tue Oct 20 18:02:16 +06 2026 ===
+# a7_C1c: val 87.34 (control 87.51, -0.17)  91.5% of oracle  R_short 0.042  viol 0  selected best_val_from_49
+STAGE2 PASS
+=== ACC-007 stage 3: TEST Tue Oct 20 18:48:29 +06 2026 ===
+# seed 1: control 91.96  certified 91.70  (92.3% of oracle, viol 0)  [best-test-epoch rule: control 92.35, certified 92.37]
+# seed 2: control 91.48  certified 91.25  (91.8% of oracle, viol 0)  [best-test-epoch rule: control 92.18, certified 91.54]
+# seed 3: control 90.46  certified 90.33  (91.7% of oracle, viol 0)  [best-test-epoch rule: control 91.04, certified 90.46]
+# mean: control 91.30  certified 91.09  91.9% of oracle  viol 0  [best-test-epoch rule: control 91.86, certified 91.46]
+ACC-007 CONFIRMED
+=== ACC-007 END Wed Oct 21 01:00:14 +06 2026 ===

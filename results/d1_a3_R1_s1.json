@@ -1,0 +1,58 @@
+{
+ "tag": "a3_R1",
+ "dataset": "shd",
+ "seed": 1,
+ "epochs": 150,
+ "H": 512,
+ "K": 4,
+ "cpc": 32,
+ "taum": 2.0,
+ "local": 0,
+ "local_r": 1,
+ "aug": 2,
+ "lam": 1.0,
+ "acc_val": 0.8674080410607357,
+ "acc": NaN,
+ "recipe": {
+  "drop": 0.0,
+  "bn": 0,
+  "onecycle": 0,
+  "bs": 128,
+  "surr": "fs",
+  "nbins": 1,
+  "ft_ep": 0,
+  "lr": 0.0005
+ },
+ "arch": {
+  "fe": "none",
+  "fe_delays": [
+   0
+  ],
+  "fe_h": 256,
+  "fe_tau": 2.0,
+  "fe_drop": 0.0,
+  "fe_layers": 2,
+  "fe_dmax": 25,
+  "fe_pos_mean": null,
+  "n_params": 1155072
+ },
+ "test": null,
+ "core_cert": 0.5641211072603861,
+ "core_oracle": 0.5930078228314718,
+ "violations": 0,
+ "neuron_cert": 0.961656391620636,
+ "allcore_cert": 0.5641211072603861,
+ "R_per_delay": [
+  0.2735521197319031,
+  6.017240047454834,
+  6.585366725921631
+ ],
+ "R_mean": 12.876158893108368,
+ "R_short": 0.2735521197319031,
+ "budget": 0.3934693402873666,
+ "delays": [
+  2,
+  4,
+  8
+ ]
+}

@@ -1,0 +1,4 @@
+sample 0: errors=0 []
+sample 1: errors=0 []
+sample 2: errors=0 []
+RESULT model=hdcls core=10 C=32 samples=3 steps=402 normal=294 catchup=36 idle=72 cert_checked=283 cert_true=36 neuron_passes_saved=0.179 cycles=360891 pass_cycles=13668 event_cycles=334359 input_cycles=12864

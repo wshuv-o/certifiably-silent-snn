@@ -1,0 +1,4 @@
+sample 0: errors=0 []
+sample 1: errors=0 []
+sample 2: errors=0 []
+RESULT model=cert core=4 C=32 samples=3 steps=297 normal=168 catchup=43 idle=86 cert_checked=160 cert_true=43 neuron_passes_saved=0.290 cycles=463571 pass_cycles=10098 event_cycles=443969 input_cycles=9504

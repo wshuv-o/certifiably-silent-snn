@@ -1,0 +1,77 @@
+% One stage k of the 16-bit certificate unit (harness/hw/lowcert.py), CircuiTikZ.
+\documentclass[border=3pt]{standalone}
+\usepackage[siunitx]{circuitikz}
+\usepackage{amsmath}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\tikzset{
+  blk/.style={draw, thick, fill=gray!8, minimum height=0.8cm, minimum width=1.5cm, align=center, font=\small},
+  sum/.style={draw, thick, circle, fill=white, inner sep=0pt, minimum size=0.55cm, font=\small},
+  sig/.style={-{Latex[length=1.8mm]}, thick},
+  lbl/.style={font=\footnotesize},
+}
+\newcommand{\bw}[2]{\draw[thin] ($(#1)+(-0.07,-0.13)$) -- ($(#1)+(0.07,0.13)$) node[above right=-1pt, font=\scriptsize] {#2};}
+\ctikzset{logic ports=ieee, logic ports/scale=0.75}
+\begin{document}
+\begin{circuitikz}[font=\small]
+% ================= membrane bound path (y = 3) =================
+\node[flipflop D, thick, scale=0.6, anchor=pin 6] (FU) at (1.0,3) {};
+\node[above=0.02cm of FU.north, lbl] {$U_{k-1}$};
+\node[muxdemux, muxdemux def={Lh=1.6, NL=2, Rh=0.9, w=0.7, NB=1}, thick] (MX) at (3.6,4.5) {};
+\node[left, lbl] at (MX.lpin 1) {$\lceil\beta\rceil$};
+\node[left, lbl] at (MX.lpin 2) {$\lfloor\beta\rfloor$};
+\node[sum] (MUL) at (5.3,3) {$\times$};
+\node[blk] (SH) at (7.1,3) {$\lceil\,\cdot/2^{6}\rceil$};
+\node[sum] (ADD) at (9.0,3) {$+$};
+\node[blk] (RX) at (9.0,4.6) {$\lceil x_k/2^{4}\rceil$};
+\node[blk] (RB) at (9.0,1.5) {$\lceil b_k/2^{4}\rceil$};
+\node[blk] (SAT) at (11.0,3) {saturate\\16 bit};
+\node[flipflop D, thick, scale=0.6, anchor=pin 1] (FUK) at (14.6,3) {};
+\node[above=0.02cm of FUK.north, lbl] {$U_k$};
+
+\draw[sig] (FU.pin 6) -- (MUL.west);
+\bw{1.6,3}{16}
+\draw (MX.bpin 1 |- 0,3) node[circ]{} -- (MX.bpin 1);
+\node[right, lbl] at ($(MX.bpin 1)!0.5!(MX.bpin 1 |- 0,3)$) {sign};
+\draw[sig] (MX.rpin 1) -| (MUL.north);
+\bw{$(MUL.north)+(0,0.55)$}{7}
+\draw[sig] (MUL.east) -- (SH.west);
+\draw[sig] (SH.east) -- (ADD.west);
+\draw[sig] (RX.south) -- (ADD.north);
+\draw[sig] (RB.north) -- (ADD.south);
+\draw[sig] ($(RX.north)+(0,0.6)$) node[above, lbl] {$x_k$ (accumulator bank)} -- (RX.north);
+\draw[sig] ($(RB.south)+(0,-0.6)$) node[left, lbl] {$b_k$ (bound memory)} -- (RB.south);
+\draw[sig] (ADD.east) -- (SAT.west);
+\draw[sig] (SAT.east) -- (FUK.pin 1);
+
+% ================= threshold bound path (y = -1.6) =================
+\node[flipflop D, thick, scale=0.6, anchor=pin 6] (FA) at (1.0,-1.6) {};
+\node[above=0.02cm of FA.north, lbl] {$A_{k-1}$};
+\node[blk, minimum width=1.9cm] (RM) at (3.7,-1.6) {$\lfloor\lfloor\rho\rfloor\cdot/2^{6}\rfloor$};
+\node[sum] (AG) at (6.0,-1.6) {$+$};
+\node[blk] (GM) at (6.0,-3.1) {$\lfloor\gamma\rfloor s$, $k{=}1$};
+\node[sum] (AT) at (10.6,-1.6) {$+$};
+\node[blk] (TH) at (10.6,-0.1) {$\lfloor\theta/2^{4}\rfloor$};
+\node[flipflop D, thick, scale=0.6, anchor=pin 1] (FAK) at (14.6,-2.9) {};
+\node[above=0.02cm of FAK.north, lbl] {$A_k$};
+
+\draw[sig] (FA.pin 6) -- (RM.west);
+\bw{1.6,-1.6}{16}
+\draw[sig] (RM.east) -- (AG.west);
+\draw[sig] (GM.north) -- (AG.south);
+\draw[sig] (AG.east) -- (AT.west);
+\draw[sig] (TH.south) -- (AT.north);
+\draw[sig] (7.4,-1.6) node[circ]{} |- (FAK.pin 1);
+
+% ================= comparison, flag OR, early abort =================
+\node[blk, minimum width=0.8cm] (CMP) at (13.6,0.55) {$\geq$};
+\draw[sig] (12.3,3) node[circ]{} |- ($(CMP.west)+(0,0.2)$);
+\draw[sig] (AT.east) -| (12.0,0.35) -- ($(CMP.west)+(0,-0.2)$);
+\node[or port, thick, anchor=in 2] (OR) at (15.4,0.55) {};
+\draw[sig] (CMP.east) -- (OR.in 2);
+\draw[sig] (13.3,1.35) node[left, lbl] {$f_{k-1}$} -| ($(OR.in 1)+(-0.35,0)$) -- (OR.in 1);
+\node[flipflop D, thick, scale=0.6, anchor=pin 1] (FF) at ($(OR.out)+(0.9,0)$) {};
+\node[above=0.02cm of FF.north, lbl] {$f_k$};
+\draw[sig] (OR.out) -- (FF.pin 1);
+\node[lbl, align=center, below=0.1cm of FF.south] {stage registers\\held by \emph{en}\\(early abort)};
+\end{circuitikz}
+\end{document}

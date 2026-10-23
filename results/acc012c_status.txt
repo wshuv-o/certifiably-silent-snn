@@ -1,0 +1,4 @@
+=== ACC-012c START Wed Oct 21 07:18:13 +06 2026 ===
+# stage 2 (re-certified): val 90.08 (-1.28)  adaptive 90.9% of oracle viol 0  (plain 89.4%)
+STAGE2 PASS
+=== ACC-012c stage 3: TEST Wed Oct 21 07:18:13 +06 2026 ===

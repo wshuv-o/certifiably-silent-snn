@@ -1,0 +1,26 @@
+{
+ "rho_all": -0.804,
+ "leave_one_family_out": {
+  "learnable": -0.793,
+  "locally connected": -0.603,
+  "D={2,4,8}": -0.808,
+  "learnable time constants": -0.83,
+  "recipe variants": -0.895,
+  "unit delay": -0.785,
+  "D={1,2,4,8}": -0.826,
+  "dense H=2048": -0.779
+ },
+ "loo_min": -0.895,
+ "loo_max": -0.603,
+ "median_per_family": -0.833,
+ "families": {
+  "learnable": 4,
+  "locally connected": 6,
+  "D={2,4,8}": 2,
+  "learnable time constants": 3,
+  "recipe variants": 5,
+  "unit delay": 1,
+  "D={1,2,4,8}": 1,
+  "dense H=2048": 1
+ }
+}

@@ -1,0 +1,131 @@
+\documentclass{iopjournal}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+
+% Journal heading and running header (submitted manuscript)
+\makeatletter
+\fancyhead[L]{{\small \sf IOP Publishing}\hspace{5mm} {\it Neuromorph. Comput. Eng.} (submitted manuscript)}
+\fancyhead[R]{M W Suva {\it et al}\ }
+\renewcommand{\articletype}[1]{{\vspace*{-8mm}\noindent \Large \sf Neuromorphic Computing and Engineering}\par
+\vspace*{8mm}\noindent{\scriptsize \sf{\bfseries \MakeUppercase{#1}}}}
+\makeatother
+
+\begin{document}
+
+\articletype{Supplementary material}
+
+\title{Supplementary material: Short-Delay Excitatory Drive Limits Provable Silence in Recurrent Spiking Networks}
+
+\author{Md Wahiduzzaman Suva$^{1,*}$\,\orcid{0009-0007-6227-7282}, Md Tauhidul Islam$^{2}$\,\orcid{0009-0004-3595-4274}, Esm~E~Moula~Chowdhury~Abha$^{1}$\,\orcid{0009-0008-3776-2283}, Md.~Imtiaj~Alam~Sajin$^{1}$\,\orcid{0009-0009-2423-1835} and M F Mridha$^{1}$\,\orcid{0000-0001-5738-1631}}
+\affil{$^1$Department of Computer Science, American International University-Bangladesh, Dhaka 1229, Bangladesh}
+\affil{$^2$United International University, Dhaka, Bangladesh}
+\affil{$^*$Author to whom any correspondence should be addressed.}
+\email{wshuvo360@gmail.com}
+
+\section{Networks of the rank correlation}
+
+Table~\ref{s_tab:rel} lists the 23 networks of the rank correlation between $R_{\mathrm{short}}$ and certified silence (section~5.1 of the main text). Besides the networks of the main text, it contains five networks trained with the recipe of \cite{s_dcls} (dropout 0.4, batch normalisation, one-cycle schedule, batch 256, arctangent surrogate, input channels summed 700 to 140) with one ingredient removed at a time, and networks with a learnable membrane time constant per neuron, trained at the weight learning rate and at a hundred times that rate. All are evaluated on the speaker-disjoint validation set; none produced a violation. The networks fall into eight families (learnable delays, locally connected, $\mathcal{D}=\{2,4,8\}$, learnable time constants, recipe variants, unit delay, $\mathcal{D}=\{1,2,4,8\}$ and dense $H=2048$). Leaving out each family in turn gives $\rho$ between $-0.60$ (without the locally connected networks) and $-0.90$ (without the recipe variants), and one median network per family gives $\rho=-0.83$ over eight points.
+
+\begin{table}
+\caption{\label{s_tab:rel}Networks of the rank correlation, ordered by $R_{\mathrm{short}}$ ($K=4$).}
+\centering
+\begin{tabular}{lrr}
+\hline
+network & $R_{\mathrm{short}}$ & \% oracle \\
+\hline
+learnable delays $d\le25$, constrained & 0.222 & 95.8 \\
+learnable delays, constrained (2 seeds) & 0.243 & 95.7 \\
+local $H=512$, constrained & 0.260 & 97.4 \\
+$\mathcal{D}=\{2,4,8\}$, constrained & 0.261 & 95.0 \\
+learnable time constants, constrained & 0.265 & 94.7 \\
+local $H=1024$, constrained & 0.294 & 96.3 \\
+local $H=2048$, constrained & 0.297 & 98.5 \\
+local $H=2048$, control & 0.877 & 90.0 \\
+local $H=1024$, control & 1.006 & 84.9 \\
+local $H=512$, control & 1.221 & 34.6 \\
+recipe without dropout & 2.496 & 1.5 \\
+recipe without input binning & 2.773 & 1.7 \\
+learnable delays $d\le25$, control & 2.802 & 15.5 \\
+full recipe & 2.906 & 0.9 \\
+learnable delays, control (2 seeds) & 3.028 & 2.4 \\
+recipe without batch normalisation & 4.795 & 0.5 \\
+$\mathcal{D}=\{2,4,8\}$, control & 4.813 & 6.3 \\
+learnable time constants ($100\times$ rate), control & 5.001 & 4.6 \\
+learnable time constants, control & 5.122 & 6.1 \\
+recipe with arctangent surrogate only & 5.631 & 10.8 \\
+unit delay $\mathcal{D}=\{1\}$ & 7.905 & 0.0 \\
+$\mathcal{D}=\{1,2,4,8\}$ & 8.741 & 3.8 \\
+dense $H=2048$ & 25.007 & 0.2 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Host networks}
+
+Both host networks were run from the authors' released code with speakers 3 and 6 held out of training as validation. The reported test accuracy is taken at the epoch with the highest validation accuracy; test accuracy was also recorded at every epoch to compute the maximum over epochs, which is reported only for comparison with the rule under which the host networks were published; no model, epoch or hyperparameter was selected on the test set. The certified layer is fine-tuned for 100 epochs with the penalty ramped over the first 50, and the checkpoint is the epoch with the highest validation accuracy among epochs 49--99, at which the penalty has full weight; control and certified networks are both selected at their best validation epoch. In SpikCommander the released backbone defines two forward methods at module level; they were placed in their classes with unchanged bodies, and the spiking neurons use the PyTorch backend of SpikingJelly.
+
+\section{Delay learning}
+
+Per-synapse delays were trained with positions at 100 times the weight learning rate and a Gaussian interpolation kernel annealed from half the delay range to 0.5 over the first quarter of training, following \cite{s_dcls}.
+
+\section{Execution at all latencies and over TCP}
+
+Table~\ref{s_tab:speed} gives the speed-up of the dense $K=4$ network for every core count and emulated latency (section~5.6 of the main text). At $L \leq 20\,\mu$s the delay-derived lookahead already hides the latency, so certificates add computation without removing waiting. Computing the certificate's per-core work once per horizon step and tap, instead of once per neuron, makes its cost independent of core count. Across two processes communicating over TCP (table~\ref{s_tab:tcp}), certificates add 5.1\,ms of computation per sample and remove waiting that grows with $L$, which places break-even at $L\approx348\,\mu$s; above it they are faster by $1.13\times$ at $800\,\mu$s and $1.18\times$ at $1600\,\mu$s.
+
+\begin{table}
+\caption{\label{s_tab:speed}Speed-up of certificate-based over lookahead-aware handshaking, shared-memory engine, two-socket server, one thread per physical core. Mean of three repeats; per-repeat ranges within $\pm0.01$ except 32 cores at $L=5\,\mu$s.}
+\centering
+\begin{tabular}{lrrrrrr}
+\hline
+cores & coverage & $L=0$ & $L=5$\,$\mu$s & $L=20$\,$\mu$s & $L=100$\,$\mu$s & $L=500$\,$\mu$s \\
+\hline
+4  & 46.1\% & 0.94 & 0.94 & 0.94 & 0.94 & 1.11 \\
+8  & 53.6\% & 0.86 & 0.86 & 0.88 & 1.02 & 1.12 \\
+16 & 61.3\% & 0.77 & 0.75 & 0.79 & 1.06 & 1.12 \\
+32 & 70.5\% & 0.76 & 0.86 & 0.73 & 1.06 & 1.12 \\
+64 & 79.4\% & 0.54 & 0.53 & 0.55 & 0.97 & 1.10 \\
+64, control & 6.2\% & 0.55 & 0.56 & 0.61 & 0.90 & 0.98 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+\caption{\label{s_tab:tcp}Two-process TCP engine at 32 cores, median ms per sample over 100 samples, three repeats. \emph{blocked} is the time the main loop waits on its peer.}
+\centering
+\begin{tabular}{rrrrr}
+\hline
+ & \multicolumn{2}{c}{total} & \multicolumn{2}{c}{blocked} \\
+$L$ ($\mu$s) & handshake & certificate & handshake & certificate \\
+\hline
+0    & 13.08 & 17.59 & 0.13 & 0.10 \\
+200  & 17.22 & 19.73 & 3.70 & 1.12 \\
+400  & 26.71 & 26.03 & 13.35 & 7.43 \\
+800  & 47.09 & 41.67 & 32.53 & 22.85 \\
+1600 & 86.50 & 73.44 & 73.15 & 54.85 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Full-precision certificate unit}
+
+The certificate unit of the main text uses 16-bit operands with directed rounding. For comparison, the same unit with 24-bit operands, routed with the same flow, occupies 131\,332\,$\mu$m$^2$ of cell area with 6.74\,ns slack at the 24\,ns clock and 113\,pJ per evaluation at measured mean switching activity, against 49\,381\,$\mu$m$^2$, 9.12\,ns and 34--36\,pJ for the 16-bit unit; the reduced precision accounts for the 2.7-fold area and 3.2-fold energy difference. The core with this unit passed the same cycle-level verification as the core with the 16-bit unit.
+
+\section{SpiNNaker deployment}
+
+The run of section~5.8 of the main text used a 48-chip SpiNNaker board at the University of Manchester, allocated through the EBRAINS research infrastructure, with sPyNNaker 7.4 in the EBRAINS-25.10 software environment. The simulation step is 1\,ms, so one network step is one SpiNNaker time step.
+
+\textit{Calibration.} A single \texttt{IF\_curr\_delta} neuron ($\tau_m=2$\,ms, capacitance 1\,nF, rest and reset at 0, membrane initialised to 0) received one input spike of weight 0.25. Its membrane rose by 0.787 per unit weight and decayed by a factor 0.6066 per step, against $\beta=e^{-1/2}=0.6065$ in the network, and all weights were multiplied by $1/0.787=1.271$. With a 1\,ms synaptic delay an input spike moves the membrane two steps after its emission time, and input spike times were shifted accordingly. A second measurement with two neurons showed that a recorded spike precedes the threshold crossing by one step and that a synaptic delay $d$ places the target's response $d$ steps after the crossing, so the recurrent taps were mapped to delays 2, 4 and 8 unchanged.
+
+\textit{Mapping.} The recurrent population used 16 neurons per processor core and the 700 input channels 32 sources per core. Input projections were split into blocks of 128 target neurons, since a source may address at most 256 synapses in one projection. The busiest step delivers 451 input spikes at once, so each neuron core received an incoming spike buffer of 4\,096 entries and accumulator headroom of 20 standard deviations of the expected input (ring-buffer $\sigma=20$), and the board ran 100 times slower than real time. Network data were written to the board in pieces of 256\,kB.
+
+\textit{Stored weights.} The weights read back after loading take 13 excitatory and 6 inhibitory values on the input pathway, in steps of $0.049\,\theta$ and $0.098\,\theta$; 217\,905 of the 358\,400 input synapses and 50\,472 of the 147\,456 recurrent synapses are non-zero after storage. The stored-weight model is the network of the main text with these weights, the \texttt{IF\_curr\_delta} update and reset to zero, run in double precision.
+
+\textit{Protocol.} Fifty SHD test samples were presented in sequence with 30 steps of silence between them (6\,520 steps in all); no neuron fired during the silent gaps. Accuracy is read out with the leaky readout of the main text, $u(t)=e^{-1/2}u(t-1)+W_{\mathrm{out}}s(t)$ summed over the 100 steps of a sample. On the same 50 samples the trained ALIF network reaches 88\%.
+
+\begin{thebibliography}{9}
+\bibitem{s_dcls} Hammouamri I, Khalfaoui-Hassani I and Masquelier T 2024 Learning delays in spiking neural networks using dilated convolutions with learnable spacings \textit{Int. Conf. on Learning Representations}
+\end{thebibliography}
+
+\end{document}

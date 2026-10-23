@@ -1,0 +1,4 @@
+sample 0: errors=0 []
+sample 1: errors=0 []
+sample 2: errors=0 []
+RESULT model=lk4 core=14 C=32 samples=3 steps=297 normal=195 catchup=34 idle=68 cert_checked=187 cert_true=34 neuron_passes_saved=0.229 cycles=155360 pass_cycles=7922 event_cycles=137934 input_cycles=9504

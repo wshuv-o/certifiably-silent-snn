@@ -1,0 +1,55 @@
+{
+ "tag": "g3_lam0.1",
+ "dataset": "shd",
+ "seed": 1,
+ "epochs": 150,
+ "H": 512,
+ "K": 4,
+ "cpc": 32,
+ "taum": 2.0,
+ "local": 0,
+ "local_r": 1,
+ "aug": 2,
+ "lam": 0.1,
+ "acc_val": 0.8665526090675791,
+ "acc": NaN,
+ "recipe": {
+  "drop": 0.0,
+  "bn": 0,
+  "onecycle": 0,
+  "bs": 128,
+  "surr": "fs",
+  "nbins": 1,
+  "ft_ep": 0,
+  "lr": 0.0005
+ },
+ "arch": {
+  "fe": "none",
+  "fe_delays": [
+   0
+  ],
+  "fe_h": 256,
+  "fe_tau": 2.0,
+  "fe_drop": 0.0,
+  "n_params": 1155072
+ },
+ "test": null,
+ "core_cert": 0.5342079202334086,
+ "core_oracle": 0.5772092143694559,
+ "violations": 0,
+ "neuron_cert": 0.9582304954528809,
+ "allcore_cert": 0.5342079202334086,
+ "R_per_delay": [
+  0.46553048491477966,
+  6.203016757965088,
+  6.784448623657227
+ ],
+ "R_mean": 13.452995866537094,
+ "R_short": 0.46553048491477966,
+ "budget": 0.3934693402873666,
+ "delays": [
+  2,
+  4,
+  8
+ ]
+}

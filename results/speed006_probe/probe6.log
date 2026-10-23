@@ -1,0 +1,852 @@
+=== physical cores: 64 ===
+CORES=4 rep=1 model=dense N=200 cores=4 delays=2,4,8 d_min=2 R_total=12.8762 R_short=0.2736 budget=0.3935
+CORES=4 rep=1 inter-core edges (directed) = 12 of 12
+CORES=4 rep=1 RESULT model=dense L_us=0 mode=handshake median_ms=12.0908 exact=1 cert_coverage=0.000 wait_ms=0.0490 comp_ms=12.0454
+CORES=4 rep=1 RESULT model=dense L_us=0 mode=cert median_ms=12.7315 exact=1 cert_coverage=0.507 wait_ms=0.0654 comp_ms=12.6319
+CORES=4 rep=1 RESULT model=dense L_us=0 mode=oracle median_ms=12.0989 exact=1 cert_coverage=0.529 wait_ms=0.0314 comp_ms=12.0587
+CORES=4 rep=1 RESULT model=dense L_us=5 mode=handshake median_ms=12.0435 exact=1 cert_coverage=0.000 wait_ms=0.0335 comp_ms=11.9930
+CORES=4 rep=1 RESULT model=dense L_us=5 mode=cert median_ms=12.6786 exact=1 cert_coverage=0.504 wait_ms=0.0612 comp_ms=12.5886
+CORES=4 rep=1 RESULT model=dense L_us=5 mode=oracle median_ms=12.0673 exact=1 cert_coverage=0.529 wait_ms=0.0334 comp_ms=12.0124
+CORES=4 rep=1 RESULT model=dense L_us=20 mode=handshake median_ms=12.0351 exact=1 cert_coverage=0.000 wait_ms=0.0300 comp_ms=11.9910
+CORES=4 rep=1 RESULT model=dense L_us=20 mode=cert median_ms=12.7290 exact=1 cert_coverage=0.498 wait_ms=0.0856 comp_ms=12.6056
+CORES=4 rep=1 RESULT model=dense L_us=20 mode=oracle median_ms=12.0958 exact=1 cert_coverage=0.529 wait_ms=0.0374 comp_ms=12.0234
+CORES=4 rep=1 RESULT model=dense L_us=100 mode=handshake median_ms=12.1967 exact=1 cert_coverage=0.000 wait_ms=0.1831 comp_ms=12.0117
+CORES=4 rep=1 RESULT model=dense L_us=100 mode=cert median_ms=12.7864 exact=1 cert_coverage=0.475 wait_ms=0.1800 comp_ms=12.5930
+CORES=4 rep=1 RESULT model=dense L_us=100 mode=oracle median_ms=12.2054 exact=1 cert_coverage=0.529 wait_ms=0.1630 comp_ms=12.0343
+CORES=4 rep=1 RESULT model=dense L_us=500 mode=handshake median_ms=30.5944 exact=1 cert_coverage=0.000 wait_ms=18.5705 comp_ms=12.0353
+CORES=4 rep=1 RESULT model=dense L_us=500 mode=cert median_ms=27.2420 exact=1 cert_coverage=0.471 wait_ms=14.5570 comp_ms=12.7527
+CORES=4 rep=1 RESULT model=dense L_us=500 mode=oracle median_ms=23.4503 exact=1 cert_coverage=0.529 wait_ms=11.3336 comp_ms=12.1140
+CORES=4 rep=1 model=lk4 N=200 cores=4 delays=2,4,8 d_min=2 R_total=3.8311 R_short=0.2684 budget=0.3935
+CORES=4 rep=1 inter-core edges (directed) = 8 of 12
+CORES=4 rep=1 RESULT model=lk4 L_us=0 mode=handshake median_ms=12.1372 exact=1 cert_coverage=0.000 wait_ms=0.0245 comp_ms=12.0817
+CORES=4 rep=1 RESULT model=lk4 L_us=0 mode=cert median_ms=12.8701 exact=1 cert_coverage=0.520 wait_ms=0.0826 comp_ms=12.7145
+CORES=4 rep=1 RESULT model=lk4 L_us=0 mode=oracle median_ms=12.1993 exact=1 cert_coverage=0.525 wait_ms=0.0229 comp_ms=12.1464
+CORES=4 rep=1 RESULT model=lk4 L_us=5 mode=handshake median_ms=12.1507 exact=1 cert_coverage=0.000 wait_ms=0.0271 comp_ms=12.0847
+CORES=4 rep=1 RESULT model=lk4 L_us=5 mode=cert median_ms=12.8360 exact=1 cert_coverage=0.520 wait_ms=0.0705 comp_ms=12.6784
+CORES=4 rep=1 RESULT model=lk4 L_us=5 mode=oracle median_ms=12.1613 exact=1 cert_coverage=0.525 wait_ms=0.0238 comp_ms=12.0970
+CORES=4 rep=1 RESULT model=lk4 L_us=20 mode=handshake median_ms=12.1391 exact=1 cert_coverage=0.000 wait_ms=0.0257 comp_ms=12.0754
+CORES=4 rep=1 RESULT model=lk4 L_us=20 mode=cert median_ms=12.7631 exact=1 cert_coverage=0.519 wait_ms=0.0527 comp_ms=12.6710
+CORES=4 rep=1 RESULT model=lk4 L_us=20 mode=oracle median_ms=12.1675 exact=1 cert_coverage=0.525 wait_ms=0.0238 comp_ms=12.0994
+CORES=4 rep=1 RESULT model=lk4 L_us=100 mode=handshake median_ms=12.2479 exact=1 cert_coverage=0.000 wait_ms=0.1448 comp_ms=12.0892
+CORES=4 rep=1 RESULT model=lk4 L_us=100 mode=cert median_ms=12.8656 exact=1 cert_coverage=0.517 wait_ms=0.1710 comp_ms=12.6822
+CORES=4 rep=1 RESULT model=lk4 L_us=100 mode=oracle median_ms=12.2733 exact=1 cert_coverage=0.525 wait_ms=0.1358 comp_ms=12.1117
+CORES=4 rep=1 RESULT model=lk4 L_us=500 mode=handshake median_ms=30.6087 exact=1 cert_coverage=0.000 wait_ms=18.5164 comp_ms=12.1239
+CORES=4 rep=1 RESULT model=lk4 L_us=500 mode=cert median_ms=26.9036 exact=1 cert_coverage=0.513 wait_ms=13.9972 comp_ms=12.8229
+CORES=4 rep=1 RESULT model=lk4 L_us=500 mode=oracle median_ms=23.3987 exact=1 cert_coverage=0.525 wait_ms=10.8756 comp_ms=12.1732
+CORES=4 rep=1 model=lk8 N=200 cores=4 delays=2,4,8 d_min=2 R_total=2.1822 R_short=0.0702 budget=0.3935
+CORES=4 rep=1 inter-core edges (directed) = 8 of 12
+CORES=4 rep=1 RESULT model=lk8 L_us=0 mode=handshake median_ms=12.1147 exact=1 cert_coverage=0.000 wait_ms=0.0547 comp_ms=12.0957
+CORES=4 rep=1 RESULT model=lk8 L_us=0 mode=cert median_ms=12.7608 exact=1 cert_coverage=0.550 wait_ms=0.0670 comp_ms=12.6321
+CORES=4 rep=1 RESULT model=lk8 L_us=0 mode=oracle median_ms=12.1296 exact=1 cert_coverage=0.551 wait_ms=0.0251 comp_ms=12.0922
+CORES=4 rep=1 RESULT model=lk8 L_us=5 mode=handshake median_ms=12.0847 exact=1 cert_coverage=0.000 wait_ms=0.0247 comp_ms=12.0352
+CORES=4 rep=1 RESULT model=lk8 L_us=5 mode=cert median_ms=12.7576 exact=1 cert_coverage=0.550 wait_ms=0.0881 comp_ms=12.5898
+CORES=4 rep=1 RESULT model=lk8 L_us=5 mode=oracle median_ms=12.1108 exact=1 cert_coverage=0.551 wait_ms=0.0243 comp_ms=12.0615
+CORES=4 rep=1 RESULT model=lk8 L_us=20 mode=handshake median_ms=12.0806 exact=1 cert_coverage=0.000 wait_ms=0.0256 comp_ms=12.0276
+CORES=4 rep=1 RESULT model=lk8 L_us=20 mode=cert median_ms=12.7435 exact=1 cert_coverage=0.550 wait_ms=0.0830 comp_ms=12.6009
+CORES=4 rep=1 RESULT model=lk8 L_us=20 mode=oracle median_ms=12.1095 exact=1 cert_coverage=0.551 wait_ms=0.0230 comp_ms=12.0582
+CORES=4 rep=1 RESULT model=lk8 L_us=100 mode=handshake median_ms=12.1943 exact=1 cert_coverage=0.000 wait_ms=0.1468 comp_ms=12.0380
+CORES=4 rep=1 RESULT model=lk8 L_us=100 mode=cert median_ms=12.8305 exact=1 cert_coverage=0.549 wait_ms=0.2065 comp_ms=12.5939
+CORES=4 rep=1 RESULT model=lk8 L_us=100 mode=oracle median_ms=12.2154 exact=1 cert_coverage=0.551 wait_ms=0.1335 comp_ms=12.0598
+CORES=4 rep=1 RESULT model=lk8 L_us=500 mode=handshake median_ms=30.5833 exact=1 cert_coverage=0.000 wait_ms=18.5227 comp_ms=12.0726
+CORES=4 rep=1 RESULT model=lk8 L_us=500 mode=cert median_ms=25.4295 exact=1 cert_coverage=0.549 wait_ms=12.6727 comp_ms=12.7230
+CORES=4 rep=1 RESULT model=lk8 L_us=500 mode=oracle median_ms=22.5718 exact=1 cert_coverage=0.551 wait_ms=10.2086 comp_ms=12.1265
+CORES=4 rep=1 model=hdcls N=200 cores=4 delays=2,4,8 d_min=2 R_total=4.5295 R_short=0.0268 budget=0.3935
+CORES=4 rep=1 inter-core edges (directed) = 12 of 12
+CORES=4 rep=1 RESULT model=hdcls L_us=0 mode=handshake median_ms=17.7180 exact=1 cert_coverage=0.000 wait_ms=0.0766 comp_ms=17.5994
+CORES=4 rep=1 RESULT model=hdcls L_us=0 mode=cert median_ms=18.8066 exact=1 cert_coverage=0.249 wait_ms=0.1625 comp_ms=18.5711
+CORES=4 rep=1 RESULT model=hdcls L_us=0 mode=oracle median_ms=17.7453 exact=1 cert_coverage=0.258 wait_ms=0.0588 comp_ms=17.6235
+CORES=4 rep=1 RESULT model=hdcls L_us=5 mode=handshake median_ms=17.7426 exact=1 cert_coverage=0.000 wait_ms=0.0561 comp_ms=17.6176
+CORES=4 rep=1 RESULT model=hdcls L_us=5 mode=cert median_ms=18.9133 exact=1 cert_coverage=0.246 wait_ms=0.2039 comp_ms=18.6168
+CORES=4 rep=1 RESULT model=hdcls L_us=5 mode=oracle median_ms=17.7708 exact=1 cert_coverage=0.258 wait_ms=0.0569 comp_ms=17.6692
+CORES=4 rep=1 RESULT model=hdcls L_us=20 mode=handshake median_ms=17.7163 exact=1 cert_coverage=0.000 wait_ms=0.0571 comp_ms=17.6148
+CORES=4 rep=1 RESULT model=hdcls L_us=20 mode=cert median_ms=18.7269 exact=1 cert_coverage=0.244 wait_ms=0.1325 comp_ms=18.5412
+CORES=4 rep=1 RESULT model=hdcls L_us=20 mode=oracle median_ms=17.8765 exact=1 cert_coverage=0.258 wait_ms=0.0520 comp_ms=17.8100
+CORES=4 rep=1 RESULT model=hdcls L_us=100 mode=handshake median_ms=17.8193 exact=1 cert_coverage=0.000 wait_ms=0.1644 comp_ms=17.6993
+CORES=4 rep=1 RESULT model=hdcls L_us=100 mode=cert median_ms=18.7348 exact=1 cert_coverage=0.239 wait_ms=0.2461 comp_ms=18.5257
+CORES=4 rep=1 RESULT model=hdcls L_us=100 mode=oracle median_ms=17.8077 exact=1 cert_coverage=0.258 wait_ms=0.2023 comp_ms=17.6139
+CORES=4 rep=1 RESULT model=hdcls L_us=500 mode=handshake median_ms=42.1022 exact=1 cert_coverage=0.000 wait_ms=24.4922 comp_ms=17.6621
+CORES=4 rep=1 RESULT model=hdcls L_us=500 mode=cert median_ms=42.1221 exact=1 cert_coverage=0.236 wait_ms=23.5326 comp_ms=18.5873
+CORES=4 rep=1 RESULT model=hdcls L_us=500 mode=oracle median_ms=41.1269 exact=1 cert_coverage=0.258 wait_ms=23.3551 comp_ms=17.7199
+CORES=4 rep=1 model=hscmd N=200 cores=4 delays=2,4,8 d_min=2 R_total=10.2946 R_short=0.0126 budget=0.3935
+CORES=4 rep=1 inter-core edges (directed) = 12 of 12
+CORES=4 rep=1 RESULT model=hscmd L_us=0 mode=handshake median_ms=14.4121 exact=1 cert_coverage=0.000 wait_ms=0.0826 comp_ms=14.2931
+CORES=4 rep=1 RESULT model=hscmd L_us=0 mode=cert median_ms=15.3613 exact=1 cert_coverage=0.256 wait_ms=0.1424 comp_ms=15.1350
+CORES=4 rep=1 RESULT model=hscmd L_us=0 mode=oracle median_ms=14.3707 exact=1 cert_coverage=0.280 wait_ms=0.0429 comp_ms=14.3027
+CORES=4 rep=1 RESULT model=hscmd L_us=5 mode=handshake median_ms=14.3371 exact=1 cert_coverage=0.000 wait_ms=0.0329 comp_ms=14.2518
+CORES=4 rep=1 RESULT model=hscmd L_us=5 mode=cert median_ms=15.2144 exact=1 cert_coverage=0.253 wait_ms=0.0751 comp_ms=15.0511
+CORES=4 rep=1 RESULT model=hscmd L_us=5 mode=oracle median_ms=14.3922 exact=1 cert_coverage=0.280 wait_ms=0.0438 comp_ms=14.3240
+CORES=4 rep=1 RESULT model=hscmd L_us=20 mode=handshake median_ms=14.4609 exact=1 cert_coverage=0.000 wait_ms=0.0703 comp_ms=14.4181
+CORES=4 rep=1 RESULT model=hscmd L_us=20 mode=cert median_ms=15.2094 exact=1 cert_coverage=0.248 wait_ms=0.0702 comp_ms=15.0594
+CORES=4 rep=1 RESULT model=hscmd L_us=20 mode=oracle median_ms=14.3586 exact=1 cert_coverage=0.280 wait_ms=0.0356 comp_ms=14.2614
+CORES=4 rep=1 RESULT model=hscmd L_us=100 mode=handshake median_ms=14.4435 exact=1 cert_coverage=0.000 wait_ms=0.1520 comp_ms=14.2617
+CORES=4 rep=1 RESULT model=hscmd L_us=100 mode=cert median_ms=15.2177 exact=1 cert_coverage=0.231 wait_ms=0.1709 comp_ms=15.0006
+CORES=4 rep=1 RESULT model=hscmd L_us=100 mode=oracle median_ms=14.4638 exact=1 cert_coverage=0.280 wait_ms=0.1517 comp_ms=14.2761
+CORES=4 rep=1 RESULT model=hscmd L_us=500 mode=handshake median_ms=34.3713 exact=1 cert_coverage=0.000 wait_ms=20.0618 comp_ms=14.3200
+CORES=4 rep=1 RESULT model=hscmd L_us=500 mode=cert median_ms=34.6509 exact=1 cert_coverage=0.229 wait_ms=19.4418 comp_ms=15.1404
+CORES=4 rep=1 RESULT model=hscmd L_us=500 mode=oracle median_ms=33.9809 exact=1 cert_coverage=0.280 wait_ms=19.4756 comp_ms=14.3703
+CORES=4 rep=2 model=dense N=200 cores=4 delays=2,4,8 d_min=2 R_total=12.8762 R_short=0.2736 budget=0.3935
+CORES=4 rep=2 inter-core edges (directed) = 12 of 12
+CORES=4 rep=2 RESULT model=dense L_us=0 mode=handshake median_ms=12.0643 exact=1 cert_coverage=0.000 wait_ms=0.0418 comp_ms=12.0232
+CORES=4 rep=2 RESULT model=dense L_us=0 mode=cert median_ms=12.6733 exact=1 cert_coverage=0.507 wait_ms=0.0465 comp_ms=12.6262
+CORES=4 rep=2 RESULT model=dense L_us=0 mode=oracle median_ms=12.1183 exact=1 cert_coverage=0.529 wait_ms=0.0327 comp_ms=12.0802
+CORES=4 rep=2 RESULT model=dense L_us=5 mode=handshake median_ms=12.0913 exact=1 cert_coverage=0.000 wait_ms=0.0362 comp_ms=12.0040
+CORES=4 rep=2 RESULT model=dense L_us=5 mode=cert median_ms=12.7320 exact=1 cert_coverage=0.504 wait_ms=0.0770 comp_ms=12.6060
+CORES=4 rep=2 RESULT model=dense L_us=5 mode=oracle median_ms=12.0809 exact=1 cert_coverage=0.529 wait_ms=0.0614 comp_ms=12.0331
+CORES=4 rep=2 RESULT model=dense L_us=20 mode=handshake median_ms=12.0836 exact=1 cert_coverage=0.000 wait_ms=0.0383 comp_ms=12.0081
+CORES=4 rep=2 RESULT model=dense L_us=20 mode=cert median_ms=12.6880 exact=1 cert_coverage=0.498 wait_ms=0.0681 comp_ms=12.5824
+CORES=4 rep=2 RESULT model=dense L_us=20 mode=oracle median_ms=12.0939 exact=1 cert_coverage=0.529 wait_ms=0.0329 comp_ms=12.0238
+CORES=4 rep=2 RESULT model=dense L_us=100 mode=handshake median_ms=12.1480 exact=1 cert_coverage=0.000 wait_ms=0.1605 comp_ms=12.0022
+CORES=4 rep=2 RESULT model=dense L_us=100 mode=cert median_ms=12.7874 exact=1 cert_coverage=0.475 wait_ms=0.1920 comp_ms=12.5936
+CORES=4 rep=2 RESULT model=dense L_us=100 mode=oracle median_ms=12.1520 exact=1 cert_coverage=0.529 wait_ms=0.1354 comp_ms=12.0117
+CORES=4 rep=2 RESULT model=dense L_us=500 mode=handshake median_ms=30.5876 exact=1 cert_coverage=0.000 wait_ms=18.5544 comp_ms=12.0620
+CORES=4 rep=2 RESULT model=dense L_us=500 mode=cert median_ms=27.3058 exact=1 cert_coverage=0.470 wait_ms=14.5836 comp_ms=12.7693
+CORES=4 rep=2 RESULT model=dense L_us=500 mode=oracle median_ms=23.4230 exact=1 cert_coverage=0.529 wait_ms=11.3406 comp_ms=12.0838
+CORES=4 rep=2 model=lk4 N=200 cores=4 delays=2,4,8 d_min=2 R_total=3.8311 R_short=0.2684 budget=0.3935
+CORES=4 rep=2 inter-core edges (directed) = 8 of 12
+CORES=4 rep=2 RESULT model=lk4 L_us=0 mode=handshake median_ms=12.1675 exact=1 cert_coverage=0.000 wait_ms=0.0382 comp_ms=12.1189
+CORES=4 rep=2 RESULT model=lk4 L_us=0 mode=cert median_ms=12.8938 exact=1 cert_coverage=0.520 wait_ms=0.1022 comp_ms=12.7281
+CORES=4 rep=2 RESULT model=lk4 L_us=0 mode=oracle median_ms=12.1923 exact=1 cert_coverage=0.525 wait_ms=0.0246 comp_ms=12.1407
+CORES=4 rep=2 RESULT model=lk4 L_us=5 mode=handshake median_ms=12.1487 exact=1 cert_coverage=0.000 wait_ms=0.0263 comp_ms=12.0847
+CORES=4 rep=2 RESULT model=lk4 L_us=5 mode=cert median_ms=12.8481 exact=1 cert_coverage=0.520 wait_ms=0.0873 comp_ms=12.6800
+CORES=4 rep=2 RESULT model=lk4 L_us=5 mode=oracle median_ms=12.1687 exact=1 cert_coverage=0.525 wait_ms=0.0240 comp_ms=12.1065
+CORES=4 rep=2 RESULT model=lk4 L_us=20 mode=handshake median_ms=12.1370 exact=1 cert_coverage=0.000 wait_ms=0.0233 comp_ms=12.0774
+CORES=4 rep=2 RESULT model=lk4 L_us=20 mode=cert median_ms=12.8361 exact=1 cert_coverage=0.519 wait_ms=0.1169 comp_ms=12.6936
+CORES=4 rep=2 RESULT model=lk4 L_us=20 mode=oracle median_ms=12.1695 exact=1 cert_coverage=0.525 wait_ms=0.0292 comp_ms=12.1079
+CORES=4 rep=2 RESULT model=lk4 L_us=100 mode=handshake median_ms=12.2503 exact=1 cert_coverage=0.000 wait_ms=0.1573 comp_ms=12.0922
+CORES=4 rep=2 RESULT model=lk4 L_us=100 mode=cert median_ms=12.9092 exact=1 cert_coverage=0.517 wait_ms=0.2051 comp_ms=12.6835
+CORES=4 rep=2 RESULT model=lk4 L_us=100 mode=oracle median_ms=12.2717 exact=1 cert_coverage=0.525 wait_ms=0.1355 comp_ms=12.1089
+CORES=4 rep=2 RESULT model=lk4 L_us=500 mode=handshake median_ms=30.6174 exact=1 cert_coverage=0.000 wait_ms=18.5100 comp_ms=12.1403
+CORES=4 rep=2 RESULT model=lk4 L_us=500 mode=cert median_ms=26.9154 exact=1 cert_coverage=0.512 wait_ms=13.9923 comp_ms=12.8367
+CORES=4 rep=2 RESULT model=lk4 L_us=500 mode=oracle median_ms=23.4036 exact=1 cert_coverage=0.525 wait_ms=10.8860 comp_ms=12.1895
+CORES=4 rep=2 model=lk8 N=200 cores=4 delays=2,4,8 d_min=2 R_total=2.1822 R_short=0.0702 budget=0.3935
+CORES=4 rep=2 inter-core edges (directed) = 8 of 12
+CORES=4 rep=2 RESULT model=lk8 L_us=0 mode=handshake median_ms=12.2045 exact=1 cert_coverage=0.000 wait_ms=0.0748 comp_ms=12.0945
+CORES=4 rep=2 RESULT model=lk8 L_us=0 mode=cert median_ms=12.7582 exact=1 cert_coverage=0.550 wait_ms=0.0623 comp_ms=12.6461
+CORES=4 rep=2 RESULT model=lk8 L_us=0 mode=oracle median_ms=12.0832 exact=1 cert_coverage=0.551 wait_ms=0.0169 comp_ms=12.0645
+CORES=4 rep=2 RESULT model=lk8 L_us=5 mode=handshake median_ms=12.1295 exact=1 cert_coverage=0.000 wait_ms=0.0412 comp_ms=12.0515
+CORES=4 rep=2 RESULT model=lk8 L_us=5 mode=cert median_ms=12.7726 exact=1 cert_coverage=0.550 wait_ms=0.0926 comp_ms=12.6052
+CORES=4 rep=2 RESULT model=lk8 L_us=5 mode=oracle median_ms=12.1164 exact=1 cert_coverage=0.551 wait_ms=0.0228 comp_ms=12.0570
+CORES=4 rep=2 RESULT model=lk8 L_us=20 mode=handshake median_ms=12.0901 exact=1 cert_coverage=0.000 wait_ms=0.0256 comp_ms=12.0334
+CORES=4 rep=2 RESULT model=lk8 L_us=20 mode=cert median_ms=12.6797 exact=1 cert_coverage=0.550 wait_ms=0.0589 comp_ms=12.5765
+CORES=4 rep=2 RESULT model=lk8 L_us=20 mode=oracle median_ms=12.1396 exact=1 cert_coverage=0.551 wait_ms=0.0240 comp_ms=12.0676
+CORES=4 rep=2 RESULT model=lk8 L_us=100 mode=handshake median_ms=12.1883 exact=1 cert_coverage=0.000 wait_ms=0.1719 comp_ms=12.0408
+CORES=4 rep=2 RESULT model=lk8 L_us=100 mode=cert median_ms=12.7893 exact=1 cert_coverage=0.549 wait_ms=0.1955 comp_ms=12.5731
+CORES=4 rep=2 RESULT model=lk8 L_us=100 mode=oracle median_ms=12.2517 exact=1 cert_coverage=0.551 wait_ms=0.1540 comp_ms=12.0728
+CORES=4 rep=2 RESULT model=lk8 L_us=500 mode=handshake median_ms=30.5959 exact=1 cert_coverage=0.000 wait_ms=18.5228 comp_ms=12.0779
+CORES=4 rep=2 RESULT model=lk8 L_us=500 mode=cert median_ms=25.4479 exact=1 cert_coverage=0.549 wait_ms=12.7067 comp_ms=12.7104
+CORES=4 rep=2 RESULT model=lk8 L_us=500 mode=oracle median_ms=22.5777 exact=1 cert_coverage=0.551 wait_ms=10.2151 comp_ms=12.1321
+CORES=4 rep=2 model=hdcls N=200 cores=4 delays=2,4,8 d_min=2 R_total=4.5295 R_short=0.0268 budget=0.3935
+CORES=4 rep=2 inter-core edges (directed) = 12 of 12
+CORES=4 rep=2 RESULT model=hdcls L_us=0 mode=handshake median_ms=17.6738 exact=1 cert_coverage=0.000 wait_ms=0.0815 comp_ms=17.5822
+CORES=4 rep=2 RESULT model=hdcls L_us=0 mode=cert median_ms=18.8280 exact=1 cert_coverage=0.248 wait_ms=0.1447 comp_ms=18.6112
+CORES=4 rep=2 RESULT model=hdcls L_us=0 mode=oracle median_ms=17.6541 exact=1 cert_coverage=0.258 wait_ms=0.0384 comp_ms=17.5866
+CORES=4 rep=2 RESULT model=hdcls L_us=5 mode=handshake median_ms=17.6881 exact=1 cert_coverage=0.000 wait_ms=0.0645 comp_ms=17.6194
+CORES=4 rep=2 RESULT model=hdcls L_us=5 mode=cert median_ms=18.7646 exact=1 cert_coverage=0.247 wait_ms=0.1169 comp_ms=18.5850
+CORES=4 rep=2 RESULT model=hdcls L_us=5 mode=oracle median_ms=17.6898 exact=1 cert_coverage=0.258 wait_ms=0.0482 comp_ms=17.6053
+CORES=4 rep=2 RESULT model=hdcls L_us=20 mode=handshake median_ms=17.7954 exact=1 cert_coverage=0.000 wait_ms=0.0821 comp_ms=17.7253
+CORES=4 rep=2 RESULT model=hdcls L_us=20 mode=cert median_ms=18.6973 exact=1 cert_coverage=0.244 wait_ms=0.1139 comp_ms=18.5529
+CORES=4 rep=2 RESULT model=hdcls L_us=20 mode=oracle median_ms=17.7004 exact=1 cert_coverage=0.258 wait_ms=0.0517 comp_ms=17.6167
+CORES=4 rep=2 RESULT model=hdcls L_us=100 mode=handshake median_ms=17.8164 exact=1 cert_coverage=0.000 wait_ms=0.1689 comp_ms=17.6561
+CORES=4 rep=2 RESULT model=hdcls L_us=100 mode=cert median_ms=18.7623 exact=1 cert_coverage=0.239 wait_ms=0.2287 comp_ms=18.5332
+CORES=4 rep=2 RESULT model=hdcls L_us=100 mode=oracle median_ms=17.7830 exact=1 cert_coverage=0.258 wait_ms=0.1604 comp_ms=17.6167
+CORES=4 rep=2 RESULT model=hdcls L_us=500 mode=handshake median_ms=42.0455 exact=1 cert_coverage=0.000 wait_ms=24.4798 comp_ms=17.6633
+CORES=4 rep=2 RESULT model=hdcls L_us=500 mode=cert median_ms=42.1664 exact=1 cert_coverage=0.235 wait_ms=23.5384 comp_ms=18.5853
+CORES=4 rep=2 RESULT model=hdcls L_us=500 mode=oracle median_ms=41.1021 exact=1 cert_coverage=0.258 wait_ms=23.3269 comp_ms=17.7142
+CORES=4 rep=2 model=hscmd N=200 cores=4 delays=2,4,8 d_min=2 R_total=10.2946 R_short=0.0126 budget=0.3935
+CORES=4 rep=2 inter-core edges (directed) = 12 of 12
+CORES=4 rep=2 RESULT model=hscmd L_us=0 mode=handshake median_ms=14.3716 exact=1 cert_coverage=0.000 wait_ms=0.0499 comp_ms=14.2944
+CORES=4 rep=2 RESULT model=hscmd L_us=0 mode=cert median_ms=15.2782 exact=1 cert_coverage=0.257 wait_ms=0.0922 comp_ms=15.0860
+CORES=4 rep=2 RESULT model=hscmd L_us=0 mode=oracle median_ms=14.3712 exact=1 cert_coverage=0.280 wait_ms=0.0341 comp_ms=14.3059
+CORES=4 rep=2 RESULT model=hscmd L_us=5 mode=handshake median_ms=14.4010 exact=1 cert_coverage=0.000 wait_ms=0.0490 comp_ms=14.2784
+CORES=4 rep=2 RESULT model=hscmd L_us=5 mode=cert median_ms=15.2218 exact=1 cert_coverage=0.253 wait_ms=0.0795 comp_ms=15.0482
+CORES=4 rep=2 RESULT model=hscmd L_us=5 mode=oracle median_ms=14.3898 exact=1 cert_coverage=0.280 wait_ms=0.0423 comp_ms=14.3084
+CORES=4 rep=2 RESULT model=hscmd L_us=20 mode=handshake median_ms=14.4160 exact=1 cert_coverage=0.000 wait_ms=0.0421 comp_ms=14.3395
+CORES=4 rep=2 RESULT model=hscmd L_us=20 mode=cert median_ms=15.2739 exact=1 cert_coverage=0.246 wait_ms=0.1422 comp_ms=15.0810
+CORES=4 rep=2 RESULT model=hscmd L_us=20 mode=oracle median_ms=14.3590 exact=1 cert_coverage=0.280 wait_ms=0.0366 comp_ms=14.2704
+CORES=4 rep=2 RESULT model=hscmd L_us=100 mode=handshake median_ms=14.4815 exact=1 cert_coverage=0.000 wait_ms=0.1684 comp_ms=14.2727
+CORES=4 rep=2 RESULT model=hscmd L_us=100 mode=cert median_ms=15.2174 exact=1 cert_coverage=0.231 wait_ms=0.1726 comp_ms=15.0046
+CORES=4 rep=2 RESULT model=hscmd L_us=100 mode=oracle median_ms=14.5112 exact=1 cert_coverage=0.280 wait_ms=0.1732 comp_ms=14.3195
+CORES=4 rep=2 RESULT model=hscmd L_us=500 mode=handshake median_ms=34.3950 exact=1 cert_coverage=0.000 wait_ms=20.0661 comp_ms=14.3617
+CORES=4 rep=2 RESULT model=hscmd L_us=500 mode=cert median_ms=34.7075 exact=1 cert_coverage=0.229 wait_ms=19.4386 comp_ms=15.1849
+CORES=4 rep=2 RESULT model=hscmd L_us=500 mode=oracle median_ms=34.0152 exact=1 cert_coverage=0.280 wait_ms=19.4783 comp_ms=14.3985
+CORES=8 rep=1 model=dense N=200 cores=8 delays=2,4,8 d_min=2 R_total=12.8762 R_short=0.2736 budget=0.3935
+CORES=8 rep=1 inter-core edges (directed) = 56 of 56
+CORES=8 rep=1 RESULT model=dense L_us=0 mode=handshake median_ms=6.1348 exact=1 cert_coverage=0.000 wait_ms=0.0737 comp_ms=6.0403
+CORES=8 rep=1 RESULT model=dense L_us=0 mode=cert median_ms=6.8023 exact=1 cert_coverage=0.572 wait_ms=0.2238 comp_ms=6.5517
+CORES=8 rep=1 RESULT model=dense L_us=0 mode=oracle median_ms=6.1236 exact=1 cert_coverage=0.597 wait_ms=0.0471 comp_ms=6.0415
+CORES=8 rep=1 RESULT model=dense L_us=5 mode=handshake median_ms=6.1270 exact=1 cert_coverage=0.000 wait_ms=0.0561 comp_ms=6.0572
+CORES=8 rep=1 RESULT model=dense L_us=5 mode=cert median_ms=6.7671 exact=1 cert_coverage=0.566 wait_ms=0.2270 comp_ms=6.5282
+CORES=8 rep=1 RESULT model=dense L_us=5 mode=oracle median_ms=6.1176 exact=1 cert_coverage=0.597 wait_ms=0.0469 comp_ms=6.0324
+CORES=8 rep=1 RESULT model=dense L_us=20 mode=handshake median_ms=6.1115 exact=1 cert_coverage=0.000 wait_ms=0.0574 comp_ms=6.0215
+CORES=8 rep=1 RESULT model=dense L_us=20 mode=cert median_ms=6.7271 exact=1 cert_coverage=0.553 wait_ms=0.1955 comp_ms=6.5082
+CORES=8 rep=1 RESULT model=dense L_us=20 mode=oracle median_ms=6.1071 exact=1 cert_coverage=0.597 wait_ms=0.0484 comp_ms=6.0303
+CORES=8 rep=1 RESULT model=dense L_us=100 mode=handshake median_ms=7.9859 exact=1 cert_coverage=0.000 wait_ms=1.9755 comp_ms=6.0285
+CORES=8 rep=1 RESULT model=dense L_us=100 mode=cert median_ms=7.7031 exact=1 cert_coverage=0.546 wait_ms=1.1245 comp_ms=6.5754
+CORES=8 rep=1 RESULT model=dense L_us=100 mode=oracle median_ms=7.2522 exact=1 cert_coverage=0.597 wait_ms=1.2110 comp_ms=6.0370
+CORES=8 rep=1 RESULT model=dense L_us=500 mode=handshake median_ms=27.6246 exact=1 cert_coverage=0.000 wait_ms=21.5812 comp_ms=6.0715
+CORES=8 rep=1 RESULT model=dense L_us=500 mode=cert median_ms=24.5424 exact=1 cert_coverage=0.543 wait_ms=17.8781 comp_ms=6.7516
+CORES=8 rep=1 RESULT model=dense L_us=500 mode=oracle median_ms=19.3186 exact=1 cert_coverage=0.597 wait_ms=13.3027 comp_ms=6.0943
+CORES=8 rep=1 model=lk4 N=200 cores=8 delays=2,4,8 d_min=2 R_total=3.8311 R_short=0.2684 budget=0.3935
+CORES=8 rep=1 inter-core edges (directed) = 16 of 56
+CORES=8 rep=1 RESULT model=lk4 L_us=0 mode=handshake median_ms=6.1119 exact=1 cert_coverage=0.000 wait_ms=0.0261 comp_ms=6.0714
+CORES=8 rep=1 RESULT model=lk4 L_us=0 mode=cert median_ms=6.5449 exact=1 cert_coverage=0.588 wait_ms=0.0286 comp_ms=6.4863
+CORES=8 rep=1 RESULT model=lk4 L_us=0 mode=oracle median_ms=6.1301 exact=1 cert_coverage=0.596 wait_ms=0.0262 comp_ms=6.0920
+CORES=8 rep=1 RESULT model=lk4 L_us=5 mode=handshake median_ms=6.1432 exact=1 cert_coverage=0.000 wait_ms=0.0211 comp_ms=6.1054
+CORES=8 rep=1 RESULT model=lk4 L_us=5 mode=cert median_ms=6.5129 exact=1 cert_coverage=0.587 wait_ms=0.0273 comp_ms=6.4620
+CORES=8 rep=1 RESULT model=lk4 L_us=5 mode=oracle median_ms=6.1147 exact=1 cert_coverage=0.596 wait_ms=0.0188 comp_ms=6.0726
+CORES=8 rep=1 RESULT model=lk4 L_us=20 mode=handshake median_ms=6.1025 exact=1 cert_coverage=0.000 wait_ms=0.0202 comp_ms=6.0604
+CORES=8 rep=1 RESULT model=lk4 L_us=20 mode=cert median_ms=6.5281 exact=1 cert_coverage=0.584 wait_ms=0.0319 comp_ms=6.4660
+CORES=8 rep=1 RESULT model=lk4 L_us=20 mode=oracle median_ms=6.1157 exact=1 cert_coverage=0.596 wait_ms=0.0193 comp_ms=6.0706
+CORES=8 rep=1 RESULT model=lk4 L_us=100 mode=handshake median_ms=7.9704 exact=1 cert_coverage=0.000 wait_ms=1.9044 comp_ms=6.0598
+CORES=8 rep=1 RESULT model=lk4 L_us=100 mode=cert median_ms=7.5388 exact=1 cert_coverage=0.579 wait_ms=0.9843 comp_ms=6.5517
+CORES=8 rep=1 RESULT model=lk4 L_us=100 mode=oracle median_ms=7.1727 exact=1 cert_coverage=0.596 wait_ms=1.0034 comp_ms=6.0769
+CORES=8 rep=1 RESULT model=lk4 L_us=500 mode=handshake median_ms=27.5891 exact=1 cert_coverage=0.000 wait_ms=21.6426 comp_ms=6.1101
+CORES=8 rep=1 RESULT model=lk4 L_us=500 mode=cert median_ms=24.0475 exact=1 cert_coverage=0.573 wait_ms=17.3167 comp_ms=6.6081
+CORES=8 rep=1 RESULT model=lk4 L_us=500 mode=oracle median_ms=18.7792 exact=1 cert_coverage=0.596 wait_ms=12.0734 comp_ms=6.1824
+CORES=8 rep=1 model=lk8 N=200 cores=8 delays=2,4,8 d_min=2 R_total=2.1822 R_short=0.0702 budget=0.3935
+CORES=8 rep=1 inter-core edges (directed) = 16 of 56
+CORES=8 rep=1 RESULT model=lk8 L_us=0 mode=handshake median_ms=6.0975 exact=1 cert_coverage=0.000 wait_ms=0.0295 comp_ms=6.0517
+CORES=8 rep=1 RESULT model=lk8 L_us=0 mode=cert median_ms=6.4932 exact=1 cert_coverage=0.610 wait_ms=0.0352 comp_ms=6.4012
+CORES=8 rep=1 RESULT model=lk8 L_us=0 mode=oracle median_ms=6.0955 exact=1 cert_coverage=0.612 wait_ms=0.0196 comp_ms=6.0603
+CORES=8 rep=1 RESULT model=lk8 L_us=5 mode=handshake median_ms=6.1108 exact=1 cert_coverage=0.000 wait_ms=0.0318 comp_ms=6.1007
+CORES=8 rep=1 RESULT model=lk8 L_us=5 mode=cert median_ms=6.4605 exact=1 cert_coverage=0.610 wait_ms=0.0350 comp_ms=6.3772
+CORES=8 rep=1 RESULT model=lk8 L_us=5 mode=oracle median_ms=6.0946 exact=1 cert_coverage=0.612 wait_ms=0.0184 comp_ms=6.0489
+CORES=8 rep=1 RESULT model=lk8 L_us=20 mode=handshake median_ms=6.0733 exact=1 cert_coverage=0.000 wait_ms=0.0215 comp_ms=6.0358
+CORES=8 rep=1 RESULT model=lk8 L_us=20 mode=cert median_ms=6.4606 exact=1 cert_coverage=0.609 wait_ms=0.0426 comp_ms=6.3766
+CORES=8 rep=1 RESULT model=lk8 L_us=20 mode=oracle median_ms=6.0976 exact=1 cert_coverage=0.612 wait_ms=0.0220 comp_ms=6.0500
+CORES=8 rep=1 RESULT model=lk8 L_us=100 mode=handshake median_ms=7.9552 exact=1 cert_coverage=0.000 wait_ms=1.9197 comp_ms=6.0386
+CORES=8 rep=1 RESULT model=lk8 L_us=100 mode=cert median_ms=7.3843 exact=1 cert_coverage=0.608 wait_ms=0.9799 comp_ms=6.3854
+CORES=8 rep=1 RESULT model=lk8 L_us=100 mode=oracle median_ms=7.0946 exact=1 cert_coverage=0.612 wait_ms=0.9622 comp_ms=6.0519
+CORES=8 rep=1 RESULT model=lk8 L_us=500 mode=handshake median_ms=27.5804 exact=1 cert_coverage=0.000 wait_ms=21.5178 comp_ms=6.0724
+CORES=8 rep=1 RESULT model=lk8 L_us=500 mode=cert median_ms=22.3528 exact=1 cert_coverage=0.607 wait_ms=15.5982 comp_ms=6.4505
+CORES=8 rep=1 RESULT model=lk8 L_us=500 mode=oracle median_ms=17.9207 exact=1 cert_coverage=0.612 wait_ms=11.3606 comp_ms=6.0816
+CORES=8 rep=1 model=hdcls N=200 cores=8 delays=2,4,8 d_min=2 R_total=4.5295 R_short=0.0268 budget=0.3935
+CORES=8 rep=1 inter-core edges (directed) = 56 of 56
+CORES=8 rep=1 RESULT model=hdcls L_us=0 mode=handshake median_ms=8.9539 exact=1 cert_coverage=0.000 wait_ms=0.0876 comp_ms=8.8256
+CORES=8 rep=1 RESULT model=hdcls L_us=0 mode=cert median_ms=9.7546 exact=1 cert_coverage=0.406 wait_ms=0.1350 comp_ms=9.5790
+CORES=8 rep=1 RESULT model=hdcls L_us=0 mode=oracle median_ms=8.9743 exact=1 cert_coverage=0.421 wait_ms=0.0840 comp_ms=8.8331
+CORES=8 rep=1 RESULT model=hdcls L_us=5 mode=handshake median_ms=8.9536 exact=1 cert_coverage=0.000 wait_ms=0.8146 comp_ms=9.1234
+CORES=8 rep=1 RESULT model=hdcls L_us=5 mode=cert median_ms=9.7396 exact=1 cert_coverage=0.402 wait_ms=0.1415 comp_ms=9.5686
+CORES=8 rep=1 RESULT model=hdcls L_us=5 mode=oracle median_ms=8.9568 exact=1 cert_coverage=0.421 wait_ms=0.0879 comp_ms=8.8281
+CORES=8 rep=1 RESULT model=hdcls L_us=20 mode=handshake median_ms=8.9464 exact=1 cert_coverage=0.000 wait_ms=0.0961 comp_ms=8.8190
+CORES=8 rep=1 RESULT model=hdcls L_us=20 mode=cert median_ms=9.7170 exact=1 cert_coverage=0.396 wait_ms=0.1488 comp_ms=9.5377
+CORES=8 rep=1 RESULT model=hdcls L_us=20 mode=oracle median_ms=8.9625 exact=1 cert_coverage=0.421 wait_ms=0.0959 comp_ms=8.8267
+CORES=8 rep=1 RESULT model=hdcls L_us=100 mode=handshake median_ms=11.2086 exact=1 cert_coverage=0.000 wait_ms=2.4100 comp_ms=8.8521
+CORES=8 rep=1 RESULT model=hdcls L_us=100 mode=cert median_ms=11.7025 exact=1 cert_coverage=0.391 wait_ms=2.0406 comp_ms=9.6585
+CORES=8 rep=1 RESULT model=hdcls L_us=100 mode=oracle median_ms=11.1402 exact=1 cert_coverage=0.421 wait_ms=2.2800 comp_ms=8.8864
+CORES=8 rep=1 RESULT model=hdcls L_us=500 mode=handshake median_ms=37.8365 exact=1 cert_coverage=0.000 wait_ms=28.8091 comp_ms=9.0390
+CORES=8 rep=1 RESULT model=hdcls L_us=500 mode=cert median_ms=37.7595 exact=1 cert_coverage=0.389 wait_ms=28.0366 comp_ms=9.7020
+CORES=8 rep=1 RESULT model=hdcls L_us=500 mode=oracle median_ms=36.8066 exact=1 cert_coverage=0.421 wait_ms=27.8204 comp_ms=8.9344
+CORES=8 rep=1 model=hscmd N=200 cores=8 delays=2,4,8 d_min=2 R_total=10.2946 R_short=0.0126 budget=0.3935
+CORES=8 rep=1 inter-core edges (directed) = 56 of 56
+CORES=8 rep=1 RESULT model=hscmd L_us=0 mode=handshake median_ms=7.2769 exact=1 cert_coverage=0.000 wait_ms=0.0658 comp_ms=7.1647
+CORES=8 rep=1 RESULT model=hscmd L_us=0 mode=cert median_ms=7.9053 exact=1 cert_coverage=0.436 wait_ms=0.0896 comp_ms=7.7661
+CORES=8 rep=1 RESULT model=hscmd L_us=0 mode=oracle median_ms=7.2752 exact=1 cert_coverage=0.470 wait_ms=0.0630 comp_ms=7.1767
+CORES=8 rep=1 RESULT model=hscmd L_us=5 mode=handshake median_ms=7.2620 exact=1 cert_coverage=0.000 wait_ms=0.0503 comp_ms=7.1809
+CORES=8 rep=1 RESULT model=hscmd L_us=5 mode=cert median_ms=7.8956 exact=1 cert_coverage=0.425 wait_ms=0.0961 comp_ms=7.7574
+CORES=8 rep=1 RESULT model=hscmd L_us=5 mode=oracle median_ms=7.2839 exact=1 cert_coverage=0.470 wait_ms=0.0637 comp_ms=7.1652
+CORES=8 rep=1 RESULT model=hscmd L_us=20 mode=handshake median_ms=7.2587 exact=1 cert_coverage=0.000 wait_ms=0.0647 comp_ms=7.1534
+CORES=8 rep=1 RESULT model=hscmd L_us=20 mode=cert median_ms=7.9423 exact=1 cert_coverage=0.412 wait_ms=0.1366 comp_ms=7.7561
+CORES=8 rep=1 RESULT model=hscmd L_us=20 mode=oracle median_ms=7.2702 exact=1 cert_coverage=0.470 wait_ms=0.0635 comp_ms=7.1621
+CORES=8 rep=1 RESULT model=hscmd L_us=100 mode=handshake median_ms=9.1143 exact=1 cert_coverage=0.000 wait_ms=1.9543 comp_ms=7.1485
+CORES=8 rep=1 RESULT model=hscmd L_us=100 mode=cert median_ms=9.4460 exact=1 cert_coverage=0.399 wait_ms=1.6706 comp_ms=7.7700
+CORES=8 rep=1 RESULT model=hscmd L_us=100 mode=oracle median_ms=9.0789 exact=1 cert_coverage=0.470 wait_ms=1.9025 comp_ms=7.1639
+CORES=8 rep=1 RESULT model=hscmd L_us=500 mode=handshake median_ms=30.8095 exact=1 cert_coverage=0.000 wait_ms=23.6408 comp_ms=7.2274
+CORES=8 rep=1 RESULT model=hscmd L_us=500 mode=cert median_ms=31.1434 exact=1 cert_coverage=0.398 wait_ms=23.0890 comp_ms=7.9472
+CORES=8 rep=1 RESULT model=hscmd L_us=500 mode=oracle median_ms=30.4094 exact=1 cert_coverage=0.470 wait_ms=23.0288 comp_ms=7.2901
+CORES=8 rep=2 model=dense N=200 cores=8 delays=2,4,8 d_min=2 R_total=12.8762 R_short=0.2736 budget=0.3935
+CORES=8 rep=2 inter-core edges (directed) = 56 of 56
+CORES=8 rep=2 RESULT model=dense L_us=0 mode=handshake median_ms=6.0943 exact=1 cert_coverage=0.000 wait_ms=0.0582 comp_ms=6.0253
+CORES=8 rep=2 RESULT model=dense L_us=0 mode=cert median_ms=6.8297 exact=1 cert_coverage=0.573 wait_ms=0.2217 comp_ms=6.5645
+CORES=8 rep=2 RESULT model=dense L_us=0 mode=oracle median_ms=6.1223 exact=1 cert_coverage=0.597 wait_ms=0.0457 comp_ms=6.0421
+CORES=8 rep=2 RESULT model=dense L_us=5 mode=handshake median_ms=6.1259 exact=1 cert_coverage=0.000 wait_ms=0.0530 comp_ms=6.0622
+CORES=8 rep=2 RESULT model=dense L_us=5 mode=cert median_ms=6.7719 exact=1 cert_coverage=0.565 wait_ms=0.2295 comp_ms=6.5241
+CORES=8 rep=2 RESULT model=dense L_us=5 mode=oracle median_ms=6.1287 exact=1 cert_coverage=0.597 wait_ms=0.0500 comp_ms=6.0363
+CORES=8 rep=2 RESULT model=dense L_us=20 mode=handshake median_ms=6.1299 exact=1 cert_coverage=0.000 wait_ms=0.0707 comp_ms=6.0240
+CORES=8 rep=2 RESULT model=dense L_us=20 mode=cert median_ms=6.7306 exact=1 cert_coverage=0.553 wait_ms=0.2049 comp_ms=6.5095
+CORES=8 rep=2 RESULT model=dense L_us=20 mode=oracle median_ms=6.1237 exact=1 cert_coverage=0.597 wait_ms=0.0547 comp_ms=6.0353
+CORES=8 rep=2 RESULT model=dense L_us=100 mode=handshake median_ms=7.9928 exact=1 cert_coverage=0.000 wait_ms=1.9636 comp_ms=6.0263
+CORES=8 rep=2 RESULT model=dense L_us=100 mode=cert median_ms=7.6937 exact=1 cert_coverage=0.546 wait_ms=1.1235 comp_ms=6.5740
+CORES=8 rep=2 RESULT model=dense L_us=100 mode=oracle median_ms=7.2607 exact=1 cert_coverage=0.597 wait_ms=1.2062 comp_ms=6.0414
+CORES=8 rep=2 RESULT model=dense L_us=500 mode=handshake median_ms=27.6187 exact=1 cert_coverage=0.000 wait_ms=21.5813 comp_ms=6.0772
+CORES=8 rep=2 RESULT model=dense L_us=500 mode=cert median_ms=24.6099 exact=1 cert_coverage=0.542 wait_ms=17.8913 comp_ms=6.7683
+CORES=8 rep=2 RESULT model=dense L_us=500 mode=oracle median_ms=19.3423 exact=1 cert_coverage=0.597 wait_ms=13.3053 comp_ms=6.1034
+CORES=8 rep=2 model=lk4 N=200 cores=8 delays=2,4,8 d_min=2 R_total=3.8311 R_short=0.2684 budget=0.3935
+CORES=8 rep=2 inter-core edges (directed) = 16 of 56
+CORES=8 rep=2 RESULT model=lk4 L_us=0 mode=handshake median_ms=6.1390 exact=1 cert_coverage=0.000 wait_ms=0.0346 comp_ms=6.0883
+CORES=8 rep=2 RESULT model=lk4 L_us=0 mode=cert median_ms=6.5470 exact=1 cert_coverage=0.588 wait_ms=0.0290 comp_ms=6.4885
+CORES=8 rep=2 RESULT model=lk4 L_us=0 mode=oracle median_ms=6.1258 exact=1 cert_coverage=0.596 wait_ms=0.0200 comp_ms=6.0858
+CORES=8 rep=2 RESULT model=lk4 L_us=5 mode=handshake median_ms=6.1329 exact=1 cert_coverage=0.000 wait_ms=0.0204 comp_ms=6.1018
+CORES=8 rep=2 RESULT model=lk4 L_us=5 mode=cert median_ms=6.5207 exact=1 cert_coverage=0.587 wait_ms=0.0282 comp_ms=6.4638
+CORES=8 rep=2 RESULT model=lk4 L_us=5 mode=oracle median_ms=6.1208 exact=1 cert_coverage=0.596 wait_ms=0.0245 comp_ms=6.0763
+CORES=8 rep=2 RESULT model=lk4 L_us=20 mode=handshake median_ms=6.1082 exact=1 cert_coverage=0.000 wait_ms=0.0202 comp_ms=6.0619
+CORES=8 rep=2 RESULT model=lk4 L_us=20 mode=cert median_ms=6.5293 exact=1 cert_coverage=0.584 wait_ms=0.0360 comp_ms=6.4686
+CORES=8 rep=2 RESULT model=lk4 L_us=20 mode=oracle median_ms=6.1191 exact=1 cert_coverage=0.596 wait_ms=0.0199 comp_ms=6.0750
+CORES=8 rep=2 RESULT model=lk4 L_us=100 mode=handshake median_ms=7.9725 exact=1 cert_coverage=0.000 wait_ms=1.9127 comp_ms=6.0648
+CORES=8 rep=2 RESULT model=lk4 L_us=100 mode=cert median_ms=7.5430 exact=1 cert_coverage=0.579 wait_ms=0.9759 comp_ms=6.5441
+CORES=8 rep=2 RESULT model=lk4 L_us=100 mode=oracle median_ms=7.1867 exact=1 cert_coverage=0.596 wait_ms=1.0053 comp_ms=6.0778
+CORES=8 rep=2 RESULT model=lk4 L_us=500 mode=handshake median_ms=27.5982 exact=1 cert_coverage=0.000 wait_ms=21.5166 comp_ms=6.1608
+CORES=8 rep=2 RESULT model=lk4 L_us=500 mode=cert median_ms=24.0674 exact=1 cert_coverage=0.573 wait_ms=17.3008 comp_ms=6.6121
+CORES=8 rep=2 RESULT model=lk4 L_us=500 mode=oracle median_ms=18.3980 exact=1 cert_coverage=0.596 wait_ms=12.0399 comp_ms=6.1217
+CORES=8 rep=2 model=lk8 N=200 cores=8 delays=2,4,8 d_min=2 R_total=2.1822 R_short=0.0702 budget=0.3935
+CORES=8 rep=2 inter-core edges (directed) = 16 of 56
+CORES=8 rep=2 RESULT model=lk8 L_us=0 mode=handshake median_ms=6.0996 exact=1 cert_coverage=0.000 wait_ms=0.0295 comp_ms=6.0445
+CORES=8 rep=2 RESULT model=lk8 L_us=0 mode=cert median_ms=6.5505 exact=1 cert_coverage=0.610 wait_ms=0.0479 comp_ms=6.4279
+CORES=8 rep=2 RESULT model=lk8 L_us=0 mode=oracle median_ms=6.1016 exact=1 cert_coverage=0.612 wait_ms=0.0195 comp_ms=6.0595
+CORES=8 rep=2 RESULT model=lk8 L_us=5 mode=handshake median_ms=6.1231 exact=1 cert_coverage=0.000 wait_ms=0.0210 comp_ms=6.0816
+CORES=8 rep=2 RESULT model=lk8 L_us=5 mode=cert median_ms=6.4577 exact=1 cert_coverage=0.610 wait_ms=0.0327 comp_ms=6.3735
+CORES=8 rep=2 RESULT model=lk8 L_us=5 mode=oracle median_ms=6.0883 exact=1 cert_coverage=0.612 wait_ms=0.0185 comp_ms=6.0471
+CORES=8 rep=2 RESULT model=lk8 L_us=20 mode=handshake median_ms=6.0843 exact=1 cert_coverage=0.000 wait_ms=0.0244 comp_ms=6.0357
+CORES=8 rep=2 RESULT model=lk8 L_us=20 mode=cert median_ms=6.4587 exact=1 cert_coverage=0.609 wait_ms=0.0398 comp_ms=6.3764
+CORES=8 rep=2 RESULT model=lk8 L_us=20 mode=oracle median_ms=6.0877 exact=1 cert_coverage=0.612 wait_ms=0.0185 comp_ms=6.0453
+CORES=8 rep=2 RESULT model=lk8 L_us=100 mode=handshake median_ms=7.9577 exact=1 cert_coverage=0.000 wait_ms=1.9159 comp_ms=6.0362
+CORES=8 rep=2 RESULT model=lk8 L_us=100 mode=cert median_ms=7.3854 exact=1 cert_coverage=0.608 wait_ms=0.9773 comp_ms=6.3855
+CORES=8 rep=2 RESULT model=lk8 L_us=100 mode=oracle median_ms=7.0994 exact=1 cert_coverage=0.612 wait_ms=0.9640 comp_ms=6.0518
+CORES=8 rep=2 RESULT model=lk8 L_us=500 mode=handshake median_ms=27.5880 exact=1 cert_coverage=0.000 wait_ms=21.5328 comp_ms=6.0799
+CORES=8 rep=2 RESULT model=lk8 L_us=500 mode=cert median_ms=22.2898 exact=1 cert_coverage=0.607 wait_ms=15.5974 comp_ms=6.4688
+CORES=8 rep=2 RESULT model=lk8 L_us=500 mode=oracle median_ms=17.9181 exact=1 cert_coverage=0.612 wait_ms=11.3462 comp_ms=6.0827
+CORES=8 rep=2 model=hdcls N=200 cores=8 delays=2,4,8 d_min=2 R_total=4.5295 R_short=0.0268 budget=0.3935
+CORES=8 rep=2 inter-core edges (directed) = 56 of 56
+CORES=8 rep=2 RESULT model=hdcls L_us=0 mode=handshake median_ms=8.9517 exact=1 cert_coverage=0.000 wait_ms=0.0902 comp_ms=8.8193
+CORES=8 rep=2 RESULT model=hdcls L_us=0 mode=cert median_ms=9.7343 exact=1 cert_coverage=0.406 wait_ms=0.1294 comp_ms=9.5667
+CORES=8 rep=2 RESULT model=hdcls L_us=0 mode=oracle median_ms=8.9713 exact=1 cert_coverage=0.421 wait_ms=0.0867 comp_ms=8.8302
+CORES=8 rep=2 RESULT model=hdcls L_us=5 mode=handshake median_ms=8.9872 exact=1 cert_coverage=0.000 wait_ms=0.0916 comp_ms=8.8675
+CORES=8 rep=2 RESULT model=hdcls L_us=5 mode=cert median_ms=9.7357 exact=1 cert_coverage=0.402 wait_ms=0.1390 comp_ms=9.5658
+CORES=8 rep=2 RESULT model=hdcls L_us=5 mode=oracle median_ms=8.9365 exact=1 cert_coverage=0.421 wait_ms=0.0777 comp_ms=8.8212
+CORES=8 rep=2 RESULT model=hdcls L_us=20 mode=handshake median_ms=8.9424 exact=1 cert_coverage=0.000 wait_ms=0.0926 comp_ms=8.8176
+CORES=8 rep=2 RESULT model=hdcls L_us=20 mode=cert median_ms=9.7140 exact=1 cert_coverage=0.396 wait_ms=0.1462 comp_ms=9.5383
+CORES=8 rep=2 RESULT model=hdcls L_us=20 mode=oracle median_ms=8.9444 exact=1 cert_coverage=0.421 wait_ms=0.0879 comp_ms=8.8217
+CORES=8 rep=2 RESULT model=hdcls L_us=100 mode=handshake median_ms=11.2102 exact=1 cert_coverage=0.000 wait_ms=2.3932 comp_ms=8.8426
+CORES=8 rep=2 RESULT model=hdcls L_us=100 mode=cert median_ms=11.6156 exact=1 cert_coverage=0.391 wait_ms=2.0031 comp_ms=9.6206
+CORES=8 rep=2 RESULT model=hdcls L_us=100 mode=oracle median_ms=11.1140 exact=1 cert_coverage=0.421 wait_ms=2.2640 comp_ms=8.8629
+CORES=8 rep=2 RESULT model=hdcls L_us=500 mode=handshake median_ms=37.7128 exact=1 cert_coverage=0.000 wait_ms=28.8277 comp_ms=8.9062
+CORES=8 rep=2 RESULT model=hdcls L_us=500 mode=cert median_ms=37.7484 exact=1 cert_coverage=0.389 wait_ms=28.1241 comp_ms=9.6793
+CORES=8 rep=2 RESULT model=hdcls L_us=500 mode=oracle median_ms=36.7449 exact=1 cert_coverage=0.421 wait_ms=27.8192 comp_ms=8.9161
+CORES=8 rep=2 model=hscmd N=200 cores=8 delays=2,4,8 d_min=2 R_total=10.2946 R_short=0.0126 budget=0.3935
+CORES=8 rep=2 inter-core edges (directed) = 56 of 56
+CORES=8 rep=2 RESULT model=hscmd L_us=0 mode=handshake median_ms=7.2822 exact=1 cert_coverage=0.000 wait_ms=0.0676 comp_ms=7.1626
+CORES=8 rep=2 RESULT model=hscmd L_us=0 mode=cert median_ms=7.9342 exact=1 cert_coverage=0.436 wait_ms=0.1047 comp_ms=7.7663
+CORES=8 rep=2 RESULT model=hscmd L_us=0 mode=oracle median_ms=7.2858 exact=1 cert_coverage=0.470 wait_ms=0.0583 comp_ms=7.2013
+CORES=8 rep=2 RESULT model=hscmd L_us=5 mode=handshake median_ms=7.2718 exact=1 cert_coverage=0.000 wait_ms=0.0611 comp_ms=7.1598
+CORES=8 rep=2 RESULT model=hscmd L_us=5 mode=cert median_ms=7.9005 exact=1 cert_coverage=0.425 wait_ms=0.0910 comp_ms=7.7633
+CORES=8 rep=2 RESULT model=hscmd L_us=5 mode=oracle median_ms=7.2642 exact=1 cert_coverage=0.470 wait_ms=0.0581 comp_ms=7.1611
+CORES=8 rep=2 RESULT model=hscmd L_us=20 mode=handshake median_ms=7.2733 exact=1 cert_coverage=0.000 wait_ms=0.1027 comp_ms=7.1651
+CORES=8 rep=2 RESULT model=hscmd L_us=20 mode=cert median_ms=7.8895 exact=1 cert_coverage=0.412 wait_ms=0.1057 comp_ms=7.7455
+CORES=8 rep=2 RESULT model=hscmd L_us=20 mode=oracle median_ms=7.2979 exact=1 cert_coverage=0.470 wait_ms=0.0736 comp_ms=7.1673
+CORES=8 rep=2 RESULT model=hscmd L_us=100 mode=handshake median_ms=9.1477 exact=1 cert_coverage=0.000 wait_ms=1.9807 comp_ms=7.1602
+CORES=8 rep=2 RESULT model=hscmd L_us=100 mode=cert median_ms=9.4535 exact=1 cert_coverage=0.399 wait_ms=1.6729 comp_ms=7.7777
+CORES=8 rep=2 RESULT model=hscmd L_us=100 mode=oracle median_ms=9.0728 exact=1 cert_coverage=0.470 wait_ms=1.8995 comp_ms=7.1643
+CORES=8 rep=2 RESULT model=hscmd L_us=500 mode=handshake median_ms=30.8108 exact=1 cert_coverage=0.000 wait_ms=23.6208 comp_ms=7.2221
+CORES=8 rep=2 RESULT model=hscmd L_us=500 mode=cert median_ms=31.1219 exact=1 cert_coverage=0.398 wait_ms=23.0816 comp_ms=7.9221
+CORES=8 rep=2 RESULT model=hscmd L_us=500 mode=oracle median_ms=30.3123 exact=1 cert_coverage=0.470 wait_ms=23.0452 comp_ms=7.2244
+CORES=16 rep=1 model=dense N=200 cores=16 delays=2,4,8 d_min=2 R_total=12.8762 R_short=0.2736 budget=0.3935
+CORES=16 rep=1 inter-core edges (directed) = 240 of 240
+CORES=16 rep=1 RESULT model=dense L_us=0 mode=handshake median_ms=3.2203 exact=1 cert_coverage=0.000 wait_ms=0.1441 comp_ms=3.0417
+CORES=16 rep=1 RESULT model=dense L_us=0 mode=cert median_ms=3.8169 exact=1 cert_coverage=0.642 wait_ms=0.2956 comp_ms=3.4998
+CORES=16 rep=1 RESULT model=dense L_us=0 mode=oracle median_ms=3.2433 exact=1 cert_coverage=0.664 wait_ms=0.1165 comp_ms=3.0506
+CORES=16 rep=1 RESULT model=dense L_us=5 mode=handshake median_ms=3.2366 exact=1 cert_coverage=0.000 wait_ms=0.1691 comp_ms=3.0363
+CORES=16 rep=1 RESULT model=dense L_us=5 mode=cert median_ms=3.8797 exact=1 cert_coverage=0.635 wait_ms=0.3260 comp_ms=3.5148
+CORES=16 rep=1 RESULT model=dense L_us=5 mode=oracle median_ms=3.2455 exact=1 cert_coverage=0.664 wait_ms=0.1271 comp_ms=3.0463
+CORES=16 rep=1 RESULT model=dense L_us=20 mode=handshake median_ms=3.1484 exact=1 cert_coverage=0.000 wait_ms=0.1060 comp_ms=3.0342
+CORES=16 rep=1 RESULT model=dense L_us=20 mode=cert median_ms=3.8633 exact=1 cert_coverage=0.623 wait_ms=0.3079 comp_ms=3.5240
+CORES=16 rep=1 RESULT model=dense L_us=20 mode=oracle median_ms=3.1466 exact=1 cert_coverage=0.664 wait_ms=0.1080 comp_ms=3.0415
+CORES=16 rep=1 RESULT model=dense L_us=100 mode=handshake median_ms=6.5448 exact=1 cert_coverage=0.000 wait_ms=3.5238 comp_ms=3.0586
+CORES=16 rep=1 RESULT model=dense L_us=100 mode=cert median_ms=6.0649 exact=1 cert_coverage=0.619 wait_ms=2.4990 comp_ms=3.5909
+CORES=16 rep=1 RESULT model=dense L_us=100 mode=oracle median_ms=5.2313 exact=1 cert_coverage=0.664 wait_ms=2.1764 comp_ms=3.0456
+CORES=16 rep=1 RESULT model=dense L_us=500 mode=handshake median_ms=26.1715 exact=1 cert_coverage=0.000 wait_ms=23.1282 comp_ms=3.0794
+CORES=16 rep=1 RESULT model=dense L_us=500 mode=cert median_ms=23.3576 exact=1 cert_coverage=0.619 wait_ms=19.5701 comp_ms=3.8447
+CORES=16 rep=1 RESULT model=dense L_us=500 mode=oracle median_ms=17.3159 exact=1 cert_coverage=0.664 wait_ms=14.4266 comp_ms=3.0720
+CORES=16 rep=1 model=lk4 N=200 cores=16 delays=2,4,8 d_min=2 R_total=3.8311 R_short=0.2684 budget=0.3935
+CORES=16 rep=1 inter-core edges (directed) = 32 of 240
+CORES=16 rep=1 RESULT model=lk4 L_us=0 mode=handshake median_ms=3.1162 exact=1 cert_coverage=0.000 wait_ms=0.0226 comp_ms=3.0629
+CORES=16 rep=1 RESULT model=lk4 L_us=0 mode=cert median_ms=3.4448 exact=1 cert_coverage=0.649 wait_ms=0.0287 comp_ms=3.3905
+CORES=16 rep=1 RESULT model=lk4 L_us=0 mode=oracle median_ms=3.0976 exact=1 cert_coverage=0.660 wait_ms=0.0169 comp_ms=3.0612
+CORES=16 rep=1 RESULT model=lk4 L_us=5 mode=handshake median_ms=3.1164 exact=1 cert_coverage=0.000 wait_ms=0.0221 comp_ms=3.0603
+CORES=16 rep=1 RESULT model=lk4 L_us=5 mode=cert median_ms=3.4488 exact=1 cert_coverage=0.647 wait_ms=0.0257 comp_ms=3.3880
+CORES=16 rep=1 RESULT model=lk4 L_us=5 mode=oracle median_ms=3.0946 exact=1 cert_coverage=0.660 wait_ms=0.0172 comp_ms=3.0617
+CORES=16 rep=1 RESULT model=lk4 L_us=20 mode=handshake median_ms=3.1296 exact=1 cert_coverage=0.000 wait_ms=0.0447 comp_ms=3.0637
+CORES=16 rep=1 RESULT model=lk4 L_us=20 mode=cert median_ms=3.4660 exact=1 cert_coverage=0.637 wait_ms=0.0419 comp_ms=3.3972
+CORES=16 rep=1 RESULT model=lk4 L_us=20 mode=oracle median_ms=3.1201 exact=1 cert_coverage=0.660 wait_ms=0.0321 comp_ms=3.0634
+CORES=16 rep=1 RESULT model=lk4 L_us=100 mode=handshake median_ms=6.4574 exact=1 cert_coverage=0.000 wait_ms=3.3983 comp_ms=3.0561
+CORES=16 rep=1 RESULT model=lk4 L_us=100 mode=cert median_ms=5.8694 exact=1 cert_coverage=0.625 wait_ms=2.3705 comp_ms=3.4748
+CORES=16 rep=1 RESULT model=lk4 L_us=100 mode=oracle median_ms=4.9818 exact=1 cert_coverage=0.660 wait_ms=1.6226 comp_ms=3.0511
+CORES=16 rep=1 RESULT model=lk4 L_us=500 mode=handshake median_ms=26.0855 exact=1 cert_coverage=0.000 wait_ms=23.0165 comp_ms=3.0962
+CORES=16 rep=1 RESULT model=lk4 L_us=500 mode=cert median_ms=22.6813 exact=1 cert_coverage=0.622 wait_ms=19.0423 comp_ms=3.4913
+CORES=16 rep=1 RESULT model=lk4 L_us=500 mode=oracle median_ms=16.1985 exact=1 cert_coverage=0.660 wait_ms=11.9993 comp_ms=3.0628
+CORES=16 rep=1 model=lk8 N=200 cores=16 delays=2,4,8 d_min=2 R_total=2.1822 R_short=0.0702 budget=0.3935
+CORES=16 rep=1 inter-core edges (directed) = 32 of 240
+CORES=16 rep=1 RESULT model=lk8 L_us=0 mode=handshake median_ms=3.0970 exact=1 cert_coverage=0.000 wait_ms=0.0190 comp_ms=3.2880
+CORES=16 rep=1 RESULT model=lk8 L_us=0 mode=cert median_ms=3.3881 exact=1 cert_coverage=0.668 wait_ms=0.0358 comp_ms=3.3006
+CORES=16 rep=1 RESULT model=lk8 L_us=0 mode=oracle median_ms=3.0891 exact=1 cert_coverage=0.671 wait_ms=0.0177 comp_ms=3.0478
+CORES=16 rep=1 RESULT model=lk8 L_us=5 mode=handshake median_ms=3.0749 exact=1 cert_coverage=0.000 wait_ms=0.0176 comp_ms=3.0395
+CORES=16 rep=1 RESULT model=lk8 L_us=5 mode=cert median_ms=3.3946 exact=1 cert_coverage=0.667 wait_ms=0.0477 comp_ms=3.2983
+CORES=16 rep=1 RESULT model=lk8 L_us=5 mode=oracle median_ms=3.0786 exact=1 cert_coverage=0.671 wait_ms=0.0172 comp_ms=3.0468
+CORES=16 rep=1 RESULT model=lk8 L_us=20 mode=handshake median_ms=3.1178 exact=1 cert_coverage=0.000 wait_ms=0.0481 comp_ms=3.0475
+CORES=16 rep=1 RESULT model=lk8 L_us=20 mode=cert median_ms=3.4060 exact=1 cert_coverage=0.665 wait_ms=0.0622 comp_ms=3.2959
+CORES=16 rep=1 RESULT model=lk8 L_us=20 mode=oracle median_ms=3.1046 exact=1 cert_coverage=0.671 wait_ms=0.0320 comp_ms=3.0504
+CORES=16 rep=1 RESULT model=lk8 L_us=100 mode=handshake median_ms=6.4567 exact=1 cert_coverage=0.000 wait_ms=3.4245 comp_ms=3.0536
+CORES=16 rep=1 RESULT model=lk8 L_us=100 mode=cert median_ms=5.5639 exact=1 cert_coverage=0.663 wait_ms=2.2214 comp_ms=3.3104
+CORES=16 rep=1 RESULT model=lk8 L_us=100 mode=oracle median_ms=4.8687 exact=1 cert_coverage=0.671 wait_ms=1.5495 comp_ms=3.0420
+CORES=16 rep=1 RESULT model=lk8 L_us=500 mode=handshake median_ms=26.1068 exact=1 cert_coverage=0.000 wait_ms=23.0351 comp_ms=3.0822
+CORES=16 rep=1 RESULT model=lk8 L_us=500 mode=cert median_ms=20.5043 exact=1 cert_coverage=0.662 wait_ms=16.8376 comp_ms=3.3518
+CORES=16 rep=1 RESULT model=lk8 L_us=500 mode=oracle median_ms=15.2728 exact=1 cert_coverage=0.671 wait_ms=11.4122 comp_ms=3.0447
+CORES=16 rep=1 model=hdcls N=200 cores=16 delays=2,4,8 d_min=2 R_total=4.5295 R_short=0.0268 budget=0.3935
+CORES=16 rep=1 inter-core edges (directed) = 240 of 240
+CORES=16 rep=1 RESULT model=hdcls L_us=0 mode=handshake median_ms=4.7557 exact=1 cert_coverage=0.000 wait_ms=0.2592 comp_ms=4.4586
+CORES=16 rep=1 RESULT model=hdcls L_us=0 mode=cert median_ms=5.3230 exact=1 cert_coverage=0.586 wait_ms=0.2043 comp_ms=5.0989
+CORES=16 rep=1 RESULT model=hdcls L_us=0 mode=oracle median_ms=4.6136 exact=1 cert_coverage=0.603 wait_ms=0.1621 comp_ms=4.4547
+CORES=16 rep=1 RESULT model=hdcls L_us=5 mode=handshake median_ms=4.6201 exact=1 cert_coverage=0.000 wait_ms=0.1764 comp_ms=4.4451
+CORES=16 rep=1 RESULT model=hdcls L_us=5 mode=cert median_ms=5.3352 exact=1 cert_coverage=0.580 wait_ms=0.2244 comp_ms=5.0971
+CORES=16 rep=1 RESULT model=hdcls L_us=5 mode=oracle median_ms=4.5950 exact=1 cert_coverage=0.603 wait_ms=0.1422 comp_ms=4.4507
+CORES=16 rep=1 RESULT model=hdcls L_us=20 mode=handshake median_ms=4.6160 exact=1 cert_coverage=0.000 wait_ms=0.1853 comp_ms=4.4479
+CORES=16 rep=1 RESULT model=hdcls L_us=20 mode=cert median_ms=5.4026 exact=1 cert_coverage=0.573 wait_ms=0.2885 comp_ms=5.0943
+CORES=16 rep=1 RESULT model=hdcls L_us=20 mode=oracle median_ms=4.6022 exact=1 cert_coverage=0.603 wait_ms=0.1502 comp_ms=4.4517
+CORES=16 rep=1 RESULT model=hdcls L_us=100 mode=handshake median_ms=8.9725 exact=1 cert_coverage=0.000 wait_ms=4.5415 comp_ms=4.4511
+CORES=16 rep=1 RESULT model=hdcls L_us=100 mode=cert median_ms=9.3654 exact=1 cert_coverage=0.570 wait_ms=4.2041 comp_ms=5.1635
+CORES=16 rep=1 RESULT model=hdcls L_us=100 mode=oracle median_ms=8.8720 exact=1 cert_coverage=0.603 wait_ms=4.3734 comp_ms=4.4891
+CORES=16 rep=1 RESULT model=hdcls L_us=500 mode=handshake median_ms=35.5479 exact=1 cert_coverage=0.000 wait_ms=31.0492 comp_ms=4.5663
+CORES=16 rep=1 RESULT model=hdcls L_us=500 mode=cert median_ms=35.5985 exact=1 cert_coverage=0.570 wait_ms=30.3618 comp_ms=5.2296
+CORES=16 rep=1 RESULT model=hdcls L_us=500 mode=oracle median_ms=34.5853 exact=1 cert_coverage=0.603 wait_ms=30.0852 comp_ms=4.5092
+CORES=16 rep=1 model=hscmd N=200 cores=16 delays=2,4,8 d_min=2 R_total=10.2946 R_short=0.0126 budget=0.3935
+CORES=16 rep=1 inter-core edges (directed) = 240 of 240
+CORES=16 rep=1 RESULT model=hscmd L_us=0 mode=handshake median_ms=3.8057 exact=1 cert_coverage=0.000 wait_ms=0.1499 comp_ms=3.6146
+CORES=16 rep=1 RESULT model=hscmd L_us=0 mode=cert median_ms=4.3245 exact=1 cert_coverage=0.623 wait_ms=0.1776 comp_ms=4.1283
+CORES=16 rep=1 RESULT model=hscmd L_us=0 mode=oracle median_ms=3.8587 exact=1 cert_coverage=0.659 wait_ms=0.1802 comp_ms=3.6175
+CORES=16 rep=1 RESULT model=hscmd L_us=5 mode=handshake median_ms=3.7282 exact=1 cert_coverage=0.000 wait_ms=0.1229 comp_ms=3.6030
+CORES=16 rep=1 RESULT model=hscmd L_us=5 mode=cert median_ms=4.3930 exact=1 cert_coverage=0.606 wait_ms=0.2503 comp_ms=4.1345
+CORES=16 rep=1 RESULT model=hscmd L_us=5 mode=oracle median_ms=3.7213 exact=1 cert_coverage=0.659 wait_ms=0.0940 comp_ms=3.6080
+CORES=16 rep=1 RESULT model=hscmd L_us=20 mode=handshake median_ms=3.7397 exact=1 cert_coverage=0.000 wait_ms=0.1366 comp_ms=3.6035
+CORES=16 rep=1 RESULT model=hscmd L_us=20 mode=cert median_ms=4.3544 exact=1 cert_coverage=0.590 wait_ms=0.2377 comp_ms=4.1269
+CORES=16 rep=1 RESULT model=hscmd L_us=20 mode=oracle median_ms=3.7391 exact=1 cert_coverage=0.659 wait_ms=0.1206 comp_ms=3.6100
+CORES=16 rep=1 RESULT model=hscmd L_us=100 mode=handshake median_ms=7.3409 exact=1 cert_coverage=0.000 wait_ms=3.7732 comp_ms=3.6539
+CORES=16 rep=1 RESULT model=hscmd L_us=100 mode=cert median_ms=7.6412 exact=1 cert_coverage=0.586 wait_ms=3.4353 comp_ms=4.1920
+CORES=16 rep=1 RESULT model=hscmd L_us=100 mode=oracle median_ms=7.2606 exact=1 cert_coverage=0.659 wait_ms=3.6331 comp_ms=3.6173
+CORES=16 rep=1 RESULT model=hscmd L_us=500 mode=handshake median_ms=29.0759 exact=1 cert_coverage=0.000 wait_ms=25.4349 comp_ms=3.7097
+CORES=16 rep=1 RESULT model=hscmd L_us=500 mode=cert median_ms=29.2956 exact=1 cert_coverage=0.587 wait_ms=24.8969 comp_ms=4.3020
+CORES=16 rep=1 RESULT model=hscmd L_us=500 mode=oracle median_ms=28.5095 exact=1 cert_coverage=0.659 wait_ms=24.7737 comp_ms=3.6619
+CORES=16 rep=2 model=dense N=200 cores=16 delays=2,4,8 d_min=2 R_total=12.8762 R_short=0.2736 budget=0.3935
+CORES=16 rep=2 inter-core edges (directed) = 240 of 240
+CORES=16 rep=2 RESULT model=dense L_us=0 mode=handshake median_ms=3.2189 exact=1 cert_coverage=0.000 wait_ms=0.1442 comp_ms=3.0415
+CORES=16 rep=2 RESULT model=dense L_us=0 mode=cert median_ms=3.8627 exact=1 cert_coverage=0.643 wait_ms=0.3240 comp_ms=3.5108
+CORES=16 rep=2 RESULT model=dense L_us=0 mode=oracle median_ms=3.1562 exact=1 cert_coverage=0.664 wait_ms=0.0831 comp_ms=3.0419
+CORES=16 rep=2 RESULT model=dense L_us=5 mode=handshake median_ms=3.1534 exact=1 cert_coverage=0.000 wait_ms=0.0999 comp_ms=3.0349
+CORES=16 rep=2 RESULT model=dense L_us=5 mode=cert median_ms=3.8384 exact=1 cert_coverage=0.634 wait_ms=0.3183 comp_ms=3.5034
+CORES=16 rep=2 RESULT model=dense L_us=5 mode=oracle median_ms=3.1433 exact=1 cert_coverage=0.664 wait_ms=0.0790 comp_ms=3.0422
+CORES=16 rep=2 RESULT model=dense L_us=20 mode=handshake median_ms=3.2545 exact=1 cert_coverage=0.000 wait_ms=0.1954 comp_ms=3.0457
+CORES=16 rep=2 RESULT model=dense L_us=20 mode=cert median_ms=3.8230 exact=1 cert_coverage=0.622 wait_ms=0.3120 comp_ms=3.5025
+CORES=16 rep=2 RESULT model=dense L_us=20 mode=oracle median_ms=3.1585 exact=1 cert_coverage=0.664 wait_ms=0.1056 comp_ms=3.0426
+CORES=16 rep=2 RESULT model=dense L_us=100 mode=handshake median_ms=6.5159 exact=1 cert_coverage=0.000 wait_ms=3.4868 comp_ms=3.0625
+CORES=16 rep=2 RESULT model=dense L_us=100 mode=cert median_ms=6.0500 exact=1 cert_coverage=0.620 wait_ms=2.4952 comp_ms=3.5884
+CORES=16 rep=2 RESULT model=dense L_us=100 mode=oracle median_ms=5.2318 exact=1 cert_coverage=0.664 wait_ms=2.1759 comp_ms=3.0481
+CORES=16 rep=2 RESULT model=dense L_us=500 mode=handshake median_ms=26.1825 exact=1 cert_coverage=0.000 wait_ms=23.1354 comp_ms=3.1053
+CORES=16 rep=2 RESULT model=dense L_us=500 mode=cert median_ms=23.4777 exact=1 cert_coverage=0.619 wait_ms=19.6310 comp_ms=3.8449
+CORES=16 rep=2 RESULT model=dense L_us=500 mode=oracle median_ms=17.3405 exact=1 cert_coverage=0.664 wait_ms=14.4315 comp_ms=3.0919
+CORES=16 rep=2 model=lk4 N=200 cores=16 delays=2,4,8 d_min=2 R_total=3.8311 R_short=0.2684 budget=0.3935
+CORES=16 rep=2 inter-core edges (directed) = 32 of 240
+CORES=16 rep=2 RESULT model=lk4 L_us=0 mode=handshake median_ms=3.1034 exact=1 cert_coverage=0.000 wait_ms=0.0197 comp_ms=3.0579
+CORES=16 rep=2 RESULT model=lk4 L_us=0 mode=cert median_ms=3.4433 exact=1 cert_coverage=0.649 wait_ms=0.0248 comp_ms=3.3877
+CORES=16 rep=2 RESULT model=lk4 L_us=0 mode=oracle median_ms=3.1113 exact=1 cert_coverage=0.660 wait_ms=0.0173 comp_ms=3.0621
+CORES=16 rep=2 RESULT model=lk4 L_us=5 mode=handshake median_ms=3.1035 exact=1 cert_coverage=0.000 wait_ms=0.0198 comp_ms=3.0583
+CORES=16 rep=2 RESULT model=lk4 L_us=5 mode=cert median_ms=3.4416 exact=1 cert_coverage=0.646 wait_ms=0.0256 comp_ms=3.3874
+CORES=16 rep=2 RESULT model=lk4 L_us=5 mode=oracle median_ms=3.1142 exact=1 cert_coverage=0.660 wait_ms=0.0194 comp_ms=3.0649
+CORES=16 rep=2 RESULT model=lk4 L_us=20 mode=handshake median_ms=3.1162 exact=1 cert_coverage=0.000 wait_ms=0.0361 comp_ms=3.0583
+CORES=16 rep=2 RESULT model=lk4 L_us=20 mode=cert median_ms=3.4763 exact=1 cert_coverage=0.637 wait_ms=0.0436 comp_ms=3.4009
+CORES=16 rep=2 RESULT model=lk4 L_us=20 mode=oracle median_ms=3.1274 exact=1 cert_coverage=0.660 wait_ms=0.0328 comp_ms=3.0660
+CORES=16 rep=2 RESULT model=lk4 L_us=100 mode=handshake median_ms=6.4665 exact=1 cert_coverage=0.000 wait_ms=3.4069 comp_ms=3.0627
+CORES=16 rep=2 RESULT model=lk4 L_us=100 mode=cert median_ms=5.8566 exact=1 cert_coverage=0.625 wait_ms=2.3614 comp_ms=3.4698
+CORES=16 rep=2 RESULT model=lk4 L_us=100 mode=oracle median_ms=4.9851 exact=1 cert_coverage=0.660 wait_ms=1.6226 comp_ms=3.0511
+CORES=16 rep=2 RESULT model=lk4 L_us=500 mode=handshake median_ms=26.0842 exact=1 cert_coverage=0.000 wait_ms=23.0612 comp_ms=3.0953
+CORES=16 rep=2 RESULT model=lk4 L_us=500 mode=cert median_ms=22.6718 exact=1 cert_coverage=0.623 wait_ms=19.0342 comp_ms=3.4880
+CORES=16 rep=2 RESULT model=lk4 L_us=500 mode=oracle median_ms=16.1845 exact=1 cert_coverage=0.660 wait_ms=11.9977 comp_ms=3.0621
+CORES=16 rep=2 model=lk8 N=200 cores=16 delays=2,4,8 d_min=2 R_total=2.1822 R_short=0.0702 budget=0.3935
+CORES=16 rep=2 inter-core edges (directed) = 32 of 240
+CORES=16 rep=2 RESULT model=lk8 L_us=0 mode=handshake median_ms=3.0905 exact=1 cert_coverage=0.000 wait_ms=0.0201 comp_ms=3.0424
+CORES=16 rep=2 RESULT model=lk8 L_us=0 mode=cert median_ms=3.4064 exact=1 cert_coverage=0.668 wait_ms=0.4051 comp_ms=3.4463
+CORES=16 rep=2 RESULT model=lk8 L_us=0 mode=oracle median_ms=3.0842 exact=1 cert_coverage=0.671 wait_ms=0.0172 comp_ms=3.0475
+CORES=16 rep=2 RESULT model=lk8 L_us=5 mode=handshake median_ms=3.0768 exact=1 cert_coverage=0.000 wait_ms=0.0180 comp_ms=3.0404
+CORES=16 rep=2 RESULT model=lk8 L_us=5 mode=cert median_ms=3.3839 exact=1 cert_coverage=0.668 wait_ms=0.0348 comp_ms=3.2941
+CORES=16 rep=2 RESULT model=lk8 L_us=5 mode=oracle median_ms=3.0816 exact=1 cert_coverage=0.671 wait_ms=0.0188 comp_ms=3.0472
+CORES=16 rep=2 RESULT model=lk8 L_us=20 mode=handshake median_ms=3.1036 exact=1 cert_coverage=0.000 wait_ms=0.0497 comp_ms=3.0437
+CORES=16 rep=2 RESULT model=lk8 L_us=20 mode=cert median_ms=3.4061 exact=1 cert_coverage=0.665 wait_ms=0.0586 comp_ms=3.2962
+CORES=16 rep=2 RESULT model=lk8 L_us=20 mode=oracle median_ms=3.1042 exact=1 cert_coverage=0.671 wait_ms=0.0324 comp_ms=3.0501
+CORES=16 rep=2 RESULT model=lk8 L_us=100 mode=handshake median_ms=6.4462 exact=1 cert_coverage=0.000 wait_ms=3.4073 comp_ms=3.0440
+CORES=16 rep=2 RESULT model=lk8 L_us=100 mode=cert median_ms=5.5626 exact=1 cert_coverage=0.663 wait_ms=2.2250 comp_ms=3.3114
+CORES=16 rep=2 RESULT model=lk8 L_us=100 mode=oracle median_ms=4.8758 exact=1 cert_coverage=0.671 wait_ms=1.5476 comp_ms=3.0430
+CORES=16 rep=2 RESULT model=lk8 L_us=500 mode=handshake median_ms=26.0823 exact=1 cert_coverage=0.000 wait_ms=23.1713 comp_ms=3.0717
+CORES=16 rep=2 RESULT model=lk8 L_us=500 mode=cert median_ms=20.3862 exact=1 cert_coverage=0.662 wait_ms=16.8370 comp_ms=3.3201
+CORES=16 rep=2 RESULT model=lk8 L_us=500 mode=oracle median_ms=15.2797 exact=1 cert_coverage=0.671 wait_ms=11.4052 comp_ms=3.0615
+CORES=16 rep=2 model=hdcls N=200 cores=16 delays=2,4,8 d_min=2 R_total=4.5295 R_short=0.0268 budget=0.3935
+CORES=16 rep=2 inter-core edges (directed) = 240 of 240
+CORES=16 rep=2 RESULT model=hdcls L_us=0 mode=handshake median_ms=4.7292 exact=1 cert_coverage=0.000 wait_ms=0.2337 comp_ms=4.4589
+CORES=16 rep=2 RESULT model=hdcls L_us=0 mode=cert median_ms=5.3315 exact=1 cert_coverage=0.586 wait_ms=0.2047 comp_ms=5.1007
+CORES=16 rep=2 RESULT model=hdcls L_us=0 mode=oracle median_ms=4.6354 exact=1 cert_coverage=0.603 wait_ms=0.1638 comp_ms=4.4560
+CORES=16 rep=2 RESULT model=hdcls L_us=5 mode=handshake median_ms=4.6233 exact=1 cert_coverage=0.000 wait_ms=0.1764 comp_ms=4.4464
+CORES=16 rep=2 RESULT model=hdcls L_us=5 mode=cert median_ms=5.3603 exact=1 cert_coverage=0.580 wait_ms=0.2426 comp_ms=5.1020
+CORES=16 rep=2 RESULT model=hdcls L_us=5 mode=oracle median_ms=4.5978 exact=1 cert_coverage=0.603 wait_ms=0.1319 comp_ms=4.4521
+CORES=16 rep=2 RESULT model=hdcls L_us=20 mode=handshake median_ms=4.6616 exact=1 cert_coverage=0.000 wait_ms=0.2125 comp_ms=4.4477
+CORES=16 rep=2 RESULT model=hdcls L_us=20 mode=cert median_ms=5.3798 exact=1 cert_coverage=0.573 wait_ms=0.2717 comp_ms=5.0914
+CORES=16 rep=2 RESULT model=hdcls L_us=20 mode=oracle median_ms=4.6112 exact=1 cert_coverage=0.603 wait_ms=0.1805 comp_ms=4.4519
+CORES=16 rep=2 RESULT model=hdcls L_us=100 mode=handshake median_ms=9.0255 exact=1 cert_coverage=0.000 wait_ms=4.5819 comp_ms=4.4522
+CORES=16 rep=2 RESULT model=hdcls L_us=100 mode=cert median_ms=9.3891 exact=1 cert_coverage=0.570 wait_ms=4.2119 comp_ms=5.1884
+CORES=16 rep=2 RESULT model=hdcls L_us=100 mode=oracle median_ms=8.8595 exact=1 cert_coverage=0.603 wait_ms=4.3860 comp_ms=4.4599
+CORES=16 rep=2 RESULT model=hdcls L_us=500 mode=handshake median_ms=35.5040 exact=1 cert_coverage=0.000 wait_ms=31.0403 comp_ms=4.5035
+CORES=16 rep=2 RESULT model=hdcls L_us=500 mode=cert median_ms=35.6241 exact=1 cert_coverage=0.570 wait_ms=30.3822 comp_ms=5.2489
+CORES=16 rep=2 RESULT model=hdcls L_us=500 mode=oracle median_ms=34.6527 exact=1 cert_coverage=0.603 wait_ms=30.0906 comp_ms=4.5229
+CORES=16 rep=2 model=hscmd N=200 cores=16 delays=2,4,8 d_min=2 R_total=10.2946 R_short=0.0126 budget=0.3935
+CORES=16 rep=2 inter-core edges (directed) = 240 of 240
+CORES=16 rep=2 RESULT model=hscmd L_us=0 mode=handshake median_ms=3.8031 exact=1 cert_coverage=0.000 wait_ms=0.1543 comp_ms=3.6124
+CORES=16 rep=2 RESULT model=hscmd L_us=0 mode=cert median_ms=4.3190 exact=1 cert_coverage=0.623 wait_ms=0.1607 comp_ms=4.1303
+CORES=16 rep=2 RESULT model=hscmd L_us=0 mode=oracle median_ms=3.7362 exact=1 cert_coverage=0.659 wait_ms=0.1236 comp_ms=3.6098
+CORES=16 rep=2 RESULT model=hscmd L_us=5 mode=handshake median_ms=3.7269 exact=1 cert_coverage=0.000 wait_ms=0.1195 comp_ms=3.6023
+CORES=16 rep=2 RESULT model=hscmd L_us=5 mode=cert median_ms=4.3013 exact=1 cert_coverage=0.606 wait_ms=0.1527 comp_ms=4.1228
+CORES=16 rep=2 RESULT model=hscmd L_us=5 mode=oracle median_ms=3.7302 exact=1 cert_coverage=0.659 wait_ms=0.1070 comp_ms=3.6088
+CORES=16 rep=2 RESULT model=hscmd L_us=20 mode=handshake median_ms=3.7552 exact=1 cert_coverage=0.000 wait_ms=0.1469 comp_ms=3.6029
+CORES=16 rep=2 RESULT model=hscmd L_us=20 mode=cert median_ms=4.3201 exact=1 cert_coverage=0.589 wait_ms=0.1863 comp_ms=4.1190
+CORES=16 rep=2 RESULT model=hscmd L_us=20 mode=oracle median_ms=3.7230 exact=1 cert_coverage=0.659 wait_ms=0.1043 comp_ms=3.6061
+CORES=16 rep=2 RESULT model=hscmd L_us=100 mode=handshake median_ms=7.3323 exact=1 cert_coverage=0.000 wait_ms=3.7485 comp_ms=3.6502
+CORES=16 rep=2 RESULT model=hscmd L_us=100 mode=cert median_ms=7.6443 exact=1 cert_coverage=0.586 wait_ms=3.4384 comp_ms=4.1893
+CORES=16 rep=2 RESULT model=hscmd L_us=100 mode=oracle median_ms=7.2699 exact=1 cert_coverage=0.659 wait_ms=3.6320 comp_ms=3.6171
+CORES=16 rep=2 RESULT model=hscmd L_us=500 mode=handshake median_ms=29.1330 exact=1 cert_coverage=0.000 wait_ms=25.5227 comp_ms=3.7647
+CORES=16 rep=2 RESULT model=hscmd L_us=500 mode=cert median_ms=29.3248 exact=1 cert_coverage=0.587 wait_ms=24.8869 comp_ms=4.3002
+CORES=16 rep=2 RESULT model=hscmd L_us=500 mode=oracle median_ms=28.4983 exact=1 cert_coverage=0.659 wait_ms=24.7818 comp_ms=3.6476
+CORES=32 rep=1 model=dense N=200 cores=32 delays=2,4,8 d_min=2 R_total=12.8762 R_short=0.2736 budget=0.3935
+CORES=32 rep=1 inter-core edges (directed) = 992 of 992
+CORES=32 rep=1 RESULT model=dense L_us=0 mode=handshake median_ms=1.9348 exact=1 cert_coverage=0.000 wait_ms=0.3473 comp_ms=1.5547
+CORES=32 rep=1 RESULT model=dense L_us=0 mode=cert median_ms=2.2415 exact=1 cert_coverage=0.729 wait_ms=0.2610 comp_ms=1.9804
+CORES=32 rep=1 RESULT model=dense L_us=0 mode=oracle median_ms=1.9009 exact=1 cert_coverage=0.743 wait_ms=0.3990 comp_ms=1.5803
+CORES=32 rep=1 RESULT model=dense L_us=5 mode=handshake median_ms=1.7400 exact=1 cert_coverage=0.000 wait_ms=0.1911 comp_ms=1.5447
+CORES=32 rep=1 RESULT model=dense L_us=5 mode=cert median_ms=2.2998 exact=1 cert_coverage=0.720 wait_ms=0.2793 comp_ms=2.0045
+CORES=32 rep=1 RESULT model=dense L_us=5 mode=oracle median_ms=1.7465 exact=1 cert_coverage=0.743 wait_ms=0.1970 comp_ms=1.5516
+CORES=32 rep=1 RESULT model=dense L_us=20 mode=handshake median_ms=2.0325 exact=1 cert_coverage=0.000 wait_ms=0.4629 comp_ms=1.5548
+CORES=32 rep=1 RESULT model=dense L_us=20 mode=cert median_ms=2.3188 exact=1 cert_coverage=0.711 wait_ms=0.2984 comp_ms=2.0192
+CORES=32 rep=1 RESULT model=dense L_us=20 mode=oracle median_ms=1.8350 exact=1 cert_coverage=0.743 wait_ms=0.2874 comp_ms=1.5538
+CORES=32 rep=1 RESULT model=dense L_us=100 mode=handshake median_ms=5.9013 exact=1 cert_coverage=0.000 wait_ms=4.3372 comp_ms=1.5533
+CORES=32 rep=1 RESULT model=dense L_us=100 mode=cert median_ms=5.3989 exact=1 cert_coverage=0.710 wait_ms=3.3196 comp_ms=2.0977
+CORES=32 rep=1 RESULT model=dense L_us=100 mode=oracle median_ms=4.2767 exact=1 cert_coverage=0.743 wait_ms=2.7031 comp_ms=1.5546
+CORES=32 rep=1 RESULT model=dense L_us=500 mode=handshake median_ms=25.5010 exact=1 cert_coverage=0.000 wait_ms=24.0533 comp_ms=1.5632
+CORES=32 rep=1 RESULT model=dense L_us=500 mode=cert median_ms=22.6400 exact=1 cert_coverage=0.709 wait_ms=20.4868 comp_ms=2.1143
+CORES=32 rep=1 RESULT model=dense L_us=500 mode=oracle median_ms=16.6991 exact=1 cert_coverage=0.743 wait_ms=15.2849 comp_ms=1.5812
+CORES=32 rep=1 model=lk4 N=200 cores=32 delays=2,4,8 d_min=2 R_total=3.8311 R_short=0.2684 budget=0.3935
+CORES=32 rep=1 inter-core edges (directed) = 160 of 992
+CORES=32 rep=1 RESULT model=lk4 L_us=0 mode=handshake median_ms=1.6592 exact=1 cert_coverage=0.000 wait_ms=0.3745 comp_ms=1.5889
+CORES=32 rep=1 RESULT model=lk4 L_us=0 mode=cert median_ms=1.9759 exact=1 cert_coverage=0.738 wait_ms=0.0767 comp_ms=1.8730
+CORES=32 rep=1 RESULT model=lk4 L_us=0 mode=oracle median_ms=1.6057 exact=1 cert_coverage=0.748 wait_ms=0.0315 comp_ms=1.5581
+CORES=32 rep=1 RESULT model=lk4 L_us=5 mode=handshake median_ms=1.6246 exact=1 cert_coverage=0.000 wait_ms=0.0423 comp_ms=1.5560
+CORES=32 rep=1 RESULT model=lk4 L_us=5 mode=cert median_ms=1.9789 exact=1 cert_coverage=0.734 wait_ms=0.0760 comp_ms=1.8750
+CORES=32 rep=1 RESULT model=lk4 L_us=5 mode=oracle median_ms=1.6434 exact=1 cert_coverage=0.748 wait_ms=0.0380 comp_ms=1.5640
+CORES=32 rep=1 RESULT model=lk4 L_us=20 mode=handshake median_ms=1.7928 exact=1 cert_coverage=0.000 wait_ms=0.2411 comp_ms=1.5513
+CORES=32 rep=1 RESULT model=lk4 L_us=20 mode=cert median_ms=2.1033 exact=1 cert_coverage=0.727 wait_ms=0.1337 comp_ms=1.9510
+CORES=32 rep=1 RESULT model=lk4 L_us=20 mode=oracle median_ms=1.7094 exact=1 cert_coverage=0.748 wait_ms=0.1262 comp_ms=1.5623
+CORES=32 rep=1 RESULT model=lk4 L_us=100 mode=handshake median_ms=5.7257 exact=1 cert_coverage=0.000 wait_ms=4.1870 comp_ms=1.5549
+CORES=32 rep=1 RESULT model=lk4 L_us=100 mode=cert median_ms=5.2717 exact=1 cert_coverage=0.720 wait_ms=3.2978 comp_ms=1.9952
+CORES=32 rep=1 RESULT model=lk4 L_us=100 mode=oracle median_ms=4.0304 exact=1 cert_coverage=0.748 wait_ms=2.1711 comp_ms=1.5513
+CORES=32 rep=1 RESULT model=lk4 L_us=500 mode=handshake median_ms=25.3548 exact=1 cert_coverage=0.000 wait_ms=23.8298 comp_ms=1.5632
+CORES=32 rep=1 RESULT model=lk4 L_us=500 mode=cert median_ms=22.2561 exact=1 cert_coverage=0.720 wait_ms=20.2722 comp_ms=1.9902
+CORES=32 rep=1 RESULT model=lk4 L_us=500 mode=oracle median_ms=16.1190 exact=1 cert_coverage=0.748 wait_ms=13.4483 comp_ms=1.5683
+CORES=32 rep=1 model=lk8 N=200 cores=32 delays=2,4,8 d_min=2 R_total=2.1822 R_short=0.0702 budget=0.3935
+CORES=32 rep=1 inter-core edges (directed) = 160 of 992
+CORES=32 rep=1 RESULT model=lk8 L_us=0 mode=handshake median_ms=1.6467 exact=1 cert_coverage=0.000 wait_ms=0.0486 comp_ms=1.5611
+CORES=32 rep=1 RESULT model=lk8 L_us=0 mode=cert median_ms=1.9203 exact=1 cert_coverage=0.752 wait_ms=0.1002 comp_ms=1.7662
+CORES=32 rep=1 RESULT model=lk8 L_us=0 mode=oracle median_ms=1.6180 exact=1 cert_coverage=0.756 wait_ms=0.1571 comp_ms=1.5801
+CORES=32 rep=1 RESULT model=lk8 L_us=5 mode=handshake median_ms=1.5955 exact=1 cert_coverage=0.000 wait_ms=0.0365 comp_ms=1.5441
+CORES=32 rep=1 RESULT model=lk8 L_us=5 mode=cert median_ms=1.9235 exact=1 cert_coverage=0.752 wait_ms=0.1097 comp_ms=1.7726
+CORES=32 rep=1 RESULT model=lk8 L_us=5 mode=oracle median_ms=1.6030 exact=1 cert_coverage=0.756 wait_ms=0.0354 comp_ms=1.5490
+CORES=32 rep=1 RESULT model=lk8 L_us=20 mode=handshake median_ms=1.7873 exact=1 cert_coverage=0.000 wait_ms=0.2459 comp_ms=1.5431
+CORES=32 rep=1 RESULT model=lk8 L_us=20 mode=cert median_ms=1.9944 exact=1 cert_coverage=0.750 wait_ms=0.1849 comp_ms=1.7720
+CORES=32 rep=1 RESULT model=lk8 L_us=20 mode=oracle median_ms=1.7000 exact=1 cert_coverage=0.756 wait_ms=0.1245 comp_ms=1.5538
+CORES=32 rep=1 RESULT model=lk8 L_us=100 mode=handshake median_ms=5.7192 exact=1 cert_coverage=0.000 wait_ms=4.1949 comp_ms=1.5477
+CORES=32 rep=1 RESULT model=lk8 L_us=100 mode=cert median_ms=4.9810 exact=1 cert_coverage=0.749 wait_ms=3.1534 comp_ms=1.7714
+CORES=32 rep=1 RESULT model=lk8 L_us=100 mode=oracle median_ms=3.9236 exact=1 cert_coverage=0.756 wait_ms=2.0658 comp_ms=1.5441
+CORES=32 rep=1 RESULT model=lk8 L_us=500 mode=handshake median_ms=25.4124 exact=1 cert_coverage=0.000 wait_ms=23.8437 comp_ms=1.5810
+CORES=32 rep=1 RESULT model=lk8 L_us=500 mode=cert median_ms=21.0009 exact=1 cert_coverage=0.749 wait_ms=18.8086 comp_ms=1.7896
+CORES=32 rep=1 RESULT model=lk8 L_us=500 mode=oracle median_ms=15.3750 exact=1 cert_coverage=0.756 wait_ms=12.8617 comp_ms=1.5481
+CORES=32 rep=1 model=hdcls N=200 cores=32 delays=2,4,8 d_min=2 R_total=4.5295 R_short=0.0268 budget=0.3935
+CORES=32 rep=1 inter-core edges (directed) = 992 of 992
+CORES=32 rep=1 RESULT model=hdcls L_us=0 mode=handshake median_ms=2.9385 exact=1 cert_coverage=0.000 wait_ms=0.6249 comp_ms=2.2817
+CORES=32 rep=1 RESULT model=hdcls L_us=0 mode=cert median_ms=3.4405 exact=1 cert_coverage=0.745 wait_ms=0.9023 comp_ms=2.8873
+CORES=32 rep=1 RESULT model=hdcls L_us=0 mode=oracle median_ms=2.9116 exact=1 cert_coverage=0.758 wait_ms=0.5290 comp_ms=2.2899
+CORES=32 rep=1 RESULT model=hdcls L_us=5 mode=handshake median_ms=2.8211 exact=1 cert_coverage=0.000 wait_ms=0.4407 comp_ms=2.2643
+CORES=32 rep=1 RESULT model=hdcls L_us=5 mode=cert median_ms=3.2457 exact=1 cert_coverage=0.738 wait_ms=0.3852 comp_ms=2.8609
+CORES=32 rep=1 RESULT model=hdcls L_us=5 mode=oracle median_ms=2.5194 exact=1 cert_coverage=0.758 wait_ms=0.2467 comp_ms=2.2655
+CORES=32 rep=1 RESULT model=hdcls L_us=20 mode=handshake median_ms=2.9589 exact=1 cert_coverage=0.000 wait_ms=0.6438 comp_ms=2.2660
+CORES=32 rep=1 RESULT model=hdcls L_us=20 mode=cert median_ms=3.3264 exact=1 cert_coverage=0.733 wait_ms=0.4458 comp_ms=2.8840
+CORES=32 rep=1 RESULT model=hdcls L_us=20 mode=oracle median_ms=2.6697 exact=1 cert_coverage=0.758 wait_ms=0.9015 comp_ms=2.3198
+CORES=32 rep=1 RESULT model=hdcls L_us=100 mode=handshake median_ms=7.9686 exact=1 cert_coverage=0.000 wait_ms=5.7289 comp_ms=2.2717
+CORES=32 rep=1 RESULT model=hdcls L_us=100 mode=cert median_ms=8.3627 exact=1 cert_coverage=0.732 wait_ms=5.4355 comp_ms=2.9781
+CORES=32 rep=1 RESULT model=hdcls L_us=100 mode=oracle median_ms=7.8688 exact=1 cert_coverage=0.758 wait_ms=5.5584 comp_ms=2.2970
+CORES=32 rep=1 RESULT model=hdcls L_us=500 mode=handshake median_ms=34.5240 exact=1 cert_coverage=0.000 wait_ms=32.3007 comp_ms=2.2832
+CORES=32 rep=1 RESULT model=hdcls L_us=500 mode=cert median_ms=34.8359 exact=1 cert_coverage=0.732 wait_ms=31.6588 comp_ms=3.1329
+CORES=32 rep=1 RESULT model=hdcls L_us=500 mode=oracle median_ms=33.8204 exact=1 cert_coverage=0.758 wait_ms=31.2700 comp_ms=2.3087
+CORES=32 rep=1 model=hscmd N=200 cores=32 delays=2,4,8 d_min=2 R_total=10.2946 R_short=0.0126 budget=0.3935
+CORES=32 rep=1 inter-core edges (directed) = 992 of 992
+CORES=32 rep=1 RESULT model=hscmd L_us=0 mode=handshake median_ms=2.3524 exact=1 cert_coverage=0.000 wait_ms=0.4783 comp_ms=1.8441
+CORES=32 rep=1 RESULT model=hscmd L_us=0 mode=cert median_ms=2.7653 exact=1 cert_coverage=0.770 wait_ms=0.4051 comp_ms=2.3200
+CORES=32 rep=1 RESULT model=hscmd L_us=0 mode=oracle median_ms=2.0495 exact=1 cert_coverage=0.797 wait_ms=0.2036 comp_ms=1.8350
+CORES=32 rep=1 RESULT model=hscmd L_us=5 mode=handshake median_ms=2.2798 exact=1 cert_coverage=0.000 wait_ms=0.3737 comp_ms=1.8348
+CORES=32 rep=1 RESULT model=hscmd L_us=5 mode=cert median_ms=2.6382 exact=1 cert_coverage=0.753 wait_ms=0.2973 comp_ms=2.3176
+CORES=32 rep=1 RESULT model=hscmd L_us=5 mode=oracle median_ms=2.0541 exact=1 cert_coverage=0.797 wait_ms=0.2094 comp_ms=1.8351
+CORES=32 rep=1 RESULT model=hscmd L_us=20 mode=handshake median_ms=2.1675 exact=1 cert_coverage=0.000 wait_ms=0.3711 comp_ms=1.8328
+CORES=32 rep=1 RESULT model=hscmd L_us=20 mode=cert median_ms=2.6877 exact=1 cert_coverage=0.741 wait_ms=0.3471 comp_ms=2.3360
+CORES=32 rep=1 RESULT model=hscmd L_us=20 mode=oracle median_ms=3.6859 exact=1 cert_coverage=0.797 wait_ms=1.1258 comp_ms=2.0110
+CORES=32 rep=1 RESULT model=hscmd L_us=100 mode=handshake median_ms=6.5754 exact=1 cert_coverage=0.000 wait_ms=4.7435 comp_ms=1.8449
+CORES=32 rep=1 RESULT model=hscmd L_us=100 mode=cert median_ms=6.8364 exact=1 cert_coverage=0.740 wait_ms=4.4165 comp_ms=2.4008
+CORES=32 rep=1 RESULT model=hscmd L_us=100 mode=oracle median_ms=6.3902 exact=1 cert_coverage=0.797 wait_ms=4.5303 comp_ms=1.8430
+CORES=32 rep=1 RESULT model=hscmd L_us=500 mode=handshake median_ms=28.1883 exact=1 cert_coverage=0.000 wait_ms=26.3867 comp_ms=1.8610
+CORES=32 rep=1 RESULT model=hscmd L_us=500 mode=cert median_ms=28.4636 exact=1 cert_coverage=0.741 wait_ms=25.8534 comp_ms=2.4553
+CORES=32 rep=1 RESULT model=hscmd L_us=500 mode=oracle median_ms=27.6281 exact=1 cert_coverage=0.797 wait_ms=25.7271 comp_ms=1.8589
+CORES=32 rep=2 model=dense N=200 cores=32 delays=2,4,8 d_min=2 R_total=12.8762 R_short=0.2736 budget=0.3935
+CORES=32 rep=2 inter-core edges (directed) = 992 of 992
+CORES=32 rep=2 RESULT model=dense L_us=0 mode=handshake median_ms=1.9621 exact=1 cert_coverage=0.000 wait_ms=0.3716 comp_ms=1.5532
+CORES=32 rep=2 RESULT model=dense L_us=0 mode=cert median_ms=2.2451 exact=1 cert_coverage=0.729 wait_ms=0.2638 comp_ms=1.9802
+CORES=32 rep=2 RESULT model=dense L_us=0 mode=oracle median_ms=1.9227 exact=1 cert_coverage=0.743 wait_ms=0.2836 comp_ms=1.5726
+CORES=32 rep=2 RESULT model=dense L_us=5 mode=handshake median_ms=1.9486 exact=1 cert_coverage=0.000 wait_ms=0.3450 comp_ms=1.5478
+CORES=32 rep=2 RESULT model=dense L_us=5 mode=cert median_ms=2.2819 exact=1 cert_coverage=0.719 wait_ms=0.2747 comp_ms=1.9976
+CORES=32 rep=2 RESULT model=dense L_us=5 mode=oracle median_ms=1.7634 exact=1 cert_coverage=0.743 wait_ms=0.4369 comp_ms=1.5891
+CORES=32 rep=2 RESULT model=dense L_us=20 mode=handshake median_ms=1.9650 exact=1 cert_coverage=0.000 wait_ms=0.4090 comp_ms=1.5467
+CORES=32 rep=2 RESULT model=dense L_us=20 mode=cert median_ms=2.3225 exact=1 cert_coverage=0.711 wait_ms=0.3022 comp_ms=2.0187
+CORES=32 rep=2 RESULT model=dense L_us=20 mode=oracle median_ms=1.9356 exact=1 cert_coverage=0.743 wait_ms=0.3310 comp_ms=1.5567
+CORES=32 rep=2 RESULT model=dense L_us=100 mode=handshake median_ms=5.8468 exact=1 cert_coverage=0.000 wait_ms=4.3230 comp_ms=1.5537
+CORES=32 rep=2 RESULT model=dense L_us=100 mode=cert median_ms=5.4133 exact=1 cert_coverage=0.710 wait_ms=3.3210 comp_ms=2.0944
+CORES=32 rep=2 RESULT model=dense L_us=100 mode=oracle median_ms=4.2688 exact=1 cert_coverage=0.743 wait_ms=2.7091 comp_ms=1.5534
+CORES=32 rep=2 RESULT model=dense L_us=500 mode=handshake median_ms=25.4611 exact=1 cert_coverage=0.000 wait_ms=23.9374 comp_ms=1.5580
+CORES=32 rep=2 RESULT model=dense L_us=500 mode=cert median_ms=22.6573 exact=1 cert_coverage=0.710 wait_ms=20.5059 comp_ms=2.1567
+CORES=32 rep=2 RESULT model=dense L_us=500 mode=oracle median_ms=16.7283 exact=1 cert_coverage=0.743 wait_ms=15.3045 comp_ms=1.5806
+CORES=32 rep=2 model=lk4 N=200 cores=32 delays=2,4,8 d_min=2 R_total=3.8311 R_short=0.2684 budget=0.3935
+CORES=32 rep=2 inter-core edges (directed) = 160 of 992
+CORES=32 rep=2 RESULT model=lk4 L_us=0 mode=handshake median_ms=1.6458 exact=1 cert_coverage=0.000 wait_ms=0.0388 comp_ms=1.5634
+CORES=32 rep=2 RESULT model=lk4 L_us=0 mode=cert median_ms=1.9761 exact=1 cert_coverage=0.738 wait_ms=0.0718 comp_ms=1.8743
+CORES=32 rep=2 RESULT model=lk4 L_us=0 mode=oracle median_ms=1.6034 exact=1 cert_coverage=0.748 wait_ms=0.0317 comp_ms=1.5566
+CORES=32 rep=2 RESULT model=lk4 L_us=5 mode=handshake median_ms=1.6033 exact=1 cert_coverage=0.000 wait_ms=0.0373 comp_ms=1.5519
+CORES=32 rep=2 RESULT model=lk4 L_us=5 mode=cert median_ms=1.9904 exact=1 cert_coverage=0.734 wait_ms=0.0846 comp_ms=1.8799
+CORES=32 rep=2 RESULT model=lk4 L_us=5 mode=oracle median_ms=2.9580 exact=1 cert_coverage=0.748 wait_ms=0.3942 comp_ms=1.7168
+CORES=32 rep=2 RESULT model=lk4 L_us=20 mode=handshake median_ms=1.8052 exact=1 cert_coverage=0.000 wait_ms=0.2493 comp_ms=1.5535
+CORES=32 rep=2 RESULT model=lk4 L_us=20 mode=cert median_ms=2.0911 exact=1 cert_coverage=0.727 wait_ms=0.1243 comp_ms=1.9471
+CORES=32 rep=2 RESULT model=lk4 L_us=20 mode=oracle median_ms=1.7185 exact=1 cert_coverage=0.748 wait_ms=0.1282 comp_ms=1.5637
+CORES=32 rep=2 RESULT model=lk4 L_us=100 mode=handshake median_ms=5.7170 exact=1 cert_coverage=0.000 wait_ms=4.1954 comp_ms=1.5566
+CORES=32 rep=2 RESULT model=lk4 L_us=100 mode=cert median_ms=5.2096 exact=1 cert_coverage=0.721 wait_ms=3.2478 comp_ms=1.9655
+CORES=32 rep=2 RESULT model=lk4 L_us=100 mode=oracle median_ms=4.0293 exact=1 cert_coverage=0.748 wait_ms=2.1711 comp_ms=1.5513
+CORES=32 rep=2 RESULT model=lk4 L_us=500 mode=handshake median_ms=25.3499 exact=1 cert_coverage=0.000 wait_ms=23.7943 comp_ms=1.5621
+CORES=32 rep=2 RESULT model=lk4 L_us=500 mode=cert median_ms=22.0928 exact=1 cert_coverage=0.720 wait_ms=20.2317 comp_ms=1.9923
+CORES=32 rep=2 RESULT model=lk4 L_us=500 mode=oracle median_ms=16.1194 exact=1 cert_coverage=0.748 wait_ms=13.4500 comp_ms=1.5595
+CORES=32 rep=2 model=lk8 N=200 cores=32 delays=2,4,8 d_min=2 R_total=2.1822 R_short=0.0702 budget=0.3935
+CORES=32 rep=2 inter-core edges (directed) = 160 of 992
+CORES=32 rep=2 RESULT model=lk8 L_us=0 mode=handshake median_ms=1.6450 exact=1 cert_coverage=0.000 wait_ms=0.2712 comp_ms=1.5739
+CORES=32 rep=2 RESULT model=lk8 L_us=0 mode=cert median_ms=1.9133 exact=1 cert_coverage=0.752 wait_ms=0.1391 comp_ms=1.7697
+CORES=32 rep=2 RESULT model=lk8 L_us=0 mode=oracle median_ms=1.6004 exact=1 cert_coverage=0.756 wait_ms=0.0330 comp_ms=1.5502
+CORES=32 rep=2 RESULT model=lk8 L_us=5 mode=handshake median_ms=1.5976 exact=1 cert_coverage=0.000 wait_ms=0.0376 comp_ms=1.5434
+CORES=32 rep=2 RESULT model=lk8 L_us=5 mode=cert median_ms=1.9949 exact=1 cert_coverage=0.752 wait_ms=0.6364 comp_ms=1.8508
+CORES=32 rep=2 RESULT model=lk8 L_us=5 mode=oracle median_ms=1.6030 exact=1 cert_coverage=0.756 wait_ms=0.0352 comp_ms=1.5501
+CORES=32 rep=2 RESULT model=lk8 L_us=20 mode=handshake median_ms=1.7877 exact=1 cert_coverage=0.000 wait_ms=0.2460 comp_ms=1.5437
+CORES=32 rep=2 RESULT model=lk8 L_us=20 mode=cert median_ms=1.9898 exact=1 cert_coverage=0.750 wait_ms=0.1882 comp_ms=1.7725
+CORES=32 rep=2 RESULT model=lk8 L_us=20 mode=oracle median_ms=1.7458 exact=1 cert_coverage=0.756 wait_ms=0.3358 comp_ms=1.6107
+CORES=32 rep=2 RESULT model=lk8 L_us=100 mode=handshake median_ms=5.7195 exact=1 cert_coverage=0.000 wait_ms=4.2476 comp_ms=1.5579
+CORES=32 rep=2 RESULT model=lk8 L_us=100 mode=cert median_ms=4.9909 exact=1 cert_coverage=0.749 wait_ms=3.1595 comp_ms=1.7733
+CORES=32 rep=2 RESULT model=lk8 L_us=100 mode=oracle median_ms=3.9315 exact=1 cert_coverage=0.756 wait_ms=2.0671 comp_ms=1.5432
+CORES=32 rep=2 RESULT model=lk8 L_us=500 mode=handshake median_ms=25.3963 exact=1 cert_coverage=0.000 wait_ms=23.8391 comp_ms=1.5667
+CORES=32 rep=2 RESULT model=lk8 L_us=500 mode=cert median_ms=20.9890 exact=1 cert_coverage=0.749 wait_ms=18.7668 comp_ms=1.7833
+CORES=32 rep=2 RESULT model=lk8 L_us=500 mode=oracle median_ms=15.4438 exact=1 cert_coverage=0.756 wait_ms=12.8412 comp_ms=1.6010
+CORES=32 rep=2 model=hdcls N=200 cores=32 delays=2,4,8 d_min=2 R_total=4.5295 R_short=0.0268 budget=0.3935
+CORES=32 rep=2 inter-core edges (directed) = 992 of 992
+CORES=32 rep=2 RESULT model=hdcls L_us=0 mode=handshake median_ms=2.9053 exact=1 cert_coverage=0.000 wait_ms=0.5845 comp_ms=2.2779
+CORES=32 rep=2 RESULT model=hdcls L_us=0 mode=cert median_ms=3.3999 exact=1 cert_coverage=0.746 wait_ms=0.5042 comp_ms=2.8538
+CORES=32 rep=2 RESULT model=hdcls L_us=0 mode=oracle median_ms=2.5258 exact=1 cert_coverage=0.758 wait_ms=0.6247 comp_ms=2.2989
+CORES=32 rep=2 RESULT model=hdcls L_us=5 mode=handshake median_ms=2.8321 exact=1 cert_coverage=0.000 wait_ms=0.4559 comp_ms=2.2640
+CORES=32 rep=2 RESULT model=hdcls L_us=5 mode=cert median_ms=3.2503 exact=1 cert_coverage=0.738 wait_ms=0.3684 comp_ms=2.8606
+CORES=32 rep=2 RESULT model=hdcls L_us=5 mode=oracle median_ms=2.5249 exact=1 cert_coverage=0.758 wait_ms=0.2446 comp_ms=2.2654
+CORES=32 rep=2 RESULT model=hdcls L_us=20 mode=handshake median_ms=2.9414 exact=1 cert_coverage=0.000 wait_ms=0.6121 comp_ms=2.2625
+CORES=32 rep=2 RESULT model=hdcls L_us=20 mode=cert median_ms=3.3284 exact=1 cert_coverage=0.733 wait_ms=0.4427 comp_ms=2.8831
+CORES=32 rep=2 RESULT model=hdcls L_us=20 mode=oracle median_ms=2.9168 exact=1 cert_coverage=0.758 wait_ms=0.5665 comp_ms=2.2753
+CORES=32 rep=2 RESULT model=hdcls L_us=100 mode=handshake median_ms=8.0665 exact=1 cert_coverage=0.000 wait_ms=5.8435 comp_ms=2.2691
+CORES=32 rep=2 RESULT model=hdcls L_us=100 mode=cert median_ms=8.3503 exact=1 cert_coverage=0.732 wait_ms=5.4070 comp_ms=2.9428
+CORES=32 rep=2 RESULT model=hdcls L_us=100 mode=oracle median_ms=7.8035 exact=1 cert_coverage=0.758 wait_ms=5.5090 comp_ms=2.2731
+CORES=32 rep=2 RESULT model=hdcls L_us=500 mode=handshake median_ms=34.4969 exact=1 cert_coverage=0.000 wait_ms=32.2402 comp_ms=2.2790
+CORES=32 rep=2 RESULT model=hdcls L_us=500 mode=cert median_ms=34.9708 exact=1 cert_coverage=0.733 wait_ms=31.7514 comp_ms=3.1640
+CORES=32 rep=2 RESULT model=hdcls L_us=500 mode=oracle median_ms=33.8388 exact=1 cert_coverage=0.758 wait_ms=31.2696 comp_ms=2.2925
+CORES=32 rep=2 model=hscmd N=200 cores=32 delays=2,4,8 d_min=2 R_total=10.2946 R_short=0.0126 budget=0.3935
+CORES=32 rep=2 inter-core edges (directed) = 992 of 992
+CORES=32 rep=2 RESULT model=hscmd L_us=0 mode=handshake median_ms=2.3690 exact=1 cert_coverage=0.000 wait_ms=0.8103 comp_ms=1.8658
+CORES=32 rep=2 RESULT model=hscmd L_us=0 mode=cert median_ms=2.6315 exact=1 cert_coverage=0.767 wait_ms=0.3451 comp_ms=2.3165
+CORES=32 rep=2 RESULT model=hscmd L_us=0 mode=oracle median_ms=2.2717 exact=1 cert_coverage=0.797 wait_ms=0.3489 comp_ms=1.8505
+CORES=32 rep=2 RESULT model=hscmd L_us=5 mode=handshake median_ms=2.0472 exact=1 cert_coverage=0.000 wait_ms=0.2196 comp_ms=1.8280
+CORES=32 rep=2 RESULT model=hscmd L_us=5 mode=cert median_ms=2.7709 exact=1 cert_coverage=0.754 wait_ms=0.7828 comp_ms=2.4444
+CORES=32 rep=2 RESULT model=hscmd L_us=5 mode=oracle median_ms=2.0513 exact=1 cert_coverage=0.797 wait_ms=0.2085 comp_ms=1.8345
+CORES=32 rep=2 RESULT model=hscmd L_us=20 mode=handshake median_ms=2.3951 exact=1 cert_coverage=0.000 wait_ms=0.5025 comp_ms=1.8319
+CORES=32 rep=2 RESULT model=hscmd L_us=20 mode=cert median_ms=2.6868 exact=1 cert_coverage=0.741 wait_ms=0.3483 comp_ms=2.3360
+CORES=32 rep=2 RESULT model=hscmd L_us=20 mode=oracle median_ms=2.1430 exact=1 cert_coverage=0.797 wait_ms=0.3019 comp_ms=1.8376
+CORES=32 rep=2 RESULT model=hscmd L_us=100 mode=handshake median_ms=6.6118 exact=1 cert_coverage=0.000 wait_ms=4.7921 comp_ms=1.8436
+CORES=32 rep=2 RESULT model=hscmd L_us=100 mode=cert median_ms=6.8179 exact=1 cert_coverage=0.740 wait_ms=4.4131 comp_ms=2.3919
+CORES=32 rep=2 RESULT model=hscmd L_us=100 mode=oracle median_ms=6.4020 exact=1 cert_coverage=0.797 wait_ms=4.5421 comp_ms=1.8415
+CORES=32 rep=2 RESULT model=hscmd L_us=500 mode=handshake median_ms=28.2154 exact=1 cert_coverage=0.000 wait_ms=26.5598 comp_ms=1.8634
+CORES=32 rep=2 RESULT model=hscmd L_us=500 mode=cert median_ms=28.4668 exact=1 cert_coverage=0.742 wait_ms=25.8963 comp_ms=2.4621
+CORES=32 rep=2 RESULT model=hscmd L_us=500 mode=oracle median_ms=27.6267 exact=1 cert_coverage=0.797 wait_ms=25.7209 comp_ms=1.8541
+CORES=64 rep=1 model=dense N=200 cores=64 delays=2,4,8 d_min=2 R_total=12.8762 R_short=0.2736 budget=0.3935
+CORES=64 rep=1 inter-core edges (directed) = 4032 of 4032
+CORES=64 rep=1 RESULT model=dense L_us=0 mode=handshake median_ms=2.0248 exact=1 cert_coverage=0.000 wait_ms=0.5928 comp_ms=1.4252
+CORES=64 rep=1 RESULT model=dense L_us=0 mode=cert median_ms=2.9873 exact=1 cert_coverage=0.811 wait_ms=0.7125 comp_ms=2.2815
+CORES=64 rep=1 RESULT model=dense L_us=0 mode=oracle median_ms=2.0227 exact=1 cert_coverage=0.820 wait_ms=0.5269 comp_ms=1.4764
+CORES=64 rep=1 RESULT model=dense L_us=5 mode=handshake median_ms=2.0239 exact=1 cert_coverage=0.000 wait_ms=0.5439 comp_ms=1.4670
+CORES=64 rep=1 RESULT model=dense L_us=5 mode=cert median_ms=3.0131 exact=1 cert_coverage=0.805 wait_ms=0.7188 comp_ms=2.2966
+CORES=64 rep=1 RESULT model=dense L_us=5 mode=oracle median_ms=2.0163 exact=1 cert_coverage=0.820 wait_ms=0.5180 comp_ms=1.4942
+CORES=64 rep=1 RESULT model=dense L_us=20 mode=handshake median_ms=2.0390 exact=1 cert_coverage=0.000 wait_ms=0.5392 comp_ms=1.4891
+CORES=64 rep=1 RESULT model=dense L_us=20 mode=cert median_ms=3.1178 exact=1 cert_coverage=0.798 wait_ms=0.6750 comp_ms=2.4277
+CORES=64 rep=1 RESULT model=dense L_us=20 mode=oracle median_ms=2.0417 exact=1 cert_coverage=0.820 wait_ms=0.5508 comp_ms=1.5027
+CORES=64 rep=1 RESULT model=dense L_us=100 mode=handshake median_ms=5.9549 exact=1 cert_coverage=0.000 wait_ms=4.4881 comp_ms=1.4613
+CORES=64 rep=1 RESULT model=dense L_us=100 mode=cert median_ms=5.9313 exact=1 cert_coverage=0.796 wait_ms=3.2822 comp_ms=2.6740
+CORES=64 rep=1 RESULT model=dense L_us=100 mode=oracle median_ms=4.3772 exact=1 cert_coverage=0.820 wait_ms=2.9034 comp_ms=1.4793
+CORES=64 rep=1 RESULT model=dense L_us=500 mode=handshake median_ms=25.5547 exact=1 cert_coverage=0.000 wait_ms=24.1527 comp_ms=1.4036
+CORES=64 rep=1 RESULT model=dense L_us=500 mode=cert median_ms=23.0758 exact=1 cert_coverage=0.797 wait_ms=20.3770 comp_ms=2.6103
+CORES=64 rep=1 RESULT model=dense L_us=500 mode=oracle median_ms=16.7274 exact=1 cert_coverage=0.820 wait_ms=15.4319 comp_ms=1.4671
+CORES=64 rep=1 model=lk4 N=200 cores=64 delays=2,4,8 d_min=2 R_total=3.8311 R_short=0.2684 budget=0.3935
+CORES=64 rep=1 inter-core edges (directed) = 704 of 4032
+CORES=64 rep=1 RESULT model=lk4 L_us=0 mode=handshake median_ms=1.6352 exact=1 cert_coverage=0.000 wait_ms=0.1481 comp_ms=1.4732
+CORES=64 rep=1 RESULT model=lk4 L_us=0 mode=cert median_ms=2.4645 exact=1 cert_coverage=0.819 wait_ms=0.4620 comp_ms=2.0789
+CORES=64 rep=1 RESULT model=lk4 L_us=0 mode=oracle median_ms=1.6459 exact=1 cert_coverage=0.828 wait_ms=0.1171 comp_ms=1.4687
+CORES=64 rep=1 RESULT model=lk4 L_us=5 mode=handshake median_ms=1.6477 exact=1 cert_coverage=0.000 wait_ms=0.2175 comp_ms=1.4506
+CORES=64 rep=1 RESULT model=lk4 L_us=5 mode=cert median_ms=2.4787 exact=1 cert_coverage=0.819 wait_ms=0.2661 comp_ms=2.1674
+CORES=64 rep=1 RESULT model=lk4 L_us=5 mode=oracle median_ms=1.6407 exact=1 cert_coverage=0.828 wait_ms=0.0999 comp_ms=1.5046
+CORES=64 rep=1 RESULT model=lk4 L_us=20 mode=handshake median_ms=1.8078 exact=1 cert_coverage=0.000 wait_ms=0.3255 comp_ms=1.4806
+CORES=64 rep=1 RESULT model=lk4 L_us=20 mode=cert median_ms=2.6199 exact=1 cert_coverage=0.813 wait_ms=0.3412 comp_ms=2.2802
+CORES=64 rep=1 RESULT model=lk4 L_us=20 mode=oracle median_ms=1.7190 exact=1 cert_coverage=0.828 wait_ms=0.1947 comp_ms=1.4945
+CORES=64 rep=1 RESULT model=lk4 L_us=100 mode=handshake median_ms=5.7264 exact=1 cert_coverage=0.000 wait_ms=4.2425 comp_ms=1.4732
+CORES=64 rep=1 RESULT model=lk4 L_us=100 mode=cert median_ms=5.5333 exact=1 cert_coverage=0.809 wait_ms=3.1322 comp_ms=2.3990
+CORES=64 rep=1 RESULT model=lk4 L_us=100 mode=oracle median_ms=3.9085 exact=1 cert_coverage=0.828 wait_ms=2.2618 comp_ms=1.3892
+CORES=64 rep=1 RESULT model=lk4 L_us=500 mode=handshake median_ms=25.3303 exact=1 cert_coverage=0.000 wait_ms=23.8951 comp_ms=1.4251
+CORES=64 rep=1 RESULT model=lk4 L_us=500 mode=cert median_ms=22.3303 exact=1 cert_coverage=0.809 wait_ms=20.2250 comp_ms=2.2835
+CORES=64 rep=1 RESULT model=lk4 L_us=500 mode=oracle median_ms=16.0901 exact=1 cert_coverage=0.828 wait_ms=13.6959 comp_ms=1.3210
+CORES=64 rep=1 model=lk8 N=200 cores=64 delays=2,4,8 d_min=2 R_total=2.1822 R_short=0.0702 budget=0.3935
+CORES=64 rep=1 inter-core edges (directed) = 704 of 4032
+CORES=64 rep=1 RESULT model=lk8 L_us=0 mode=handshake median_ms=1.6207 exact=1 cert_coverage=0.000 wait_ms=0.1453 comp_ms=1.4423
+CORES=64 rep=1 RESULT model=lk8 L_us=0 mode=cert median_ms=2.2928 exact=1 cert_coverage=0.830 wait_ms=0.3585 comp_ms=1.8719
+CORES=64 rep=1 RESULT model=lk8 L_us=0 mode=oracle median_ms=1.6200 exact=1 cert_coverage=0.833 wait_ms=0.1009 comp_ms=1.4919
+CORES=64 rep=1 RESULT model=lk8 L_us=5 mode=handshake median_ms=1.6240 exact=1 cert_coverage=0.000 wait_ms=0.1263 comp_ms=1.4745
+CORES=64 rep=1 RESULT model=lk8 L_us=5 mode=cert median_ms=2.3211 exact=1 cert_coverage=0.829 wait_ms=0.4473 comp_ms=1.8548
+CORES=64 rep=1 RESULT model=lk8 L_us=5 mode=oracle median_ms=1.6360 exact=1 cert_coverage=0.833 wait_ms=0.1275 comp_ms=1.4662
+CORES=64 rep=1 RESULT model=lk8 L_us=20 mode=handshake median_ms=1.7939 exact=1 cert_coverage=0.000 wait_ms=0.3360 comp_ms=1.4606
+CORES=64 rep=1 RESULT model=lk8 L_us=20 mode=cert median_ms=2.4184 exact=1 cert_coverage=0.828 wait_ms=0.5310 comp_ms=1.8603
+CORES=64 rep=1 RESULT model=lk8 L_us=20 mode=oracle median_ms=1.7038 exact=1 cert_coverage=0.833 wait_ms=0.1991 comp_ms=1.4731
+CORES=64 rep=1 RESULT model=lk8 L_us=100 mode=handshake median_ms=5.7071 exact=1 cert_coverage=0.000 wait_ms=4.2451 comp_ms=1.4588
+CORES=64 rep=1 RESULT model=lk8 L_us=100 mode=cert median_ms=5.3409 exact=1 cert_coverage=0.827 wait_ms=3.4290 comp_ms=1.8380
+CORES=64 rep=1 RESULT model=lk8 L_us=100 mode=oracle median_ms=3.7856 exact=1 cert_coverage=0.833 wait_ms=2.1840 comp_ms=1.3943
+CORES=64 rep=1 RESULT model=lk8 L_us=500 mode=handshake median_ms=25.3140 exact=1 cert_coverage=0.000 wait_ms=23.9206 comp_ms=1.3964
+CORES=64 rep=1 RESULT model=lk8 L_us=500 mode=cert median_ms=21.6995 exact=1 cert_coverage=0.827 wait_ms=19.4498 comp_ms=1.8028
+CORES=64 rep=1 RESULT model=lk8 L_us=500 mode=oracle median_ms=15.5093 exact=1 cert_coverage=0.833 wait_ms=13.1156 comp_ms=1.2945
+CORES=64 rep=1 model=hdcls N=200 cores=64 delays=2,4,8 d_min=2 R_total=4.5295 R_short=0.0268 budget=0.3935
+CORES=64 rep=1 inter-core edges (directed) = 4032 of 4032
+CORES=64 rep=1 RESULT model=hdcls L_us=0 mode=handshake median_ms=2.8164 exact=1 cert_coverage=0.000 wait_ms=0.7080 comp_ms=2.0908
+CORES=64 rep=1 RESULT model=hdcls L_us=0 mode=cert median_ms=4.2499 exact=1 cert_coverage=0.853 wait_ms=1.3772 comp_ms=2.9084
+CORES=64 rep=1 RESULT model=hdcls L_us=0 mode=oracle median_ms=2.7939 exact=1 cert_coverage=0.861 wait_ms=0.6572 comp_ms=2.1261
+CORES=64 rep=1 RESULT model=hdcls L_us=5 mode=handshake median_ms=2.8048 exact=1 cert_coverage=0.000 wait_ms=0.6794 comp_ms=2.1137
+CORES=64 rep=1 RESULT model=hdcls L_us=5 mode=cert median_ms=4.2984 exact=1 cert_coverage=0.849 wait_ms=1.1829 comp_ms=3.1153
+CORES=64 rep=1 RESULT model=hdcls L_us=5 mode=oracle median_ms=2.8042 exact=1 cert_coverage=0.861 wait_ms=0.6679 comp_ms=2.1285
+CORES=64 rep=1 RESULT model=hdcls L_us=20 mode=handshake median_ms=2.8361 exact=1 cert_coverage=0.000 wait_ms=0.7115 comp_ms=2.1182
+CORES=64 rep=1 RESULT model=hdcls L_us=20 mode=cert median_ms=4.3647 exact=1 cert_coverage=0.846 wait_ms=1.0975 comp_ms=3.2537
+CORES=64 rep=1 RESULT model=hdcls L_us=20 mode=oracle median_ms=2.8397 exact=1 cert_coverage=0.861 wait_ms=0.7005 comp_ms=2.1269
+CORES=64 rep=1 RESULT model=hdcls L_us=100 mode=handshake median_ms=8.0741 exact=1 cert_coverage=0.000 wait_ms=5.9987 comp_ms=2.0804
+CORES=64 rep=1 RESULT model=hdcls L_us=100 mode=cert median_ms=8.9914 exact=1 cert_coverage=0.845 wait_ms=5.7742 comp_ms=3.4042
+CORES=64 rep=1 RESULT model=hdcls L_us=100 mode=oracle median_ms=7.8647 exact=1 cert_coverage=0.861 wait_ms=5.7484 comp_ms=2.0939
+CORES=64 rep=1 RESULT model=hdcls L_us=500 mode=handshake median_ms=34.4872 exact=1 cert_coverage=0.000 wait_ms=32.5390 comp_ms=1.9718
+CORES=64 rep=1 RESULT model=hdcls L_us=500 mode=cert median_ms=34.9629 exact=1 cert_coverage=0.845 wait_ms=31.9382 comp_ms=3.1118
+CORES=64 rep=1 RESULT model=hdcls L_us=500 mode=oracle median_ms=33.8629 exact=1 cert_coverage=0.861 wait_ms=31.5662 comp_ms=2.0367
+CORES=64 rep=1 model=hscmd N=200 cores=64 delays=2,4,8 d_min=2 R_total=10.2946 R_short=0.0126 budget=0.3935
+CORES=64 rep=1 inter-core edges (directed) = 4032 of 4032
+CORES=64 rep=1 RESULT model=hscmd L_us=0 mode=handshake median_ms=2.3321 exact=1 cert_coverage=0.000 wait_ms=0.6566 comp_ms=1.6632
+CORES=64 rep=1 RESULT model=hscmd L_us=0 mode=cert median_ms=3.4895 exact=1 cert_coverage=0.868 wait_ms=1.4519 comp_ms=2.5580
+CORES=64 rep=1 RESULT model=hscmd L_us=0 mode=oracle median_ms=2.3413 exact=1 cert_coverage=0.884 wait_ms=0.6723 comp_ms=1.7187
+CORES=64 rep=1 RESULT model=hscmd L_us=5 mode=handshake median_ms=2.3004 exact=1 cert_coverage=0.000 wait_ms=0.5666 comp_ms=1.7334
+CORES=64 rep=1 RESULT model=hscmd L_us=5 mode=cert median_ms=3.5445 exact=1 cert_coverage=0.859 wait_ms=0.8943 comp_ms=2.6143
+CORES=64 rep=1 RESULT model=hscmd L_us=5 mode=oracle median_ms=2.3347 exact=1 cert_coverage=0.884 wait_ms=0.6211 comp_ms=1.7051
+CORES=64 rep=1 RESULT model=hscmd L_us=20 mode=handshake median_ms=2.3370 exact=1 cert_coverage=0.000 wait_ms=0.6011 comp_ms=1.7352
+CORES=64 rep=1 RESULT model=hscmd L_us=20 mode=cert median_ms=3.5781 exact=1 cert_coverage=0.849 wait_ms=0.8986 comp_ms=2.6742
+CORES=64 rep=1 RESULT model=hscmd L_us=20 mode=oracle median_ms=2.3205 exact=1 cert_coverage=0.884 wait_ms=0.5673 comp_ms=1.7441
+CORES=64 rep=1 RESULT model=hscmd L_us=100 mode=handshake median_ms=6.6333 exact=1 cert_coverage=0.000 wait_ms=4.9735 comp_ms=1.7224
+CORES=64 rep=1 RESULT model=hscmd L_us=100 mode=cert median_ms=7.3366 exact=1 cert_coverage=0.847 wait_ms=4.5386 comp_ms=2.7832
+CORES=64 rep=1 RESULT model=hscmd L_us=100 mode=oracle median_ms=6.4717 exact=1 cert_coverage=0.884 wait_ms=4.7489 comp_ms=1.7049
+CORES=64 rep=1 RESULT model=hscmd L_us=500 mode=handshake median_ms=28.2002 exact=1 cert_coverage=0.000 wait_ms=26.5536 comp_ms=1.6635
+CORES=64 rep=1 RESULT model=hscmd L_us=500 mode=cert median_ms=28.9381 exact=1 cert_coverage=0.848 wait_ms=26.1653 comp_ms=2.7232
+CORES=64 rep=1 RESULT model=hscmd L_us=500 mode=oracle median_ms=27.6858 exact=1 cert_coverage=0.884 wait_ms=25.9354 comp_ms=1.7145
+CORES=64 rep=2 model=dense N=200 cores=64 delays=2,4,8 d_min=2 R_total=12.8762 R_short=0.2736 budget=0.3935
+CORES=64 rep=2 inter-core edges (directed) = 4032 of 4032
+CORES=64 rep=2 RESULT model=dense L_us=0 mode=handshake median_ms=2.0322 exact=1 cert_coverage=0.000 wait_ms=0.5489 comp_ms=1.4690
+CORES=64 rep=2 RESULT model=dense L_us=0 mode=cert median_ms=2.9922 exact=1 cert_coverage=0.811 wait_ms=0.7818 comp_ms=2.2649
+CORES=64 rep=2 RESULT model=dense L_us=0 mode=oracle median_ms=2.0033 exact=1 cert_coverage=0.820 wait_ms=0.4954 comp_ms=1.4934
+CORES=64 rep=2 RESULT model=dense L_us=5 mode=handshake median_ms=2.0089 exact=1 cert_coverage=0.000 wait_ms=0.5115 comp_ms=1.4852
+CORES=64 rep=2 RESULT model=dense L_us=5 mode=cert median_ms=2.9866 exact=1 cert_coverage=0.805 wait_ms=0.6043 comp_ms=2.3633
+CORES=64 rep=2 RESULT model=dense L_us=5 mode=oracle median_ms=2.0138 exact=1 cert_coverage=0.820 wait_ms=0.6560 comp_ms=1.4981
+CORES=64 rep=2 RESULT model=dense L_us=20 mode=handshake median_ms=2.0592 exact=1 cert_coverage=0.000 wait_ms=0.6106 comp_ms=1.4610
+CORES=64 rep=2 RESULT model=dense L_us=20 mode=cert median_ms=3.1202 exact=1 cert_coverage=0.798 wait_ms=0.7481 comp_ms=2.3755
+CORES=64 rep=2 RESULT model=dense L_us=20 mode=oracle median_ms=2.0890 exact=1 cert_coverage=0.820 wait_ms=0.6028 comp_ms=1.4877
+CORES=64 rep=2 RESULT model=dense L_us=100 mode=handshake median_ms=5.9587 exact=1 cert_coverage=0.000 wait_ms=4.4647 comp_ms=1.4868
+CORES=64 rep=2 RESULT model=dense L_us=100 mode=cert median_ms=5.9133 exact=1 cert_coverage=0.797 wait_ms=3.2393 comp_ms=2.6829
+CORES=64 rep=2 RESULT model=dense L_us=100 mode=oracle median_ms=4.3908 exact=1 cert_coverage=0.820 wait_ms=2.8916 comp_ms=1.5057
+CORES=64 rep=2 RESULT model=dense L_us=500 mode=handshake median_ms=25.5621 exact=1 cert_coverage=0.000 wait_ms=24.1667 comp_ms=1.3992
+CORES=64 rep=2 RESULT model=dense L_us=500 mode=cert median_ms=23.0630 exact=1 cert_coverage=0.797 wait_ms=20.4323 comp_ms=2.5763
+CORES=64 rep=2 RESULT model=dense L_us=500 mode=oracle median_ms=16.7164 exact=1 cert_coverage=0.820 wait_ms=15.4393 comp_ms=1.4668
+CORES=64 rep=2 model=lk4 N=200 cores=64 delays=2,4,8 d_min=2 R_total=3.8311 R_short=0.2684 budget=0.3935
+CORES=64 rep=2 inter-core edges (directed) = 704 of 4032
+CORES=64 rep=2 RESULT model=lk4 L_us=0 mode=handshake median_ms=1.6324 exact=1 cert_coverage=0.000 wait_ms=0.1742 comp_ms=1.4712
+CORES=64 rep=2 RESULT model=lk4 L_us=0 mode=cert median_ms=2.4550 exact=1 cert_coverage=0.821 wait_ms=0.3417 comp_ms=2.0931
+CORES=64 rep=2 RESULT model=lk4 L_us=0 mode=oracle median_ms=1.6408 exact=1 cert_coverage=0.828 wait_ms=0.1082 comp_ms=1.4900
+CORES=64 rep=2 RESULT model=lk4 L_us=5 mode=handshake median_ms=1.6328 exact=1 cert_coverage=0.000 wait_ms=0.1263 comp_ms=1.4826
+CORES=64 rep=2 RESULT model=lk4 L_us=5 mode=cert median_ms=2.5012 exact=1 cert_coverage=0.819 wait_ms=0.3018 comp_ms=2.1537
+CORES=64 rep=2 RESULT model=lk4 L_us=5 mode=oracle median_ms=1.6484 exact=1 cert_coverage=0.828 wait_ms=0.1541 comp_ms=1.4776
+CORES=64 rep=2 RESULT model=lk4 L_us=20 mode=handshake median_ms=1.8081 exact=1 cert_coverage=0.000 wait_ms=0.3189 comp_ms=1.4800
+CORES=64 rep=2 RESULT model=lk4 L_us=20 mode=cert median_ms=2.6538 exact=1 cert_coverage=0.813 wait_ms=0.3458 comp_ms=2.3056
+CORES=64 rep=2 RESULT model=lk4 L_us=20 mode=oracle median_ms=1.7238 exact=1 cert_coverage=0.828 wait_ms=0.2191 comp_ms=1.4948
+CORES=64 rep=2 RESULT model=lk4 L_us=100 mode=handshake median_ms=5.7257 exact=1 cert_coverage=0.000 wait_ms=4.2333 comp_ms=1.4833
+CORES=64 rep=2 RESULT model=lk4 L_us=100 mode=cert median_ms=5.5283 exact=1 cert_coverage=0.809 wait_ms=3.1359 comp_ms=2.3964
+CORES=64 rep=2 RESULT model=lk4 L_us=100 mode=oracle median_ms=3.9208 exact=1 cert_coverage=0.828 wait_ms=2.2648 comp_ms=1.3871
+CORES=64 rep=2 RESULT model=lk4 L_us=500 mode=handshake median_ms=25.3269 exact=1 cert_coverage=0.000 wait_ms=23.9757 comp_ms=1.4042
+CORES=64 rep=2 RESULT model=lk4 L_us=500 mode=cert median_ms=22.3013 exact=1 cert_coverage=0.809 wait_ms=20.2183 comp_ms=2.2741
+CORES=64 rep=2 RESULT model=lk4 L_us=500 mode=oracle median_ms=16.1318 exact=1 cert_coverage=0.828 wait_ms=13.6884 comp_ms=1.3290
+CORES=64 rep=2 model=lk8 N=200 cores=64 delays=2,4,8 d_min=2 R_total=2.1822 R_short=0.0702 budget=0.3935
+CORES=64 rep=2 inter-core edges (directed) = 704 of 4032
+CORES=64 rep=2 RESULT model=lk8 L_us=0 mode=handshake median_ms=1.6372 exact=1 cert_coverage=0.000 wait_ms=0.2122 comp_ms=1.4301
+CORES=64 rep=2 RESULT model=lk8 L_us=0 mode=cert median_ms=2.2904 exact=1 cert_coverage=0.830 wait_ms=0.4043 comp_ms=1.8428
+CORES=64 rep=2 RESULT model=lk8 L_us=0 mode=oracle median_ms=1.6249 exact=1 cert_coverage=0.833 wait_ms=0.1090 comp_ms=1.4867
+CORES=64 rep=2 RESULT model=lk8 L_us=5 mode=handshake median_ms=1.6208 exact=1 cert_coverage=0.000 wait_ms=0.1280 comp_ms=1.4662
+CORES=64 rep=2 RESULT model=lk8 L_us=5 mode=cert median_ms=2.3341 exact=1 cert_coverage=0.829 wait_ms=0.4548 comp_ms=1.8537
+CORES=64 rep=2 RESULT model=lk8 L_us=5 mode=oracle median_ms=1.6272 exact=1 cert_coverage=0.833 wait_ms=0.1090 comp_ms=1.4858
+CORES=64 rep=2 RESULT model=lk8 L_us=20 mode=handshake median_ms=1.7937 exact=1 cert_coverage=0.000 wait_ms=0.3197 comp_ms=1.4749
+CORES=64 rep=2 RESULT model=lk8 L_us=20 mode=cert median_ms=2.4093 exact=1 cert_coverage=0.828 wait_ms=0.5317 comp_ms=1.8530
+CORES=64 rep=2 RESULT model=lk8 L_us=20 mode=oracle median_ms=1.7053 exact=1 cert_coverage=0.833 wait_ms=0.1949 comp_ms=1.4890
+CORES=64 rep=2 RESULT model=lk8 L_us=100 mode=handshake median_ms=5.7119 exact=1 cert_coverage=0.000 wait_ms=4.2509 comp_ms=1.4587
+CORES=64 rep=2 RESULT model=lk8 L_us=100 mode=cert median_ms=5.3281 exact=1 cert_coverage=0.827 wait_ms=3.4189 comp_ms=1.8558
+CORES=64 rep=2 RESULT model=lk8 L_us=100 mode=oracle median_ms=3.7835 exact=1 cert_coverage=0.833 wait_ms=2.1597 comp_ms=1.3864
+CORES=64 rep=2 RESULT model=lk8 L_us=500 mode=handshake median_ms=25.3175 exact=1 cert_coverage=0.000 wait_ms=23.9228 comp_ms=1.3977
+CORES=64 rep=2 RESULT model=lk8 L_us=500 mode=cert median_ms=21.7266 exact=1 cert_coverage=0.827 wait_ms=19.5610 comp_ms=1.7705
+CORES=64 rep=2 RESULT model=lk8 L_us=500 mode=oracle median_ms=15.5337 exact=1 cert_coverage=0.833 wait_ms=13.1049 comp_ms=1.2989
+CORES=64 rep=2 model=hdcls N=200 cores=64 delays=2,4,8 d_min=2 R_total=4.5295 R_short=0.0268 budget=0.3935
+CORES=64 rep=2 inter-core edges (directed) = 4032 of 4032
+CORES=64 rep=2 RESULT model=hdcls L_us=0 mode=handshake median_ms=2.8143 exact=1 cert_coverage=0.000 wait_ms=0.7489 comp_ms=2.0866
+CORES=64 rep=2 RESULT model=hdcls L_us=0 mode=cert median_ms=4.2217 exact=1 cert_coverage=0.853 wait_ms=1.2951 comp_ms=3.0632
+CORES=64 rep=2 RESULT model=hdcls L_us=0 mode=oracle median_ms=2.8022 exact=1 cert_coverage=0.861 wait_ms=0.6560 comp_ms=2.1287
+CORES=64 rep=2 RESULT model=hdcls L_us=5 mode=handshake median_ms=2.8329 exact=1 cert_coverage=0.000 wait_ms=0.7074 comp_ms=2.1117
+CORES=64 rep=2 RESULT model=hdcls L_us=5 mode=cert median_ms=4.3083 exact=1 cert_coverage=0.849 wait_ms=1.1740 comp_ms=3.1290
+CORES=64 rep=2 RESULT model=hdcls L_us=5 mode=oracle median_ms=2.8130 exact=1 cert_coverage=0.861 wait_ms=0.6636 comp_ms=2.1331
+CORES=64 rep=2 RESULT model=hdcls L_us=20 mode=handshake median_ms=2.9370 exact=1 cert_coverage=0.000 wait_ms=0.8269 comp_ms=2.0923
+CORES=64 rep=2 RESULT model=hdcls L_us=20 mode=cert median_ms=4.3833 exact=1 cert_coverage=0.846 wait_ms=1.2010 comp_ms=3.1722
+CORES=64 rep=2 RESULT model=hdcls L_us=20 mode=oracle median_ms=2.8362 exact=1 cert_coverage=0.861 wait_ms=0.7023 comp_ms=2.1230
+CORES=64 rep=2 RESULT model=hdcls L_us=100 mode=handshake median_ms=8.0958 exact=1 cert_coverage=0.000 wait_ms=6.1888 comp_ms=2.0627
+CORES=64 rep=2 RESULT model=hdcls L_us=100 mode=cert median_ms=9.0030 exact=1 cert_coverage=0.845 wait_ms=5.8195 comp_ms=3.2996
+CORES=64 rep=2 RESULT model=hdcls L_us=100 mode=oracle median_ms=7.8773 exact=1 cert_coverage=0.861 wait_ms=5.7662 comp_ms=2.0886
+CORES=64 rep=2 RESULT model=hdcls L_us=500 mode=handshake median_ms=34.4786 exact=1 cert_coverage=0.000 wait_ms=32.5096 comp_ms=1.9832
+CORES=64 rep=2 RESULT model=hdcls L_us=500 mode=cert median_ms=34.9704 exact=1 cert_coverage=0.845 wait_ms=31.9396 comp_ms=3.1095
+CORES=64 rep=2 RESULT model=hdcls L_us=500 mode=oracle median_ms=33.8828 exact=1 cert_coverage=0.861 wait_ms=31.5717 comp_ms=2.0807
+CORES=64 rep=2 model=hscmd N=200 cores=64 delays=2,4,8 d_min=2 R_total=10.2946 R_short=0.0126 budget=0.3935
+CORES=64 rep=2 inter-core edges (directed) = 4032 of 4032
+CORES=64 rep=2 RESULT model=hscmd L_us=0 mode=handshake median_ms=2.3506 exact=1 cert_coverage=0.000 wait_ms=0.6815 comp_ms=1.6584
+CORES=64 rep=2 RESULT model=hscmd L_us=0 mode=cert median_ms=3.4963 exact=1 cert_coverage=0.868 wait_ms=0.9409 comp_ms=2.5374
+CORES=64 rep=2 RESULT model=hscmd L_us=0 mode=oracle median_ms=2.2865 exact=1 cert_coverage=0.884 wait_ms=0.5333 comp_ms=1.7409
+CORES=64 rep=2 RESULT model=hscmd L_us=5 mode=handshake median_ms=2.3100 exact=1 cert_coverage=0.000 wait_ms=0.5786 comp_ms=1.7193
+CORES=64 rep=2 RESULT model=hscmd L_us=5 mode=cert median_ms=3.5415 exact=1 cert_coverage=0.859 wait_ms=0.8954 comp_ms=2.6087
+CORES=64 rep=2 RESULT model=hscmd L_us=5 mode=oracle median_ms=2.2958 exact=1 cert_coverage=0.884 wait_ms=0.5425 comp_ms=1.7426
+CORES=64 rep=2 RESULT model=hscmd L_us=20 mode=handshake median_ms=2.3932 exact=1 cert_coverage=0.000 wait_ms=0.6658 comp_ms=1.7146
+CORES=64 rep=2 RESULT model=hscmd L_us=20 mode=cert median_ms=3.5570 exact=1 cert_coverage=0.849 wait_ms=0.8854 comp_ms=2.6583
+CORES=64 rep=2 RESULT model=hscmd L_us=20 mode=oracle median_ms=2.3179 exact=1 cert_coverage=0.884 wait_ms=0.5714 comp_ms=1.7409
+CORES=64 rep=2 RESULT model=hscmd L_us=100 mode=handshake median_ms=6.6329 exact=1 cert_coverage=0.000 wait_ms=5.0154 comp_ms=1.6779
+CORES=64 rep=2 RESULT model=hscmd L_us=100 mode=cert median_ms=7.3441 exact=1 cert_coverage=0.847 wait_ms=4.6243 comp_ms=2.7146
+CORES=64 rep=2 RESULT model=hscmd L_us=100 mode=oracle median_ms=6.4838 exact=1 cert_coverage=0.884 wait_ms=4.8111 comp_ms=1.7007
+CORES=64 rep=2 RESULT model=hscmd L_us=500 mode=handshake median_ms=28.2190 exact=1 cert_coverage=0.000 wait_ms=26.6166 comp_ms=1.6224
+CORES=64 rep=2 RESULT model=hscmd L_us=500 mode=cert median_ms=28.8964 exact=1 cert_coverage=0.849 wait_ms=26.1668 comp_ms=2.5558
+CORES=64 rep=2 RESULT model=hscmd L_us=500 mode=oracle median_ms=27.6874 exact=1 cert_coverage=0.884 wait_ms=26.0012 comp_ms=1.6479
+=== SPEED-006 PROBE COMPLETE Wed Oct 21 12:51:29 UTC 2026 ===

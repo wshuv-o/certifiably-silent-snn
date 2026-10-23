@@ -1,0 +1,573 @@
+OpenROAD f12e2f474102bfb875eeee57fb610d7d7de17770 
+This program is licensed under the BSD-3 license. See the LICENSE file for details.
+Components of this program may be licensed under more restrictive licenses which must be honored.
+[INFO ODB-0222] Reading LEF file: ~/pdk/sky130A/libs.ref/sky130_fd_sc_hd/techlef/sky130_fd_sc_hd__nom.tlef
+[INFO ODB-0223]     Created 14 technology layers
+[INFO ODB-0224]     Created 25 technology vias
+[INFO ODB-0226] Finished LEF file:  ~/pdk/sky130A/libs.ref/sky130_fd_sc_hd/techlef/sky130_fd_sc_hd__nom.tlef
+[INFO ODB-0222] Reading LEF file: ~/pdk/sky130A/libs.ref/sky130_fd_sc_hd/lef/sky130_fd_sc_hd.lef
+[WARNING ODB-0220] WARNING (LEFPARS-2008): NOWIREEXTENSIONATPIN statement is obsolete in version 5.6 or later.
+The NOWIREEXTENSIONATPIN statement will be ignored. See file ~/pdk/sky130A/libs.ref/sky130_fd_sc_hd/lef/sky130_fd_sc_hd.lef at line 2.
+
+[INFO ODB-0225]     Created 437 library cells
+[INFO ODB-0226] Finished LEF file:  ~/pdk/sky130A/libs.ref/sky130_fd_sc_hd/lef/sky130_fd_sc_hd.lef
+[WARNING IFP-0028] Core area lower left (5.000, 5.000) snapped to (5.060, 5.440).
+[INFO IFP-0001] Added 88 rows of 523 sites.
+Found 0 macro blocks.
+Using 1u default distance from corners.
+Using 2 tracks default min distance between IO pins.
+[INFO PPL-0010] Tentative 0 to set up sections.
+[INFO PPL-0001] Number of slots          914
+[INFO PPL-0002] Number of I/O            272
+[INFO PPL-0003] Number of I/O w/sink     272
+[INFO PPL-0004] Number of I/O w/o sink   25
+[INFO PPL-0005] Slots per section        200
+[INFO PPL-0006] Slots increase factor    0.01
+[INFO PPL-0008] Successfully assigned pins to sections.
+[INFO PPL-0012] I/O nets HPWL: 43820.49 um.
+[INFO TAP-0001] Found 0 macro blocks.
+[INFO TAP-0002] Original rows: 88
+[INFO TAP-0003] Created 0 rows for a total of 88 rows.
+[INFO TAP-0005] Inserted 765 tapcells.
+[INFO GPL-0002] DBU: 1000
+[INFO GPL-0003] SiteSize: 460 2720
+[INFO GPL-0004] CoreAreaLxLy: 5060 5440
+[INFO GPL-0005] CoreAreaUxUy: 245640 244800
+[INFO GPL-0006] NumInstances: 4338
+[INFO GPL-0007] NumPlaceInstances: 3573
+[INFO GPL-0008] NumFixedInstances: 765
+[INFO GPL-0009] NumDummyInstances: 0
+[INFO GPL-0010] NumNets: 3747
+[INFO GPL-0011] NumPins: 12171
+[INFO GPL-0012] DieAreaLxLy: 0 0
+[INFO GPL-0013] DieAreaUxUy: 250690 250690
+[INFO GPL-0014] CoreAreaLxLy: 5060 5440
+[INFO GPL-0015] CoreAreaUxUy: 245640 244800
+[INFO GPL-0016] CoreArea: 57585228800
+[INFO GPL-0017] NonPlaceInstsArea: 957168000
+[INFO GPL-0018] PlaceInstsArea: 28965280000
+[INFO GPL-0019] Util(%): 51.15
+[INFO GPL-0020] StdInstsArea: 28965280000
+[INFO GPL-0021] MacroInstsArea: 0
+[InitialPlace]  Iter: 1 CG residual: 0.00105817 HPWL: 71719185
+[InitialPlace]  Iter: 2 CG residual: 0.00051595 HPWL: 63314507
+[InitialPlace]  Iter: 3 CG residual: 0.00012877 HPWL: 58905448
+[InitialPlace]  Iter: 4 CG residual: 0.00000320 HPWL: 56688044
+[InitialPlace]  Iter: 5 CG residual: 0.00000373 HPWL: 55554073
+[INFO GPL-0031] FillerInit: NumGCells: 4236
+[INFO GPL-0032] FillerInit: NumGNets: 3747
+[INFO GPL-0033] FillerInit: NumGPins: 12171
+[INFO GPL-0023] TargetDensity: 0.60
+[INFO GPL-0024] AveragePlaceInstArea: 8106711
+[INFO GPL-0025] IdealBinArea: 13511184
+[INFO GPL-0026] IdealBinCnt: 4262
+[INFO GPL-0027] TotalBinArea: 57585228800
+[INFO GPL-0028] BinCnt: 64 64
+[INFO GPL-0029] BinSize: 3760 3740
+[INFO GPL-0030] NumBins: 4096
+[NesterovSolve] Iter: 1 overflow: 0.958408 HPWL: 36472569
+[NesterovSolve] Iter: 10 overflow: 0.875761 HPWL: 44565134
+[NesterovSolve] Iter: 20 overflow: 0.850587 HPWL: 47210273
+[NesterovSolve] Iter: 30 overflow: 0.849118 HPWL: 47820371
+[NesterovSolve] Iter: 40 overflow: 0.850888 HPWL: 47363522
+[NesterovSolve] Iter: 50 overflow: 0.85375 HPWL: 47182561
+[NesterovSolve] Iter: 60 overflow: 0.848948 HPWL: 47651326
+[NesterovSolve] Iter: 70 overflow: 0.845622 HPWL: 48142487
+[NesterovSolve] Iter: 80 overflow: 0.843536 HPWL: 48290950
+[NesterovSolve] Iter: 90 overflow: 0.842687 HPWL: 48242691
+[NesterovSolve] Iter: 100 overflow: 0.842427 HPWL: 48244254
+[NesterovSolve] Iter: 110 overflow: 0.842769 HPWL: 48233869
+[NesterovSolve] Iter: 120 overflow: 0.843406 HPWL: 48113848
+[NesterovSolve] Iter: 130 overflow: 0.844498 HPWL: 47934486
+[NesterovSolve] Iter: 140 overflow: 0.844831 HPWL: 47819764
+[NesterovSolve] Iter: 150 overflow: 0.844937 HPWL: 47844983
+[NesterovSolve] Iter: 160 overflow: 0.843254 HPWL: 48021224
+[NesterovSolve] Iter: 170 overflow: 0.840645 HPWL: 48376061
+[NesterovSolve] Iter: 180 overflow: 0.836674 HPWL: 48947856
+[NesterovSolve] Iter: 190 overflow: 0.829814 HPWL: 49743763
+[NesterovSolve] Iter: 200 overflow: 0.818837 HPWL: 50770813
+[NesterovSolve] Iter: 210 overflow: 0.804876 HPWL: 52072548
+[NesterovSolve] Iter: 220 overflow: 0.786862 HPWL: 53534858
+[NesterovSolve] Iter: 230 overflow: 0.76836 HPWL: 55284281
+[NesterovSolve] Iter: 240 overflow: 0.746913 HPWL: 57344912
+[NesterovSolve] Iter: 250 overflow: 0.719781 HPWL: 59654620
+[NesterovSolve] Iter: 260 overflow: 0.687005 HPWL: 61988075
+[NesterovSolve] Iter: 270 overflow: 0.651147 HPWL: 64157647
+[NesterovSolve] Iter: 280 overflow: 0.607211 HPWL: 66102925
+[NesterovSolve] Iter: 290 overflow: 0.564131 HPWL: 67456106
+[NesterovSolve] Iter: 300 overflow: 0.511278 HPWL: 67941068
+[NesterovSolve] Iter: 310 overflow: 0.461222 HPWL: 68254751
+[NesterovSolve] Iter: 320 overflow: 0.41612 HPWL: 68808851
+[NesterovSolve] Iter: 330 overflow: 0.374047 HPWL: 69420724
+[NesterovSolve] Iter: 340 overflow: 0.335453 HPWL: 70548445
+[NesterovSolve] Iter: 350 overflow: 0.309443 HPWL: 70941084
+[NesterovSolve] Iter: 360 overflow: 0.283993 HPWL: 71464668
+[NesterovSolve] Iter: 370 overflow: 0.259277 HPWL: 71700580
+[NesterovSolve] Iter: 380 overflow: 0.235387 HPWL: 71937868
+[NesterovSolve] Iter: 390 overflow: 0.212515 HPWL: 72087551
+[NesterovSolve] Iter: 400 overflow: 0.193821 HPWL: 72292200
+[NesterovSolve] Iter: 410 overflow: 0.173193 HPWL: 72466190
+[NesterovSolve] Iter: 420 overflow: 0.158356 HPWL: 72662502
+[NesterovSolve] Iter: 430 overflow: 0.143234 HPWL: 72852701
+[NesterovSolve] Iter: 440 overflow: 0.128344 HPWL: 73039965
+[NesterovSolve] Iter: 450 overflow: 0.113227 HPWL: 73304014
+[NesterovSolve] Iter: 460 overflow: 0.0997604 HPWL: 73473008
+[NesterovSolve] Finished with Overflow: 0.099760
+[WARNING DPL-0011] Could not find power special net.
+Placement Analysis
+---------------------------------
+total displacement       7599.1 u
+average displacement        1.8 u
+max displacement            9.3 u
+original HPWL           73478.4 u
+legalized HPWL          81115.4 u
+delta HPWL                   10 %
+
+UPSIZED 57
+[WARNING DPL-0011] Could not find power special net.
+Placement Analysis
+---------------------------------
+total displacement        129.8 u
+average displacement        0.0 u
+max displacement            5.9 u
+original HPWL           81098.9 u
+legalized HPWL          81151.5 u
+delta HPWL                    0 %
+
+[INFO CTS-0039] Number of created patterns = 49104.
+[INFO CTS-0084] Compiling LUT.
+Min. len    Max. len    Min. cap    Max. cap    Min. slew   Max. slew
+2           8           1           35          1           83          
+[WARNING CTS-0043] 3168 wires are pure wire and no slew degradation.
+TritonCTS forced slew degradation on these wires.
+[INFO CTS-0046]     Number of wire segments: 49104.
+[INFO CTS-0047]     Number of keys in characterization LUT: 1888.
+[INFO CTS-0048]     Actual min input cap: 1.
+[INFO CTS-0007] Net "clk" found for clock "clk".
+[INFO CTS-0010]  Clock net "clk" has 146 sinks.
+[INFO CTS-0008] TritonCTS found 1 clock nets.
+[INFO CTS-0097] Characterization used 2 buffer(s) types.
+[INFO CTS-0027] Generating H-Tree topology for net clk.
+[INFO CTS-0028]  Total number of sinks: 146.
+[INFO CTS-0030]  Number of static layers: 0.
+[INFO CTS-0020]  Wire segment unit: 13000  dbu (13 um).
+[INFO CTS-0023]  Original sink region: [(5325, 9580), (238545, 191700)].
+[INFO CTS-0024]  Normalized sink region: [(0.409615, 0.736923), (18.3496, 14.7462)].
+[INFO CTS-0025]     Width:  17.9400.
+[INFO CTS-0026]     Height: 14.0092.
+ Level 1
+    Direction: Horizontal
+    Sinks per sub-region: 73
+    Sub-region size: 8.9700 X 14.0092
+[INFO CTS-0034]     Segment length (rounded): 4.
+    Key: 48 outSlew: 2 load: 1 length: 4 isBuffered: false
+ Out of 146 sinks, 6 sinks closer to other cluster.
+ Level 2
+    Direction: Vertical
+    Sinks per sub-region: 37
+    Sub-region size: 8.9700 X 7.0046
+[INFO CTS-0034]     Segment length (rounded): 4.
+    Key: 48 outSlew: 2 load: 1 length: 4 isBuffered: false
+ Level 3
+    Direction: Horizontal
+    Sinks per sub-region: 19
+    Sub-region size: 4.4850 X 7.0046
+[INFO CTS-0034]     Segment length (rounded): 2.
+    Key: 2 outSlew: 3 load: 1 length: 2 isBuffered: false
+ Out of 41 sinks, 2 sinks closer to other cluster.
+[WARNING CTS-0045] Creating fake entries in the LUT.
+ Level 4
+    Direction: Vertical
+    Sinks per sub-region: 10
+    Sub-region size: 4.4850 X 3.5023
+[INFO CTS-0034]     Segment length (rounded): 1.
+    Key: 49118 outSlew: 7 load: 1 length: 1 isBuffered: true
+ Out of 14 sinks, 1 sinks closer to other cluster.
+ Out of 20 sinks, 2 sinks closer to other cluster.
+[INFO CTS-0032]  Stop criterion found. Max number of sinks is 15.
+[INFO CTS-0035]  Number of sinks covered: 146.
+[INFO CTS-0036]  Average source sink dist: 37962.68 dbu.
+[INFO CTS-0037]  Number of outlier sinks: 0.
+[INFO CTS-0018]     Created 17 clock buffers.
+[INFO CTS-0012]     Minimum number of buffers in the clock path: 2.
+[INFO CTS-0013]     Maximum number of buffers in the clock path: 2.
+[INFO CTS-0015]     Created 17 clock nets.
+[INFO CTS-0016]     Fanout distribution for the current clock = 5:2, 6:1, 7:2, 8:3, 9:2, 10:1, 11:1, 12:2, 13:1, 16:1..
+[INFO CTS-0017]     Max level of the clock tree: 4.
+[INFO CTS-0098] Clock net "clk"
+[INFO CTS-0099]  Sinks 146
+[INFO CTS-0100]  Leaf buffers 0
+[INFO CTS-0101]  Average sink wire length 408.03 um
+[INFO CTS-0102]  Path depth 2 - 2
+[WARNING DPL-0011] Could not find power special net.
+Placement Analysis
+---------------------------------
+total displacement         50.9 u
+average displacement        0.0 u
+max displacement            6.3 u
+original HPWL           82490.8 u
+legalized HPWL          82505.8 u
+delta HPWL                    0 %
+
+[INFO DRT-0167] List of default vias:
+  Layer mcon
+    default via: L1M1_PR
+  Layer via
+    default via: M1M2_PR
+  Layer via2
+    default via: M2M3_PR
+  Layer via3
+    default via: M3M4_PR
+  Layer via4
+    default via: M4M5_PR
+[INFO DRT-0168] Init region query.
+[INFO DRT-0033] FR_MASTERSLICE shape region query size = 0.
+[INFO DRT-0033] licon shape region query size = 0.
+[INFO DRT-0033] li1 shape region query size = 90679.
+[INFO DRT-0033] mcon shape region query size = 0.
+[INFO DRT-0033] met1 shape region query size = 13200.
+[INFO DRT-0033] via shape region query size = 0.
+[INFO DRT-0033] met2 shape region query size = 25.
+[INFO DRT-0033] via2 shape region query size = 0.
+[INFO DRT-0033] met3 shape region query size = 247.
+[INFO DRT-0033] via3 shape region query size = 0.
+[INFO DRT-0033] met4 shape region query size = 0.
+[INFO DRT-0033] via4 shape region query size = 0.
+[INFO DRT-0033] met5 shape region query size = 0.
+
+Generating GCell with size = 15 tracks, using layer li1 pitch  = 0.46
+li1 V Track-Pitch = 0.46000  line-2-Via Pitch = 0.34000
+met1 H Track-Pitch = 0.34000  line-2-Via Pitch = 0.32500
+met2 V Track-Pitch = 0.46000  line-2-Via Pitch = 0.34000
+met3 H Track-Pitch = 0.68000  line-2-Via Pitch = 0.61000
+met4 V Track-Pitch = 0.92000  line-2-Via Pitch = 0.61500
+met5 H Track-Pitch = 3.40000  line-2-Via Pitch = 3.11000
+
+initializing congestion map...
+             Routing   #Avail     #Track     #Total     %Gcell
+Layer      Direction    Track    Blocked      Gcell    Blocked
+--------------------------------------------------------------
+li1             V         545          0       1296     65.35%
+met1            H         737          0       1296      0.00%
+met2            V         545          0       1296      0.00%
+met3            H         369          0       1296      0.00%
+met4            V         272          0       1296      0.00%
+met5            H          74          0       1296      0.00%
+--------------------------------------------------------------
+Total                    2542      0.00%       7776     10.89%
+
+
+generating net topology...
+done net topology...
+[INFO DRT-0032] FR_MASTERSLICE grObj region query size = 0.
+[INFO DRT-0032] licon grObj region query size = 0.
+[INFO DRT-0032] li1 grObj region query size = 7096.
+[INFO DRT-0032] mcon grObj region query size = 0.
+[INFO DRT-0032] met1 grObj region query size = 0.
+[INFO DRT-0032] via grObj region query size = 0.
+[INFO DRT-0032] met2 grObj region query size = 0.
+[INFO DRT-0032] via2 grObj region query size = 0.
+[INFO DRT-0032] met3 grObj region query size = 0.
+[INFO DRT-0032] via3 grObj region query size = 0.
+[INFO DRT-0032] met4 grObj region query size = 0.
+[INFO DRT-0032] via4 grObj region query size = 0.
+[INFO DRT-0032] met5 grObj region query size = 0.
+              #OverCon  %OverCon
+Direction        GCell     GCell
+--------------------------------
+    H               0     0.00%
+    V               0     0.00%
+worstConH:  87.88%
+worstConV:  67.57%
+
+[INFO DRT-0267] cpu time = 00:00:00, elapsed time = 00:00:00, memory = 229.89 (MB), peak = 229.76 (MB)
+
+[INFO DRT-0267] cpu time = 00:00:00, elapsed time = 00:00:00, memory = 230.14 (MB), peak = 230.01 (MB)
+
+[INFO DRT-0267] cpu time = 00:00:00, elapsed time = 00:00:00, memory = 230.21 (MB), peak = 230.01 (MB)
+
+              #OverCon  %OverCon
+Direction        GCell     GCell
+--------------------------------
+    H               0     0.00%
+    V               0     0.00%
+worstConH:  78.79%
+worstConV:  67.57%
+
+layer assignment...
+done layer assignment...
+[INFO DRT-0267] cpu time = 00:00:00, elapsed time = 00:00:00, memory = 231.98 (MB), peak = 231.76 (MB)
+
+---------- li1 ----------
+numOverConGCell: 0, %OverConGCell:   0.00%
+---------- met1 ----------
+numOverConGCell: 3, %OverConGCell:   0.23%
+---------- met2 ----------
+numOverConGCell: 0, %OverConGCell:   0.00%
+---------- met3 ----------
+numOverConGCell: 0, %OverConGCell:   0.00%
+---------- met4 ----------
+numOverConGCell: 0, %OverConGCell:   0.00%
+---------- met5 ----------
+numOverConGCell: 0, %OverConGCell:   0.00%
+
+[WARNING DRT-0203] dbGcellGrid already exists in db. Clearing existing dbGCellGrid.
+[INFO DRT-0178] Init guide query.
+[INFO DRT-0036] FR_MASTERSLICE guide region query size = 0.
+[INFO DRT-0036] licon guide region query size = 0.
+[INFO DRT-0036] li1 guide region query size = 8726.
+[INFO DRT-0036] mcon guide region query size = 0.
+[INFO DRT-0036] met1 guide region query size = 6236.
+[INFO DRT-0036] via guide region query size = 0.
+[INFO DRT-0036] met2 guide region query size = 3839.
+[INFO DRT-0036] via2 guide region query size = 0.
+[INFO DRT-0036] met3 guide region query size = 1399.
+[INFO DRT-0036] via3 guide region query size = 0.
+[INFO DRT-0036] met4 guide region query size = 283.
+[INFO DRT-0036] via4 guide region query size = 0.
+[INFO DRT-0036] met5 guide region query size = 69.
+[INFO DRT-0179] Init gr pin query.
+[WARNING STA-0335] pin '_a0e810fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_d0ea10fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_00ed10fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_30ef10fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_60f110fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_90f310fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_c0f510fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_f0f710fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_20fa10fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_50fc10fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_80fe10fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_b00011fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_e00211fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_100511fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_400711fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_700911fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_a00b11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_d00d11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_001011fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_301211fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_601411fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_901611fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_c01811fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_f01a11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_201d11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_501f11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_802111fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_b02311fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_e02511fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_102811fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_402a11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_702c11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_a02e11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_d03011fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_003311fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_303511fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_603711fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_903911fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_c03b11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_f03d11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_204011fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_504211fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_804411fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_b04611fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_e04811fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_104b11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_404d11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_704f11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_a05111fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_d05311fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_005611fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_305811fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_605a11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_905c11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_c05e11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_f06011fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_206311fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_506511fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_806711fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_b06911fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_e06b11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_106e11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_407011fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_707211fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_a07411fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_d07611fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_007911fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_307b11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_607d11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_907f11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_c08111fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_f08311fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_208611fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_508811fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_808a11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_b08c11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_e08e11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_109111fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_409311fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_709511fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_a09711fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_d09911fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_90fd11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_c0ff11fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_f00112fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_200412fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_500612fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_800812fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_b00a12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_e00c12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_100f12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_401112fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_701312fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_a01512fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_d01712fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_001a12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_301c12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_601e12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_902012fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_c02212fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_f02412fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_202712fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_502912fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_802b12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_b02d12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_e02f12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_103212fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_403412fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_703612fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_a03812fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_d03a12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_003d12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_303f12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_604112fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_904312fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_c04512fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_f04712fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_204a12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_504c12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_804e12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_b05012fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_e05212fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_105512fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_405712fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_705912fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_a05b12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_d05d12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_006012fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_306212fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_606412fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_906612fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_c06812fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_f06a12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_206d12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_506f12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_807112fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_b07312fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_e07512fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_107812fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_407a12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_707c12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_a07e12fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_d08012fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_008312fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_308512fb8a590000_p_Pin' not found.
+[WARNING STA-0335] pin '_608712fb8a590000_p_Pin' not found.
+Design area 30320 u^2 53% utilization.
+worst slack 5.71
+tns 0.00
+Group                  Internal  Switching    Leakage      Total
+                          Power      Power      Power      Power
+----------------------------------------------------------------
+Sequential             8.36e-04   9.61e-04   1.25e-09   1.80e-03  29.9%
+Combinational          1.80e-03   2.41e-03   9.90e-09   4.21e-03  70.1%
+Macro                  0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+Pad                    0.00e+00   0.00e+00   0.00e+00   0.00e+00   0.0%
+----------------------------------------------------------------
+Total                  2.63e-03   3.38e-03   1.12e-08   6.01e-03 100.0%
+                          43.8%      56.2%       0.0%
+Startpoint: _6903_ (rising edge-triggered flip-flop clocked by clk)
+Endpoint: _6876_ (rising edge-triggered flip-flop clocked by clk)
+Path Group: clk
+Path Type: max
+
+   Delay     Time   Description
+-----------------------------------------------------------
+   0.000    0.000   clock clk (rise edge)
+   0.000    0.000   clock source latency
+   0.000    0.000 ^ clk (in)
+   0.196    0.196 ^ clkbuf_0_clk/X (sky130_fd_sc_hd__clkbuf_8)
+   0.230    0.426 ^ clkbuf_4_13_0_clk/X (sky130_fd_sc_hd__clkbuf_4)
+   0.001    0.428 ^ _6903_/CLK (sky130_fd_sc_hd__dfxtp_4)
+   0.501    0.929 ^ _6903_/Q (sky130_fd_sc_hd__dfxtp_4)
+   0.166    1.095 v _5210_/Y (sky130_fd_sc_hd__nand2_1)
+   0.380    1.474 v _5213_/X (sky130_fd_sc_hd__maj3_1)
+   0.416    1.890 v _5242_/X (sky130_fd_sc_hd__xnor3_1)
+   0.402    2.293 v _5244_/X (sky130_fd_sc_hd__xor3_1)
+   0.276    2.568 ^ _5275_/X (sky130_fd_sc_hd__xor2_1)
+   0.371    2.940 v _5303_/X (sky130_fd_sc_hd__xor3_1)
+   0.368    3.308 v _5305_/X (sky130_fd_sc_hd__maj3_1)
+   0.373    3.681 v _5306_/X (sky130_fd_sc_hd__maj3_1)
+   0.361    4.041 v _5310_/X (sky130_fd_sc_hd__maj3_1)
+   0.336    4.377 v _5313_/X (sky130_fd_sc_hd__a221o_1)
+   0.240    4.617 v _5314_/X (sky130_fd_sc_hd__a31o_1)
+   0.394    5.012 v _5316_/X (sky130_fd_sc_hd__maj3_1)
+   0.374    5.386 ^ _5472_/Y (sky130_fd_sc_hd__xnor2_1)
+   0.450    5.836 v _5534_/X (sky130_fd_sc_hd__xnor3_1)
+   0.390    6.226 v _5539_/X (sky130_fd_sc_hd__maj3_1)
+   0.404    6.630 v _5541_/X (sky130_fd_sc_hd__maj3_1)
+   0.401    7.030 v _5543_/X (sky130_fd_sc_hd__maj3_1)
+   0.419    7.450 v _5545_/X (sky130_fd_sc_hd__maj3_1)
+   0.409    7.859 v _5547_/X (sky130_fd_sc_hd__maj3_1)
+   0.409    8.267 v _5549_/X (sky130_fd_sc_hd__maj3_1)
+   0.408    8.675 v _5551_/X (sky130_fd_sc_hd__maj3_1)
+   0.407    9.082 v _5553_/X (sky130_fd_sc_hd__maj3_1)
+   0.403    9.485 v _5555_/X (sky130_fd_sc_hd__maj3_1)
+   0.405    9.890 v _5556_/X (sky130_fd_sc_hd__maj3_1)
+   0.405   10.295 v _5558_/X (sky130_fd_sc_hd__maj3_1)
+   0.408   10.702 v _5560_/X (sky130_fd_sc_hd__maj3_1)
+   0.404   11.106 v _5562_/X (sky130_fd_sc_hd__maj3_1)
+   0.399   11.505 v _5563_/X (sky130_fd_sc_hd__maj3_1)
+   0.399   11.904 v _5564_/X (sky130_fd_sc_hd__maj3_1)
+   0.406   12.311 v _5565_/X (sky130_fd_sc_hd__maj3_1)
+   0.401   12.712 v _5566_/X (sky130_fd_sc_hd__maj3_1)
+   0.398   13.110 v _5567_/X (sky130_fd_sc_hd__maj3_1)
+   0.224   13.333 v _5628_/X (sky130_fd_sc_hd__xnor3_1)
+   0.371   13.704 v _5710_/X (sky130_fd_sc_hd__maj3_1)
+   0.363   14.067 v _5711_/X (sky130_fd_sc_hd__maj3_1)
+   0.367   14.433 v _5712_/X (sky130_fd_sc_hd__maj3_1)
+   0.382   14.815 v _5713_/X (sky130_fd_sc_hd__maj3_1)
+   0.669   15.485 ^ _5781_/Y (sky130_fd_sc_hd__o31ai_1)
+   0.448   15.933 ^ _5784_/X (sky130_fd_sc_hd__and2_4)
+   0.150   16.083 v _5812_/Y (sky130_fd_sc_hd__o2bb2ai_1)
+   0.190   16.273 v _5814_/X (sky130_fd_sc_hd__a21o_1)
+   0.295   16.568 ^ _5818_/Y (sky130_fd_sc_hd__a21boi_0)
+   0.193   16.761 v _5821_/Y (sky130_fd_sc_hd__o21ai_0)
+   0.217   16.978 ^ _5824_/Y (sky130_fd_sc_hd__a21oi_1)
+   0.130   17.109 v _5830_/Y (sky130_fd_sc_hd__o21bai_1)
+   0.194   17.302 ^ _5833_/Y (sky130_fd_sc_hd__a21oi_1)
+   0.175   17.477 v _5836_/Y (sky130_fd_sc_hd__o21ai_0)
+   0.224   17.701 v _5840_/X (sky130_fd_sc_hd__a21o_1)
+   0.174   17.875 v _5844_/X (sky130_fd_sc_hd__a21o_1)
+   0.416   18.291 ^ _5846_/Y (sky130_fd_sc_hd__a311oi_1)
+   0.096   18.387 v _5851_/Y (sky130_fd_sc_hd__nor3_1)
+   0.225   18.612 ^ _5853_/Y (sky130_fd_sc_hd__nor3_1)
+   0.000   18.612 ^ _6876_/D (sky130_fd_sc_hd__dfxtp_1)
+           18.612   data arrival time
+
+  24.000   24.000   clock clk (rise edge)
+   0.000   24.000   clock source latency
+   0.000   24.000 ^ clk (in)
+   0.196   24.196 ^ clkbuf_0_clk/X (sky130_fd_sc_hd__clkbuf_8)
+   0.211   24.407 ^ clkbuf_4_8_0_clk/X (sky130_fd_sc_hd__clkbuf_4)
+   0.002   24.409 ^ _6876_/CLK (sky130_fd_sc_hd__dfxtp_1)
+   0.000   24.409   clock reconvergence pessimism
+  -0.084   24.325   library setup time
+           24.325   data required time
+-----------------------------------------------------------
+           24.325   data required time
+          -18.612   data arrival time
+-----------------------------------------------------------
+            5.712   slack (MET)
+
+

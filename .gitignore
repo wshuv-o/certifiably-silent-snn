@@ -1,0 +1,27 @@
+__pycache__/
+*.pyc
+*.tmp
+# checkpoints, datasets and exported engine data live outside the repository (~/research/...)
+*.pt
+*.h5
+*.h5.gz
+*.bin
+# LaTeX build artefacts
+*.aux
+*.out
+*.log
+!harness/hw/build/pnr_*/flow.log
+*.fls
+*.fdb_latexmk
+# hardware build outputs are regenerable from harness/hw; reports and rendered layouts are kept
+harness/hw/build/**
+!harness/hw/build/
+!harness/hw/build/pnr_*/
+!harness/hw/build/pnr_*/flow.log
+!harness/hw/build/pnr_*/drc.rpt
+!harness/hw/build/pnr_*/synth.stat
+!harness/hw/build/gds_*.png
+harness/hw/route.guide
+# trained networks shipped with the repository
+!models/**/*.pt
+!results/**

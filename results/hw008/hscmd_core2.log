@@ -1,0 +1,4 @@
+sample 0: errors=0 []
+sample 1: errors=0 []
+sample 2: errors=0 []
+RESULT model=hscmd core=2 C=32 samples=3 steps=330 normal=240 catchup=30 idle=60 cert_checked=237 cert_true=30 neuron_passes_saved=0.182 cycles=291052 pass_cycles=11220 event_cycles=269272 input_cycles=10560

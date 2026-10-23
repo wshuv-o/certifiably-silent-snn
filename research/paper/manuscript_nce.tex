@@ -1,0 +1,559 @@
+%% Submission to Neuromorphic Computing and Engineering (IOP Publishing)
+%% Uses IOP's current template class iopjournal.cls (supplied in IOP's author kit and committed
+%% alongside this file). Build:  tectonic -X compile manuscript_nce.tex
+%%
+%% Option [anonymous] strips author names, affiliations and acknowledgements for double-anonymous
+%% review:  \documentclass[anonymous]{iopjournal}
+\documentclass{iopjournal}
+
+% Latin Modern: the Tectonic bundle lacks some Computer Modern Type 1 fonts (cmr7.pfb),
+% and lmodern is a metrically compatible drop-in that the bundle does provide.
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\newtheorem{proposition}{Proposition}
+\graphicspath{{figs/}}
+
+
+% Journal heading and running header (submitted manuscript)
+\makeatletter
+\fancyhead[L]{{\small \sf IOP Publishing}\hspace{5mm} {\it Neuromorph. Comput. Eng.} (submitted manuscript)}
+\fancyhead[R]{M W Suva {\it et al}\ }
+\renewcommand{\articletype}[1]{{\vspace*{-8mm}\noindent \Large \sf Neuromorphic Computing and Engineering}\par
+\vspace*{8mm}\noindent{\scriptsize \sf{\bfseries \MakeUppercase{#1}}}}
+\makeatother
+
+\begin{document}
+
+\articletype{Paper}
+
+\title{Short-Delay Excitatory Drive Limits Provable Silence in Recurrent Spiking Networks}
+
+\author{Md Wahiduzzaman Suva$^{1,*}$\,\orcid{0009-0007-6227-7282}, Md Tauhidul Islam$^{2}$\,\orcid{0009-0004-3595-4274}, Esm~E~Moula~Chowdhury~Abha$^{1}$\,\orcid{0009-0008-3776-2283}, Md.~Imtiaj~Alam~Sajin$^{1}$\,\orcid{0009-0009-2423-1835} and M F Mridha$^{1}$\,\orcid{0000-0001-5738-1631}}
+
+\affil{$^1$Department of Computer Science, American International University-Bangladesh, Dhaka 1229, Bangladesh}
+
+\affil{$^2$United International University, Dhaka, Bangladesh}
+
+\affil{$^*$Author to whom any correspondence should be addressed.}
+
+\email{wshuvo360@gmail.com}
+
+\keywords{spiking neural networks, neuromorphic computing, synchronisation, synaptic delays, formal guarantees, parallel discrete-event simulation}
+
+\begin{abstract}
+In multi-core neuromorphic systems a core waits for neighbour spikes before each time step, and may skip the wait only if their silence is proven in advance. Trained networks are silent in most core-steps, but what makes silence provable has not been identified. Here we show that, for recurrent networks of adaptive leaky integrate-and-fire neurons with multi-tap synaptic delays, a $K$-step silence certificate needs a worst-case bound only for synapses with delay shorter than $K$, so the binding quantity is $R_{\mathrm{short}}$, the excitatory drive carried by those delays. Across 23 networks, certified silence decreases with $R_{\mathrm{short}}$ (Spearman $\rho=-0.804$), and total recurrent excitation does not order the networks. A certificate penalty meets the bound by moving excitation into longer delays: binding-tap drive falls 94\% while total excitatory mass changes 1--16\%. In two published Heidelberg Spiking Digits architectures the certified layer reaches 91.09\% and 91.46\% test accuracy against 91.30\% and 91.42\% for matched controls, certifying 89--94\% of the oracle fraction. The recipe transfers unchanged to Spiking Speech Commands and event-camera vision. An oracle bounds the gain of silence-based execution at $1.5$--$1.7\times$ in our networks; certificate-based execution, bit-identical to lock-step on up to 64 cores, realises $1.11$--$1.28\times$ at $500\,\mu$s per message. In a core routed in SkyWater 130\,nm, a 16-bit certificate with directed rounding runs beside the neuron update and keeps 96--99\% of certified silence, and on SpiNNaker certificates from the stored weights certify 91\% of silent windows without violation. Provable silence is a trainable property set by where excitation sits across delays.
+\end{abstract}
+
+\section{Introduction}
+
+Neuromorphic processors compute with sparse spike events and are scaling to systems of many chips, each with many cores \cite{kudithipudi2025,schuman2022}. In current processors these cores exchange spike events and most advance in discrete algorithmic time steps \cite{spinnaker,loihi,spinnaker2chip,darwin3}: before a core computes step $t+1$ it must know which of its presynaptic neurons spiked at step $t$. The dependency is enforced by a global barrier \cite{truenorth,loihi} or by local handshakes between communicating cores \cite{neuroscale,asyncaccel}. Runtime models and benchmarks of current systems identify synchronisation and communication as a principal cost that grows with system size \cite{loihi2runtime,neurobench,golosio2026}, so the time cores spend waiting for one another increasingly sets how fast a large network runs.
+
+Trained recurrent spiking networks are sparse. In the networks studied here the mean firing rate is about 3\%, and whole cores are silent in roughly 59\% of core-steps. A core may use a neighbour's silence only if the silence is established before the step in question, because an unseen spike changes the computation. The quantity of interest is therefore provable silence: the fraction of core-steps for which silence can be certified in advance.
+
+Since the late 1970s, conservative parallel simulation has used the minimum synaptic delay as a provable lookahead \cite{chandymisra,fujimoto,nest}, and topology-aware mapping lengthens it by placing long-delay connections between compute nodes \cite{lober}. Lookahead beyond the minimum delay requires knowing in advance that a group of neurons will not fire, and what makes such silence provable in a trained network has not been identified. We formulate per-core silence certificates for adaptive leaky integrate-and-fire networks with multi-tap synaptic delays. A certificate at horizon $k$ needs a worst-case bound only for synapses whose delay is shorter than $k$; contributions through longer delays originate at time steps that are already computed and enter exactly (figure~\ref{fig:mech}a). Provable silence is therefore limited by the excitatory drive arriving through short delays, $R_{\mathrm{short}}$, and a network can reduce it by moving excitation into longer delays without reducing total excitation.
+
+Here we show that provable silence is limited by a single quantity that training can control. Across 23 networks certified silence decreases with $R_{\mathrm{short}}$ (Spearman $\rho=-0.804$), while total recurrent excitation does not order the networks (section~\ref{sec:governing}). A penalty on the certificate meets the bound by moving excitation from short to long delays (section~\ref{sec:mechanism}), with test-accuracy changes of $-0.21$ to $+3.03$ points against matched controls on the Heidelberg Spiking Digits (SHD), Spiking Speech Commands (SSC) and N-MNIST and inside two published SHD architectures, a learnable-delay network and a spiking transformer (sections~\ref{sec:accuracy} and \ref{sec:sota}); an adaptation-aware form of the certificate uses the exact adaptive threshold (section~\ref{sec:certs}). Certificate-based execution is bit-identical to lock-step, and an oracle that knows future silence bounds its gain at $1.5$--$1.7\times$ for the networks trained here, a bound that follows the length of silent runs (section~\ref{sec:execution}). A register-transfer core routed in SkyWater 130\,nm evaluates the certificate beside the neuron update in 16-bit arithmetic whose directed rounding keeps it sound (section~\ref{sec:hardware}), and on the SpiNNaker neuromorphic system certificates computed from the weights the chip stores hold on every window (section~\ref{sec:spinnaker}). Provable silence thus becomes a property that can be read from trained weights, trained for, and checked in hardware.
+
+\section{Related work}
+
+\paragraph{Synchronisation in neuromorphic systems.} TrueNorth advances all cores on a global tick \cite{truenorth}; Loihi exchanges barrier messages between neighbouring cores that flush in-flight spikes before the time step advances \cite{loihi}, and a recent runtime model of Loihi 2 isolates the per-step barrier cost as one of three bounds on runtime \cite{loihi2runtime}. SpiNNaker and SpiNNaker2 run cores against real-time timers and route multicast spike packets \cite{spinnaker,spinnaker2chip}, and mixed-signal processors such as DYNAP-SE2 operate without a global time step \cite{dynapse2}. NeuroScale replaces global barriers with local neighbour synchronisation while keeping execution deterministic \cite{neuroscale}, and asynchronous multi-core accelerators schedule each core from dependencies fixed at compile time \cite{asyncaccel}. Inter-node communication is likewise a principal cost in GPU and CPU simulators \cite{golosio2026,pronold2022,kurth2022,senk2026}. Removing layer synchronisation altogether changes the computation and requires training for the asynchronous schedule \cite{layersync}; silence certificates keep the computation unchanged and reduce how often a handshake must be waited for.
+
+\paragraph{Lookahead in parallel simulation.} Conservative parallel discrete-event simulation lets a process advance when no event can arrive before a known future time \cite{chandymisra,fujimoto}, while optimistic methods roll back on causality errors \cite{jefferson}. Distributed spiking simulators take their lookahead from the minimum synaptic delay and exchange spikes once per minimum-delay interval \cite{nest,pronold2022}, and topology-aware placement raises that interval by mapping areas with long mutual delays onto different nodes \cite{lober,stacs}. A silence certificate is state-dependent and extends lookahead beyond the delay-derived value; our baseline receives the delay-derived lookahead in full.
+
+\paragraph{Synaptic delays in spiking networks.} Delays support spike-timing computation \cite{polychron} and are now learned jointly with weights through dilated convolutions with learnable spacings \cite{dcls}, exact event-based gradients \cite{meszaros2025,delgrad,nowotny2025} and joint learning of delays and adaptation \cite{deckers2024}, including in recurrent networks \cite{delrec,balafrej2025}. Delayed kernels act as temporal attention \cite{bamsldk}, and delay networks have been deployed on Loihi 2, BrainScaleS-2 and RRAM-based dendritic hardware \cite{loihidelays,delgrad,denram}. Delay sets in this line include the shortest lags, which are the ones that carry the cost of provable silence.
+
+\paragraph{Bounds and verification for spiking networks.} Bound propagation through membrane potentials has been used to certify and train spiking networks for robustness to input perturbation \cite{certsnn}, and robustness has been analysed through stability \cite{rsnn2024}, randomised smoothing of rate codes \cite{mukhoty2024} and the distance of membrane potentials from threshold \cite{wang2026}. Exact verification of spiking networks has been formulated with SMT solvers \cite{banerjee2023}. In conventional networks, training against interval bounds makes them hold through implicit regularisation \cite{gowal2019,mao2024}. We bound a different property, future silence of a group of neurons under recurrent input, and use it to make a scheduling decision safe.
+
+\paragraph{Activity sparsity and event-driven execution.} Activity regularisation lowers firing rates and synaptic operations \cite{sorbaro2020,narduzzi2025,stanojevic2024}, and sparsity-aware hardware exploits inactive neurons through activity gating, event-driven cores and complementary weight and activation sparsity \cite{reeb2026,speck,hunter2022}. Energy comparisons show that spiking hardware gains only at high sparsity \cite{dampfhoffer2023}. Bounded fan-in is a recurring hardware constraint \cite{petschenig2023,dynapse2}, and partitioning a network onto cores determines its communication \cite{lober}. Event-driven reformulations reduce the work done under a fixed dependency structure \cite{eprop,paralif}; certificates act on the dependency structure itself.
+
+\section{Theory}
+
+\subsection{Network model}
+\label{sec:model}
+
+We consider a recurrent layer of adaptive leaky integrate-and-fire neurons \cite{lsnn,asrnn}. With membrane potential $v$, adaptation $a$, external input $I$ and spikes $s\in\{0,1\}$, neuron $i$ evolves as
+\begin{eqnarray}
+a_i(t) &=& \rho\, a_i(t-1) + \gamma\, s_i(t-1) \\
+v_i(t) &=& \beta\, v_i(t-1) + I_i(t) + \sum_{d\in\mathcal{D}} \sum_j W^{(d)}_{ij}\, s_j(t-d) \\
+s_i(t) &=& \mathbf{1}\!\left[\, v_i(t) \ge \theta + a_i(t) \,\right],
+\end{eqnarray}
+followed by the reset $v_i(t) \leftarrow v_i(t) - s_i(t)\,(\theta + a_i(t))$, where $\beta=\exp(-\Delta t/\tau_m)$ is the membrane decay, $\theta$ the base threshold and $W^{(d)}$ the recurrent weights for synaptic delay $d$. Setting $\mathcal{D}=\{1\}$ recovers the unit-delay recurrent network. Neurons are partitioned into $P$ cores of $C$ neurons; a core is the unit of synchronisation.
+
+\subsection{Silence certificates}
+\label{sec:certs}
+
+A core issues a certificate ``silent through step $u$'' when none of its neurons can fire at steps $t+2,\dots,u$ whatever its neighbours do; a neighbour holding the certificate need not be waited for over that interval. Let $R^{(d)}_i = \sum_j \max(0, W^{(d)}_{ij})$ be the worst-case excitatory drive into neuron $i$ through delay $d$. Bounding the membrane forward from the measured state $v_i(t+1)$ gives a sufficient condition for silence over $K$ steps. If the drive is bounded by $R_i$ at every step, the reach converges to $R_i/(1-\beta)$, so
+\begin{equation}
+R_i < (1-\beta)\,\theta
+\label{eq:budget}
+\end{equation}
+is sufficient for silence over an unbounded horizon. We call $(1-\beta)\theta$ the excitatory budget; for $\beta=e^{-1/2}$ and $\theta=1$ it is $0.3935$. A finite-$K$ certificate starts from the measured membrane potential and is less restrictive than (\ref{eq:budget}).
+
+Adaptation is non-negative, so the base threshold $\theta$ is a sound comparison. The exact threshold is also available: until a neuron's first spike inside the window its adaptation only decays, so its threshold at step $t+1+k$ is $\theta + \rho^k a_i(t+1) + \gamma\rho^{k-1} s_i(t+1)$, with both terms known when the certificate is issued. Ruling out a first spike against this threshold is as sound as ruling it out against $\theta$. We call this the adaptation-aware certificate and report it alongside the base certificate.
+
+Certificates are evaluated by a fixed-point refinement. Starting from the set of all neurons that may fire within the window, each neuron's reach is bounded using only the drive attributable to that set, which yields a possibly smaller set; iterating to a fixed point gives the certified set. The refinement is sound for any initial superset.
+
+\subsection{The delay decomposition}
+\label{sec:decomposition}
+
+Consider a certificate rooted after step $t+1$ and a horizon $k\ge 1$, so the step under consideration is $\tau = t+1+k$. A synapse with delay $d$ contributes from step $\tau - d = t + 1 + k - d$. If $d \ge k$ that step is already computed, its spikes are known and the contribution enters exactly. Only synapses with $d < k$ draw on future steps and need a worst-case bound, so the quantity to bound at horizon $k$ is $\sum_{d<k} R^{(d)}_i$, and for a $K$-step certificate
+\begin{equation}
+R_{\mathrm{short}} = \sum_{d<K} R^{(d)} .
+\end{equation}
+Two consequences follow. A minimum delay $d_{\min}$ gives $d_{\min}$ steps of exact lookahead at no cost, the lookahead that conservative parallel simulation extracts from minimum delay \cite{fujimoto,nest}; certificates extend it. And $R_{\mathrm{short}}$ can be reduced without reducing total excitation by moving excitatory mass from short to long delays: with $\mathcal{D}=\{2,4,8\}$ and $K=4$ only the $d=2$ tap is bound. Figure~\ref{fig:mech} summarises the decomposition. In panel a, a certificate rooted after step $t+1$ asks whether step $\tau$ can fire; a synapse of delay $d$ supplies that step from $\tau-d$, which is a computed step when $d\geq k$ and lies inside the horizon when $d<k$. Panel b shows excitatory mass against delay for the network with per-synapse learnable delays on a logarithmic scale, and panel c the worst-case reach $\beta^k v + R_{\mathrm{short}}(1-\beta^k)/(1-\beta)$ at the measured $R_{\mathrm{short}}$ of the control and constrained networks of table~\ref{tab:governing}. With certificates a core advances through the certified horizon instead of waiting once per step (panel d).
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{fig1_mechanism.pdf}
+\caption{\label{fig:mech}Only synapses with delay shorter than the certificate horizon need a worst-case bound, so moving excitation into longer delays makes silence provable. (a) Contributions to step $\tau$ from computed steps (solid, exact) and from inside the horizon (dashed, bounded). (b) Excitatory mass against delay, learnable-delay network, control and constrained. (c) Worst-case reach over the horizon. (d) Certificate-based execution.}
+\end{figure}
+
+\subsection{Soundness}
+\label{sec:soundness}
+
+The certificate combines the two preceding subsections. Consider a certificate rooted after step $t+1$, with the external input $I_i$ known over the horizon, as it is when the input pathway is feedforward (section~\ref{sec:networks}). For a set $S$ of neurons that may fire in the window and $k=1,\dots,K$, define the reach
+\begin{equation}
+U_i(k) = \beta\,U_i(k-1) + I_i(t+1+k) + \sum_{d\ge k}\sum_j W^{(d)}_{ij}\,s_j(t+1+k-d) + \sum_{d<k}\sum_{j\in S}\max\!\left(0,W^{(d)}_{ij}\right),
+\label{eq:reach}
+\end{equation}
+with $U_i(0)=v_i(t+1)$, and the threshold bound $\Theta_i(k)=\theta+\rho^k a_i(t+1)+\gamma\rho^{k-1}s_i(t+1)$ of the adaptation-aware certificate, or $\Theta_i(k)=\theta$ for the base certificate.
+
+\begin{proposition}\label{prop:sound}
+Let $F$ be the set of neurons that spike at some step in $t+2,\dots,t+1+K$. If $F\subseteq S$, every neuron $i\in F$ has $U_i(k)\ge\Theta_i(k)$ for some $k\le K$.
+\end{proposition}
+
+\noindent\textit{Proof.} Let $i\in F$ and let $t+1+k^\ast$ be its first spike in the window. For $k<k^\ast$ neuron $i$ does not spike, so its membrane is not reset and its adaptation decays without increments, which gives $a_i(t+1+k)=\Theta_i(k)-\theta$ for $k\le k^\ast$ under the adaptation-aware bound. The recurrent drive at step $t+1+k$ comes from steps $t+1+k-d$. For $d\ge k$ these steps are at most $t+1$, so their spikes are known and enter (\ref{eq:reach}) exactly. For $d<k$ they lie in $t+2,\dots,t+k$, where only neurons of $F\subseteq S$ spike, and $W^{(d)}_{ij}s_j\le\max(0,W^{(d)}_{ij})$ for $s_j\in\{0,1\}$. Since $\beta>0$, induction on $k$ gives $v_i(t+1+k)\le U_i(k)$ for $k\le k^\ast$. At $k^\ast$ the spike means $v_i(t+1+k^\ast)\ge\theta+a_i(t+1+k^\ast)$, so $U_i(k^\ast)\ge\Theta_i(k^\ast)$; because $a_i\ge0$, the same holds for the base bound $\Theta_i=\theta$. $\square$
+
+With $S$ the set of all neurons, a core none of whose neurons reaches its threshold bound for any $k\le K$ is therefore silent through step $t+1+K$. The fixed-point refinement of section~\ref{sec:certs} sets $S_0$ to all neurons and $S_{n+1}$ to the neurons that reach their threshold bound under $S_n$. If $F\subseteq S_n$, the proposition gives $F\subseteq S_{n+1}$, so every iterate, and the fixed point, contains $F$, and a core disjoint from the fixed point is silent. The guarantee holds for any weights, external input and neighbour activity; training changes how often a certificate can be issued, not whether it holds.
+
+\subsection{Training objective}
+
+Certificates are made to hold by adding a penalty on the worst-case $K$-step reach, evaluated on windows in which the network is silent:
+\begin{equation}
+L = L_{\mathrm{task}} + \lambda \cdot \mathrm{mean}\!\left[\, \mathrm{relu}\!\left(\max_k \mathrm{reach}_k - \theta\right) \cdot \mathbf{1}[\mathrm{silent}] \,\right],
+\end{equation}
+where $\mathrm{reach}_k$ uses the exact and bounded terms of section~\ref{sec:decomposition}.
+
+\section{Methods}
+
+\subsection{Datasets and evaluation protocol}
+
+We use SHD (20 classes, 8\,156 training and 2\,264 test samples) and SSC (35 classes, 75\,466 training samples) \cite{shd}, and N-MNIST \cite{nmnist}. For our own architecture, input spikes over 700 channels are binned into $T=100$ steps spanning 1.4\,s. The SHD test speakers include speakers absent from training, so we hold out training speakers 3 and 6 (1\,169 samples) as a speaker-disjoint validation set, select every architecture, hyperparameter and epoch on it, and evaluate the test set once per run on fresh seeds; recent work on these benchmarks adopts validation-based selection for the same reason \cite{nowotny2025,meszaros2025,baronig2025,moro2026,delrec}. Each accuracy change is computed per seed against a control with identical architecture, schedule and seed trained without the penalty.
+
+\subsection{Networks}
+\label{sec:networks}
+
+Our reference architecture has $H=512$ neurons in 16 cores of 32, $\beta=e^{-1/2}$, $\theta=1$, $\rho=e^{-14/200}$, $\gamma=0.02$. We compare a unit-delay network ($\mathcal{D}=\{1\}$), multi-tap networks with $\mathcal{D}=\{1,2,4,8\}$ and $\{2,4,8\}$, and a network with a learnable delay per synapse, $D_{ij}\in[2,8]$, learned jointly with the weights \cite{dcls}. Locally connected variants restrict recurrence to neighbouring 32-neuron groups on a ring (fan-in 96).
+
+For the host-network comparison the same recurrent layer is inserted into two published SHD networks using the authors' released code and configuration: the learnable-delay network of \cite{dcls}, two feedforward layers of 256 neurons with one learnable delay per synapse up to 250\,ms, and the spiking transformer SpikCommander \cite{spikcommander}. The layer sits between the host's last hidden stage and its readout. Its external current is a linear map of the host's spikes followed by batch normalisation and depends only on the input, so the certificate treats it as known; the readout lies downstream of the recurrence. In SpikCommander the recurrent layer trains at a learning rate of $10^{-3}$ while every host parameter keeps the reference rate of $10^{-2}$.
+
+\subsection{Training}
+
+Networks are implemented in PyTorch and trained on single NVIDIA GeForce RTX GPUs. The reference architecture is trained with surrogate gradients and AdamW (learning rate $2\times10^{-3}$, weight decay $10^{-4}$, batch 128, cosine schedule, 150 epochs) with circular shifts in time and channel and random channel and time masking. Constrained networks are fine-tuned from their matched controls for 150 epochs at $5\times10^{-4}$, with $\lambda$ ramped linearly over the first half of training; $\lambda=1$ unless stated. On SSC and N-MNIST the recipe is transferred unchanged, with the number of epochs matched to SHD by gradient steps. Host networks are trained with the authors' recipes; their certified layers are fine-tuned for 100 epochs with $\lambda=1$ and selected on validation among epochs at full penalty weight.
+
+\subsection{Certification measurement}
+
+We report the certified core fraction, the proportion of core-steps for which a whole core is provably silent over the next $K=4$ steps, and the oracle fraction, the proportion of core-steps in which the core is actually silent over the same window. A violation is a certified window in which a neuron fires; violations are counted on every evaluation, for both certificates. A silent run is a maximal sequence of consecutive steps in which no neuron of a core spikes; run lengths are measured on 50 test samples with 16 cores of 32 neurons.
+
+\subsection{Execution engines}
+
+A shared-memory engine in C++20 runs one thread per core with an emulated per-message latency $L$, and a second engine runs two processes exchanging frames over TCP. In both, the handshake baseline receives the lookahead the minimum delay provides: to compute step $t+1$ a core waits only for neighbour spikes up to step $t+1-d_{\min}$. Spike trains are compared bit for bit against a single-threaded reference on every run. An oracle mode tells each core its true future silent run, read from the reference spike trains and capped at the certificate's 16-step horizon; it bounds the gain of any silence-based scheme. Timings were taken on an otherwise idle machine. The 64-core measurements use a two-socket Intel Xeon Platinum 8375C server, with one thread per physical core.
+
+\subsection{Hardware implementation}
+\label{sec:hwmethods}
+
+One core of 32 neurons was described at register-transfer level in Amaranth and exported to Verilog. State is fixed point with 12 fractional bits in 24-bit words, and decay factors, threshold and adaptation gain are programmable. A time-multiplexed neuron unit updates one neuron per clock cycle. Synaptic events add their weights into delay accumulators that form a ring of 16 steps split into four banks by slot modulo four, so the four slots of a certificate window are read in one cycle. The certificate unit evaluates the bound of section~\ref{sec:certs} for the neuron being updated, from the same state and accumulator reads, in four pipelined stages. Because it computes an upper bound, it runs on 16-bit saturating operands in units of $2^{-8}$: membrane, input and bounded drive are rounded up, decay factors are rounded to six fractional bits in the conservative direction, and adaptation is rounded down. Every operation is monotone in its operands and rounds in the conservative direction, so the reduced-precision reach is at least the full-precision reach of (\ref{eq:reach}) and the reduced-precision threshold bound at most the full-precision one; saturation at the lower limit raises the reach, and saturation at the upper limit occurs only above the largest threshold bound, where the stage has already flagged a possible spike. A core certified at this precision is therefore silent by proposition~\ref{prop:sound}. Once a neuron of the core can fire, the core's certificate has failed and the stage registers are held for the rest of the pass. A certified core performs no neuron updates in the following $K-2$ steps and then advances each neuron through the $K-1$ skipped steps in $K-1$ consecutive cycles of the neuron unit, with one state read and one state write per neuron.
+
+A fixed-point reference model with the same arithmetic agrees with the floating-point engine on 99.9\% of spikes. Cycle-level simulation of every core was compared against it at every time step. The neuron and certificate units were synthesised with Yosys onto the SkyWater 130\,nm high-density standard-cell library (typical corner, 25\,$^{\circ}$C, 1.8\,V) and placed, clock-tree synthesised, repaired and routed with OpenROAD \cite{openroad} at a 24\,ns clock. Switching activity was measured by gate-level simulation of each routed netlist with Icarus Verilog on 5\,000 cycles of operands taken from the trained networks, and power was computed from the routed design at the measured mean activity; energy per operation is this power times the clock period.
+
+\subsection{Deployment on SpiNNaker}
+\label{sec:spinmethods}
+
+The locally connected $K=4$ network was deployed on a 48-chip SpiNNaker board \cite{spinnaker} through the EBRAINS research infrastructure, using PyNN and sPyNNaker \cite{pynn,spynnaker}. Each neuron is a leaky integrate-and-fire neuron with instantaneous synapses and reset to zero (\texttt{IF\_curr\_delta}), the ALIF neuron of section~\ref{sec:model} without adaptation. Membrane decay was set to the network's $\beta$ and confirmed on the chip, and weights were scaled by the measured response to a single input spike. The delays of the input pathway and of the three recurrent taps were set from the measured arrival times of single spikes, so that a spike emitted at step $t$ reaches its targets at step $t+d$. The board ran 100 times slower than real time with 16 neurons per processor core, which gives each core time to receive every input spike of a step. Fifty SHD test samples were presented in sequence with 30 steps of silence between them, and spikes and membrane potentials of all 512 neurons were recorded at every step. After loading, the weights stored on the chip were read back. Certificates were computed for every core of 32 neurons and every step from the recorded membranes and spikes with $\Theta_i=\theta$ and $S$ the set of all neurons, and a certified window in which a neuron of the core spiked on the chip was counted as a violation.
+
+\section{Results}
+
+\subsection{Certified silence decreases with short-delay drive}
+\label{sec:governing}
+
+Certified silence tracks $R_{\mathrm{short}}$ within a single network, across architectures and across penalty weights. Re-certifying one trained network at three horizons, with its weights fixed, gives the ordering the decomposition predicts. At $K=2$ no tap binds and 99.2\% of the oracle fraction is certified; at $K=4$ only the $d=2$ tap binds ($R_{\mathrm{short}}=0.275$) and certification reaches 94.9\% of oracle; at $K=8$ the $d=4$ tap enters the binding set, $R_{\mathrm{short}}$ rises to 6.307 and certification falls to 0.2\%. The usable horizon of an unconstrained delay set is therefore set by its second-smallest delay.
+
+Table~\ref{tab:governing} compares six architectures spanning a thirty-fold range of $R_{\mathrm{short}}$. They fall into two groups: the four with $R_{\mathrm{short}} \geq 3.06$ certify 0.0--6.3\% of oracle and the two with $R_{\mathrm{short}} \leq 0.26$ certify 95.0--95.6\%. Total recurrent excitation does not order them: the unit-delay network holds 7.91 and certifies nothing, while the constrained learnable-delay network holds 5.00 and certifies 95.6\% (figure~\ref{fig:evid}a,b, where the six architectures are numbered in the order of table~\ref{tab:governing}). Across 23 networks spanning a hundredfold range of $R_{\mathrm{short}}$, including the width-scaling networks of section~\ref{sec:scale} and the recipe and time-constant variants listed in the supplementary material, the rank correlation is $\rho=-0.804$. Several of these networks are variants of one training recipe; leaving out each of the eight network families in turn gives $\rho$ between $-0.60$ and $-0.90$, and one median network per family gives $\rho=-0.83$.
+
+\begin{table}
+\caption{\label{tab:governing}Certified silence by architecture. Budget $(1-\beta)\theta = 0.3935$. Speaker-disjoint validation set, 150 epochs, mean over three seeds; no violations.}
+\centering
+\begin{tabular}{lrrrrrr}
+\hline
+architecture & accuracy & certified & oracle & \% oracle & $R_{\mathrm{short}}$ & total $R$ \\
+\hline
+unit delay $\mathcal{D}=\{1\}$        & 82.75 & 0.00\%  & 60.91\% & 0.0\%  & 7.905 & 7.91 \\
+$\mathcal{D}=\{1,2,4,8\}$             & 85.26 & 2.35\%  & 61.45\% & 3.8\%  & 8.741 & 18.40 \\
+$\mathcal{D}=\{2,4,8\}$, control      & 86.80 & 3.73\%  & 59.21\% & 6.3\%  & 4.813 & 14.98 \\
+$\mathcal{D}=\{2,4,8\}$, constrained  & 87.20 & 57.24\% & 60.25\% & 95.0\% & 0.261 & 12.64 \\
+learnable delays, control             & 84.74 & 1.92\%  & 56.16\% & 3.4\%  & 3.096 & 7.59 \\
+learnable delays, constrained         & 85.17 & 53.59\% & 56.03\% & 95.6\% & 0.240 & 5.00 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{fig2_evidence.pdf}
+\caption{\label{fig:evid}Certified silence follows short-delay drive, and constrained training raises it at small accuracy changes. (a,b) Certified silence against $R_{\mathrm{short}}$ and against total recurrent excitation; points numbered in the order of table~\ref{tab:governing}. (c) Constrained against control test accuracy. (d,e) Per-tap drive before and after fine-tuning, SHD and SSC. (f) Speed-up against core count at three latencies, 32-thread workstation.}
+\end{figure}
+
+A sweep of the penalty weight from one dense control resolves the transition (table~\ref{tab:sweep}). Varying $\lambda$ from $10^{-3}$ to $10^{-1}$ moves $R_{\mathrm{short}}$ from 5.04 to 0.47, and certified silence follows in exact rank order (Spearman $\rho=-1.000$), crossing half of oracle near $R_{\mathrm{short}}\approx0.83$, about twice the budget. Accuracy stays within $-1.11$ to $+0.77$ points of the control across the sweep, and $\lambda=0.03$ reaches 91.5\% of oracle. The location of the transition depends on the input regime: locally connected networks cross between 1.01 and 1.22 (section~\ref{sec:scale}). Partitioning one network into 32, 64 and 128 neurons per core certifies 94.9\%, 94.2\% and 94.7\% of oracle; larger cores are silent less often, but the certificate stays as tight. At every level tested, from one network to 23, certified silence tracks $R_{\mathrm{short}}$.
+
+\begin{table}
+\caption{\label{tab:sweep}Penalty-weight sweep from one dense control ($\mathcal{D}=\{2,4,8\}$, $H=512$, seed 1). Speaker-disjoint validation set; no violations.}
+\centering
+\begin{tabular}{lrrrrr}
+\hline
+$\lambda$ & accuracy & $R_{\mathrm{short}}$ & certified & oracle & \% oracle \\
+\hline
+0 (control)  & 86.40 & 5.037 & 3.24\%  & 58.95\% & 5.5\%  \\
+0.001        & 85.46 & 2.047 & 4.49\%  & 56.86\% & 7.9\%  \\
+0.003        & 85.46 & 1.451 & 9.85\%  & 57.03\% & 17.3\% \\
+0.01         & 85.29 & 0.921 & 19.08\% & 57.17\% & 33.4\% \\
+0.03         & 87.17 & 0.609 & 52.71\% & 57.61\% & 91.5\% \\
+0.1          & 86.66 & 0.466 & 53.42\% & 57.72\% & 92.6\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Training certifies silence at small accuracy changes}
+\label{sec:accuracy}
+
+Constrained training certifies 94--98\% of the oracle fraction on three datasets at small accuracy changes. Table~\ref{tab:test} reports the reference architecture on the SHD test set with three fresh seeds and on SSC with four. Certified silence rises from 4.25\% to 55.98\% of core-steps, 95.0\% of oracle, with an accuracy change of $+0.24$ points (standard error 0.22). Transferred to SSC without retuning, the recipe raises certified silence from 10.82\% to 61.48\%, 94.0\% of oracle, and accuracy from 65.17\% to 68.20\% over four seeds ($+3.03$ points, standard error 0.08). On N-MNIST, three seeds certify 97.7\% of oracle at test accuracies of 98.55\% (control) and 98.64\% (constrained). A learnable membrane time constant per neuron gives each neuron its own budget and enters the certificate per neuron; trained at the weight learning rate, the constrained network certifies 94.7\% of oracle with a validation change of $+0.25$ points, its time constants settling at $2.04\pm0.16$ steps. No run produced a violation.
+
+\begin{table}
+\caption{\label{tab:test}Test sets, fresh seeds; the SSC recipe is transferred from SHD without retuning. Accuracy in \%; certified and oracle fractions of core-steps.}
+\centering
+\begin{tabular}{llrrrrrrr}
+\hline
+dataset & seed & control & constrained & change & ctrl.\ cert.\ & cert.\ & oracle & viol.\ \\
+\hline
+SHD & 2 & 87.28 & 87.90 & $+0.62$ & 4.08\% & 55.68\% & 58.74\% & 0 \\
+    & 3 & 86.75 & 86.62 & $-0.13$ & 4.60\% & 56.66\% & 59.44\% & 0 \\
+    & 4 & 88.03 & 88.25 & $+0.22$ & 4.06\% & 55.60\% & 58.68\% & 0 \\
+    & mean & 87.35 & 87.59 & $+0.24$ & 4.25\% & 55.98\% & 58.95\% & 0 \\
+\hline
+SSC & 1 & 65.56 & 68.66 & $+3.10$ & 9.50\%  & 60.90\% & 64.59\% & 0 \\
+    & 2 & 65.25 & 68.06 & $+2.81$ & 12.94\% & 64.17\% & 68.11\% & 0 \\
+    & 3 & 65.24 & 68.33 & $+3.09$ & 11.32\% & 61.11\% & 65.21\% & 0 \\
+    & 4 & 64.61 & 67.75 & $+3.14$ & 9.51\%  & 59.73\% & 63.84\% & 0 \\
+    & mean & 65.17 & 68.20 & $+3.03$ & 10.82\% & 61.48\% & 65.44\% & 0 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Certification carries over to two published architectures}
+\label{sec:sota}
+
+Inside two published SHD architectures the certified layer covers 89--94\% of the oracle fraction. Table~\ref{tab:sota} reports the two host networks. Each host was first run with its released code under our protocol, giving 91.82\% for the learnable-delay network and 91.22\% for SpikCommander on three seeds (93.04\% and 92.59\% when the best test epoch is reported, the rule under which both were published; this maximum is shown for comparison with the published figures, and no model, epoch or hyperparameter was selected on the test set). With the certified recurrent layer the test accuracy is 91.09\% and 91.46\%, against 91.30\% and 91.42\% for the matched controls, paired changes of $-0.21$ (standard error 0.04) and $+0.04$ points (standard error 0.42) over three seeds. The base certificate covers 91.9\% and 89.2\% of oracle and the adaptation-aware certificate 94.2\% and 90.9\%, with no violation. Without the penalty the recurrent layer certifies 7.1\% and 43.9\% of oracle, so the penalty moves both hosts across the transition of section~\ref{sec:governing}.
+
+\begin{table}
+\caption{\label{tab:sota}Certification inside two published SHD networks. ``Selected'': test accuracy at the epoch chosen on the speaker-disjoint validation set; ``best epoch'': maximum test accuracy over epochs, shown only for comparison with the rule under which the hosts were published. ``\% oracle'': base / adaptation-aware certificate. Test set, three seeds.}
+\centering
+\begin{tabular}{lrrrrr}
+\hline
+network & selected & best epoch & certified & \% oracle & viol.\ \\
+\hline
+DCLS \cite{dcls}                           & 91.82 & 93.04 & --      & --          & -- \\
+DCLS + recurrent layer, control            & 91.30 & 91.86 & 1.47\%  & 7.1         & 0 \\
+DCLS + recurrent layer, certified          & 91.09 & 91.46 & 35.75\% & 91.9 / 94.2 & 0 \\
+\hline
+SpikCommander \cite{spikcommander}         & 91.22 & 92.59 & --      & --          & -- \\
+SpikCommander + recurrent layer, control   & 91.42 & 92.59 & 11.95\% & 42.3 / 43.9 & 0 \\
+SpikCommander + recurrent layer, certified & 91.46 & 92.03 & 37.63\% & 89.2 / 90.9 & 0 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Training moves excitation into longer delays}
+\label{sec:mechanism}
+
+Training meets the bound by moving excitation from the binding tap into longer delays. Figure~\ref{fig:evid}d,e shows the per-delay drive before and after constrained fine-tuning. On SHD the binding $d=2$ drive falls from 4.97 to 0.28, by 94\%, while the $d=4$ and $d=8$ drives rise from 4.90 to 6.03 and from 5.40 to 6.46, so total excitatory mass changes by 16\%; on SSC (seed 1) the $d=2$ drive falls from 5.73 to 0.29 and total mass from 19.04 to 18.83, a change of 1\%. The $d=2$ drive lands at 0.29--0.30 on four SSC seeds and $R_{\mathrm{short}}$ at 0.253--0.260 on three SHD test seeds. On N-MNIST the binding tap falls from 3.75 to 0.13 while total excitatory mass changes from 11.82 to 10.16.
+
+A unit-delay network has no longer tap to absorb the mass and meets the same budget by removing excitation: positive recurrent weight mass falls from 2385 to 199 and the excitation-to-inhibition ratio from 0.650 to 0.045.
+
+With a learnable delay per synapse, training for accuracy places 33.3\% of excitatory mass in the shortest delay bin and 38.1\% in the longest, so 43.5\% falls below the horizon ($R_{\mathrm{short}}=3.06$) and the network certifies 1.9\% of oracle (figure~\ref{fig:mech}b). The penalty reduces mass below the horizon to 5.9\% and $R_{\mathrm{short}}$ to 0.246 by reweighting synapses: the unweighted mean delay moves from 5.00 to 5.39 while the excitation-weighted mean delay moves from 5.17 to 7.07. Certification reaches 95.5\% of oracle for an accuracy change of $-0.17$ points. Widening the delay range to $d\le25$ without the penalty raises certification to 15.5\% of oracle. Where a longer delay is available, training moves excitation into it; where none is, training removes excitation.
+
+\subsection{Bounded fan-in keeps wider networks certifiable}
+\label{sec:scale}
+
+With fan-in held fixed, wider networks become easier to certify. $R_i$ sums the positive weights into neuron $i$ and scales with its fan-in; under dense recurrence fan-in equals $H$. Table~\ref{tab:scale} holds fan-in at 96 with ring-local connectivity. $R_{\mathrm{short}}$ then decreases with width, from 1.221 to 0.877 as $H$ quadruples, and constrained networks certify 96.3--98.5\% of oracle at every width with accuracy between 85.1\% and 86.5\%. Dense recurrence at $H=2048$ gives $R_{\mathrm{short}}=25.0$ and certifies nothing. At $H=2048$ the locally connected control certifies 90.0\% of oracle without a penalty.
+
+\begin{table}
+\caption{\label{tab:scale}Width scaling at fixed fan-in (ring-local, radius one core, fan-in 96) and dense recurrence at $H=2048$. Speaker-disjoint validation set, seed 1; no violations.}
+\centering
+\begin{tabular}{llrrrr}
+\hline
+connectivity & $H$ & accuracy & $R_{\mathrm{short}}$ & certified & \% oracle \\
+\hline
+dense                & 2048 & 74.25 & 25.007 & 0.00\%  & 0.2\% \\
+\hline
+local, control       &  512 & 84.09 & 1.221 & 20.44\% & 34.6\% \\
+local, control       & 1024 & 83.92 & 1.006 & 52.69\% & 84.9\% \\
+local, control       & 2048 & 83.75 & 0.877 & 61.07\% & 90.0\% \\
+\hline
+local, constrained   &  512 & 86.23 & 0.260 & 56.99\% & 97.4\% \\
+local, constrained   & 1024 & 85.12 & 0.294 & 59.25\% & 96.3\% \\
+local, constrained   & 2048 & 86.48 & 0.297 & 66.36\% & 98.5\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Execution is exact, and silent-run length bounds its gain}
+\label{sec:execution}
+
+Every timed run, 1\,794 in total across both engines and both machines, produced spike trains bit-identical to the single-threaded reference.
+
+On the shared-memory engine with 4--64 physical cores, certificates are faster by $1.10$--$1.12\times$ at $L=500\,\mu$s at every core count, and by up to $1.06\times$ at $L=100\,\mu$s; the unconstrained control gains at no setting, so the effect is attributable to training. At $L\leq20\,\mu$s the delay-derived lookahead already hides the latency, so certificates add computation without removing waiting and are slower than the baseline. The speed-up for every core count and latency, and for a two-process engine communicating over TCP, is given in the supplementary material.
+
+Table~\ref{tab:ceiling} compares certificates with the oracle at $L=500\,\mu$s. The oracle bounds the gain at $1.53\times$ for the dense network and $1.57$--$1.71\times$ for locally connected networks: even with perfect foreknowledge, the steps in which a core spikes still force a wait. With a $K=4$ certificate the dense and local networks realise 23\% and 25\% of the available headroom at 16 cores. Training the local network against a $K=8$ certificate binds the $d=4$ tap as well; it drives both short taps below the budget ($R^{(2)}=0.07$, $R^{(4)}=0.14$) while excitation moves to the $d=8$ tap ($R^{(8)}=1.97$), certifies 95.5\% of oracle at $K=8$ for a validation change of $-0.43$ points, and realises 39\% of the headroom, $1.28\times$ at 16 cores.
+The host networks separate silence frequency from silence length. With 16 cores of 32 neurons, their cores are silent in 61--66\% of core-steps, as often as in the dense and local networks (66--67\%), but their silent runs average 5.9--6.1 steps against 14.0--15.1, and only 67--68\% of their silent core-steps lie in runs longer than eight steps against 87--88\%. At 64 cores the recurrent layer is certifiably silent in 85--88\% of core-steps, and the oracle still gains at most $1.03\times$: a run removes waiting only when it outlasts the steps a core would have waited for, so the attainable gain follows run length.
+
+\begin{table}
+\caption{\label{tab:ceiling}Speed-up at $L=500\,\mu$s, certificate / oracle upper bound (adaptation-aware certificate, mean of two repeats); $K$ is the training horizon. The host rows are the certified layers of section~\ref{sec:sota}.}
+\centering
+\begin{tabular}{lrrrrr}
+\hline
+network & val.\ acc. & 8 cores & 16 cores & 32 cores & 64 cores \\
+\hline
+dense, $K=4$                  & 86.74 & 1.12 / 1.43 & 1.12 / 1.51 & 1.13 / 1.52 & 1.11 / 1.53 \\
+local, $K=4$                  & 84.69 & 1.15 / 1.48 & 1.15 / 1.61 & 1.14 / 1.57 & 1.14 / 1.57 \\
+local, $K=8$                  & 85.63 & 1.24 / 1.54 & 1.28 / 1.71 & 1.21 / 1.65 & 1.17 / 1.63 \\
+DCLS host layer               & --    & 1.00 / 1.03 & 1.00 / 1.03 & 0.99 / 1.02 & 0.99 / 1.02 \\
+SpikCommander host layer      & --    & 0.99 / 1.01 & 0.99 / 1.02 & 0.99 / 1.02 & 0.98 / 1.02 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{A 16-bit certificate runs beside the neuron update}
+\label{sec:hardware}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{fig3_hardware.pdf}
+\caption{\label{fig:hw}The certificate unit shares the state and accumulator reads of the neuron update. (a) Core of 32 neurons. (b) Pass schedule of one core. (c) Mask layout of the routed 16-bit certificate unit in SkyWater 130\,nm; the box marks panel d. (d) Close-up showing diffusion, polysilicon gates, contacts and metal layers.}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{fig4_stage.pdf}
+\caption{\label{fig:stage}Each stage of the 16-bit certificate unit bounds the membrane from above and the threshold from below. Registers hold the membrane bound $U$, the adaptation bound $A$ and the running spike flag $f$ of stage $k$.}
+\end{figure}
+
+The certificate unit adds no cycles to a pass, and its 16-bit form keeps the certificate sound. Figure~\ref{fig:hw}a shows the core of section~\ref{sec:hwmethods} and figure~\ref{fig:hw}b its pass schedule: after a normal pass whose certificate holds, the core skips the next $K-2$ steps and advances its neurons through the $K-1$ skipped steps in one catch-up pass. Figures~\ref{fig:hw}c,d show the routed certificate unit, rendered from the routed design with the geometry of the standard-cell library, and figure~\ref{fig:stage} one stage with its directed rounding; the flags of all stages and neurons are combined by OR. Cycle-level simulation of every core of four networks (the dense and $K=4$ local networks and the two host layers, 16 cores each, three test samples) reproduced the reference model's spikes, certificate decisions and membrane state at every step, both for the core with a 24-bit certificate unit and for the core with the 16-bit unit and catch-up by the neuron unit. With the 16-bit certificate, normal passes take 59--69\% of core-steps, catch-up passes 11--14\%, and 21--27\% of core-steps need no neuron work. The certificate unit evaluates the neuron being updated in the same cycle, so certification adds no cycles to a pass.
+
+With operands in units of $2^{-8}$ and six-bit decay factors, the certificate holds in 98.8\% of the core-steps certified at full precision for the local network and 96.0\% for the DCLS host layer, with no violation; in units of $2^{-4}$ the retention falls to 77\% and 57\%.
+
+\begin{table}
+\caption{\label{tab:hw}Routed units in SkyWater 130\,nm at a 24\,ns clock (typical corner, 1.8\,V); no design-rule violations after detailed routing.}
+\centering
+\begin{tabular}{lrrr}
+\hline
+unit & cell area ($\mu$m$^2$) & slack (ns) & energy (pJ) \\
+\hline
+neuron unit                                  & 30\,320 & 5.71 & 22 \\
+certificate unit, $K=4$, 16-bit              & 49\,381 & 9.12 & 34--36 \\
+\hline
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:hw} gives the cost. The 16-bit certificate unit is 2.7$\times$ smaller than a 24-bit version routed with the same flow (supplementary material). Early abort limits its work: a normal pass uses stages beyond the first for 48--51\% of its neurons, because a failing certificate stops at the first neuron that can fire. The arithmetic per neuron and step is unchanged by certification, since every skipped step is advanced in the catch-up pass; what certification removes is state traffic, one read and one write per neuron in 21--27\% of core-steps.
+
+\subsection{Certificates hold on SpiNNaker}
+\label{sec:spinnaker}
+
+\begin{table}
+\caption{\label{tab:spinnaker}The locally connected $K=4$ network on SpiNNaker (50 SHD test samples). Certificates are computed from the weights stored on the chip and the recorded membrane potentials.}
+\centering
+\begin{tabular}{lr}
+\hline
+spikes recorded on the chip & 67\,328 \\
+spikes reproduced at the same neuron and step by the stored-weight model & 67\,327 \\
+largest one-step membrane deviation from the model (units of $\theta$) & 0.003 \\
+core-steps silent on the chip & 67.7\% \\
+silent core-windows certified, $K=2$ & 100\% (49\,172) \\
+silent core-windows certified, $K=4$ & 90.6\% (40\,045 of 44\,219) \\
+violations, $K=2$ and $K=4$ & 0 \\
+test accuracy, chip / stored-weight model / nominal weights & 80\% / 80\% / 86\% \\
+\hline
+\end{tabular}
+\end{table}
+
+Certificates computed from the weights a neuromorphic chip stores hold on that chip. SpiNNaker stores each weight in fixed point, in steps of 0.049 of the threshold for excitatory and 0.098 for inhibitory synapses. A floating-point model of the network with these stored weights reproduces the chip's spike trains: of the 67\,328 spikes recorded on the chip, 67\,327 occur at the same neuron and step in the model, and the membrane deviates from it by at most $0.003\,\theta$ per step (table~\ref{tab:spinnaker}). On the chip's recorded state, $K=4$ certificates certify 90.6\% of the core-windows that were silent, with no violation; at $K=2$, where no tap binds, they certify every silent window. Test accuracy on the 50 samples is 80\% on the chip and in the stored-weight model, against 86\% for the same network with its nominal weights, so the difference arises from the chip's weight storage. A certificate is sound against the weights and arithmetic the hardware executes; on SpiNNaker these are the stored weights, as in the 16-bit unit they are the directed-rounding operands (section~\ref{sec:hardware}).
+
+\section{Discussion}
+
+Here we have shown that provable silence in recurrent spiking networks with synaptic delays is limited by one quantity, and that training can control it. The delay decomposition makes $R_{\mathrm{short}}$ the only worst-case term of a $K$-step certificate, and certified silence tracks it at every level tested, from one network re-certified at three horizons to 23 networks, while total recurrent excitation does not order them. Certification costs at most a few tenths of a point of test accuracy, and on SSC accuracy improved (section~\ref{sec:accuracy}).
+
+Training meets the bound by redistributing excitation across delays: the binding tap loses most of its drive while the longer taps gain, and total excitatory mass changes little (section~\ref{sec:mechanism}). A unit-delay network has no longer tap and meets the same budget by removing excitation, so delays of at least two steps are what allow certification while recurrent excitation is retained. With a learnable delay per synapse the redistribution is a reweighting of existing synapses toward longer delays. Because $R_{\mathrm{short}}$ scales with fan-in, bounded fan-in keeps networks certifiable as they grow, and the measured coefficient $R \approx 0.0098 \times \mathrm{fan\text{-}in}$ estimates the fan-in at which a target certification level is reached.
+\paragraph{Relation to lookahead in parallel simulation.} The prevailing approach to lookahead in spiking simulation takes it from the network's structure: the minimum synaptic delay bounds how far a process may advance \cite{fujimoto,nest}, and topology-aware mapping lengthens that bound by placing long-delay connections between nodes \cite{lober}. Our results extend this approach to the network's state. A certificate adds a state-dependent lookahead to the delay-derived one, and the training objective shapes a network so that this lookahead exists. Its execution gain is bounded by how long cores stay silent relative to the interconnect latency, which the oracle reads from a network's spike trains before any timing experiment. The share of the oracle bound that the certificate realises grows with the trained horizon (table~\ref{tab:ceiling}). The host networks are silent as often as the networks trained here, in runs less than half as long, and their bound is close to one; the attainable gain follows the length of silent runs, which can be measured from spike trains before deployment.
+
+\paragraph{Implications for neuromorphic hardware.} In hardware the certificate reuses the reads of the neuron update and adds no cycles to a pass. A certified core advances its skipped steps exactly in one catch-up pass and removes state-memory traffic in 21--27\% of core-steps, and directed rounding lets the certificate run in 16-bit arithmetic without losing soundness. On SpiNNaker, certificates computed from the weights the chip stores hold on every window, so the certificate carries over to an existing neuromorphic system when it is computed in that system's arithmetic. For processors with time-stepped cores the results amount to a design procedure: synaptic delays of at least two steps, bounded fan-in, a certificate penalty during training, and a certificate unit beside the neuron update.
+
+\paragraph{Relation to cortical delay structure.} The regime in which certificates work resembles the delay structure of cortex, where local connections conduct within a fraction of a millisecond, long-range projections impose delays of tens of milliseconds, and most neurons are quiet most of the time \cite{conduction,sparsefiring}.
+
+\paragraph{Outlook.} Three extensions follow directly. Deploying certificate-based execution on time-stepped neuromorphic processors such as Loihi 2 \cite{loihi2runtime} and SpiNNaker2 \cite{spinnaker2chip} would measure the trade between certificate computation and avoided waiting under their own costs. Extending certificates to other neuron models requires a monotone bound on the membrane over the horizon; the delay decomposition itself does not depend on the neuron model. Training objectives that lengthen silent runs would raise the execution bound that the oracle measures.
+
+\paragraph{Scope.} The evidence covers adaptive leaky integrate-and-fire neurons with fixed delay sets of up to eight steps and learnable delays, on speech and event-vision data. Execution was timed on general-purpose processors with emulated per-message latency. The hardware figures are post-route values for a design that has not been fabricated.
+
+Overall, this work identifies where excitation sits across delays as the property that limits how far a recurrent spiking network can run ahead of silent neighbours, and gives the means to measure it, train for it and check it in hardware.
+
+\section{Conclusion}
+
+Provable silence in recurrent spiking networks with synaptic delays is limited by the excitatory drive that arrives within the certificate horizon. Training moves that drive into longer delays at small cost in accuracy, also inside published architectures, so certified silence becomes a design target for training. The execution gain it allows is set by the length of silent runs, which can be read from a network's spike trains before deployment, and the certificate is cheap enough to compute beside the neuron update in narrow arithmetic and holds on an existing neuromorphic system when computed from the weights it stores.
+
+\ack{The authors thank the creators of the Heidelberg spiking datasets and of N-MNIST, and the authors of the learnable-delay network and SpikCommander for releasing their code. We thank Amazon Web Services for the Amazon SageMaker compute instances on which the many-core execution measurements were run, and the EBRAINS research infrastructure and the SpiNNaker team at the University of Manchester for access to the SpiNNaker system.}
+
+\funding{This research received no external funding.}
+
+\roles{Md Wahiduzzaman Suva: Conceptualization, Methodology, Software, Investigation, Writing -- original draft, Writing -- review and editing. Md Tauhidul Islam: Formal analysis, Validation, Writing -- review and editing. Esm E Moula Chowdhury Abha: Data curation, Visualization, Validation, Writing -- review and editing. Md.\ Imtiaj Alam Sajin: Investigation, Visualization, Writing -- review and editing. M F Mridha: Supervision, Writing -- review and editing.}
+
+\data{
+
+The datasets are publicly available \cite{shd,nmnist}. The result files underlying every table and figure are available at \url{https://github.com/wshuv-o/certifiably-silent-snn}.
+
+\section*{Code availability}
+Training, certification, execution-engine, hardware (register-transfer, synthesis and layout) and SpiNNaker deployment code is available at \url{https://github.com/wshuv-o/certifiably-silent-snn}.
+
+}
+
+\suppdata{Supplementary material lists the networks of the rank correlation and gives the selection protocol for the host networks, the delay-learning settings, execution at all latencies and over TCP, the full-precision certificate unit, and the SpiNNaker deployment.}
+
+\begin{thebibliography}{99}
+
+\bibitem{kudithipudi2025} Kudithipudi D \textit{et al} 2025 Neuromorphic computing at scale \textit{Nature} \textbf{637} 801--812
+
+\bibitem{schuman2022} Schuman C D, Kulkarni S R, Parsa M, Mitchell J P, Date P and Kay B 2022 Opportunities for neuromorphic computing algorithms and applications \textit{Nat. Comput. Sci.} \textbf{2} 10--19
+
+\bibitem{spinnaker} Furber S B, Galluppi F, Temple S and Plana L A 2014 The SpiNNaker project \textit{Proc. IEEE} \textbf{102} 652--665
+
+\bibitem{loihi} Davies M \textit{et al} 2018 Loihi: a neuromorphic manycore processor with on-chip learning \textit{IEEE Micro} \textbf{38} 82--99
+
+\bibitem{spinnaker2chip} Scholze S \textit{et al} 2026 The SpiNNaker2 chip: a many-core platform for flexible and scalable brain-inspired computing \textit{IEEE Open J. Circuits Syst.} doi:10.1109/OJCAS.2026.3714974
+
+\bibitem{darwin3} Ma D \textit{et al} 2024 Darwin3: a large-scale neuromorphic chip with a novel ISA and on-chip learning \textit{Natl. Sci. Rev.} \textbf{11} nwae102
+
+\bibitem{truenorth} Merolla P A \textit{et al} 2014 A million spiking-neuron integrated circuit with a scalable communication network and interface \textit{Science} \textbf{345} 668--673
+
+\bibitem{neuroscale} Li C, Imam N and Manohar R 2025 A deterministic neuromorphic architecture with scalable time synchronization \textit{Nat. Commun.} \textbf{16} 10329
+
+\bibitem{asyncaccel} Chen Z, Ma D, Jin X, Xing Q, Jin O, Du X, He S and Pan G 2024 An asynchronous multi-core accelerator for SNN inference \textit{arXiv}:2407.20947
+
+\bibitem{loihi2runtime} Timcheck J, Pierro A and Shrestha S B 2026 A compute and communication runtime model for Loihi 2 \textit{arXiv}:2601.10035
+
+\bibitem{neurobench} Yik J \textit{et al} 2025 The NeuroBench framework for benchmarking neuromorphic computing algorithms and systems \textit{Nat. Commun.} \textbf{16} 1545
+
+\bibitem{golosio2026} Golosio B \textit{et al} 2026 Scalable construction of spiking neural networks using up to thousands of GPUs \textit{Neuromorph. Comput. Eng.} \textbf{6} 024012
+
+\bibitem{chandymisra} Chandy K M and Misra J 1979 Distributed simulation: a case study in design and verification of distributed programs \textit{IEEE Trans. Softw. Eng.} \textbf{SE-5} 440--452
+
+\bibitem{fujimoto} Fujimoto R M 1990 Parallel discrete event simulation \textit{Commun. ACM} \textbf{33} 30--53
+
+\bibitem{nest} Gewaltig M-O and Diesmann M 2007 NEST (NEural Simulation Tool) \textit{Scholarpedia} \textbf{2} 1430
+
+\bibitem{lober} Lober M, Diesmann M and Kunkel S 2026 Exploiting network topology in brain-scale simulations of spiking neural networks \textit{Neuromorph. Comput. Eng.} \textbf{6} 024024
+
+\bibitem{dynapse2} Richter O, Wu C, Whatley A M, K\"ostinger G, Nielsen C, Qiao N and Indiveri G 2024 DYNAP-SE2: a scalable multi-core dynamic neuromorphic asynchronous spiking neural network processor \textit{Neuromorph. Comput. Eng.} \textbf{4} 014003
+
+\bibitem{pronold2022} Pronold J, Jordan J, Wylie B J N, Kitayama I, Diesmann M and Kunkel S 2022 Routing brain traffic through the von Neumann bottleneck: efficient cache usage in spiking neural network simulation code on general purpose computers \textit{Parallel Comput.} \textbf{113} 102952
+
+\bibitem{kurth2022} Kurth A C, Senk J, Terhorst D, Finnerty J and Diesmann M 2022 Sub-realtime simulation of a neuronal network of natural density \textit{Neuromorph. Comput. Eng.} \textbf{2} 021001
+
+\bibitem{senk2026} Senk J \textit{et al} 2026 Constructive community race: full-density spiking neural network model drives neuromorphic computing \textit{Neuromorph. Comput. Eng.} \textbf{6} 012001
+
+\bibitem{layersync} Koopman R, Yousefzadeh A, Shahsavari M, Tang G and Sifalakis M 2025 Exploring the limitations of layer synchronization in spiking neural networks \textit{Trans. Mach. Learn. Res.}
+
+\bibitem{jefferson} Jefferson D R 1985 Virtual time \textit{ACM Trans. Program. Lang. Syst.} \textbf{7} 404--425
+
+\bibitem{stacs} Wang F, Kulkarni S, Theilman B, Rothganger F, Schuman C D, Lim S-H and Aimone J B 2024 Scaling neural simulations in STACS \textit{Neuromorph. Comput. Eng.} \textbf{4} 024002
+
+\bibitem{polychron} Izhikevich E M 2006 Polychronization: computation with spikes \textit{Neural Comput.} \textbf{18} 245--282
+
+\bibitem{dcls} Hammouamri I, Khalfaoui-Hassani I and Masquelier T 2024 Learning delays in spiking neural networks using dilated convolutions with learnable spacings \textit{Int. Conf. on Learning Representations}
+
+\bibitem{meszaros2025} M\'esz\'aros B, Knight J C and Nowotny T 2025 Efficient event-based delay learning in spiking neural networks \textit{Nat. Commun.} \textbf{16} 10422
+
+\bibitem{delgrad} G\"oltz J, Weber J, Kriener L, Billaudelle S, Lake P, Schemmel J, Payvand M and Petrovici M A 2025 DelGrad: exact event-based gradients for training delays and weights on spiking neuromorphic hardware \textit{Nat. Commun.} \textbf{16} 8245
+
+\bibitem{nowotny2025} Nowotny T, Turner J P and Knight J C 2025 Loss shaping enhances exact gradient learning with Eventprop in spiking neural networks \textit{Neuromorph. Comput. Eng.} \textbf{5} 014001
+
+\bibitem{deckers2024} Deckers L, Van Damme L, Van Leekwijck W, Tsang I J and Latr\'e S 2024 Co-learning synaptic delays, weights and adaptation in spiking neural networks \textit{Front. Neurosci.} \textbf{18} 1360300
+
+\bibitem{delrec} Queant A, Ran\c{c}on U, Cottereau B R and Masquelier T 2025 DelRec: learning delays in recurrent spiking neural networks \textit{arXiv}:2509.24852
+
+\bibitem{balafrej2025} Balafrej I, Bahadi S, Rouat J and Alibart F 2025 Enhancing temporal learning in recurrent spiking networks for neuromorphic applications \textit{Neuromorph. Comput. Eng.} \textbf{5} 024008
+
+\bibitem{bamsldk} Chac\'on-Falc\'on M, Pati\~no-Saucedo A, Camu\~nas-Mesa L, Serrano-Gotarredona T and Linares-Barranco B 2025 BAM-SLDK: biologically inspired attention mechanism with spiking learnable delayed kernel synapses \textit{Neuromorph. Comput. Eng.} \textbf{5} 024017
+
+\bibitem{loihidelays} M\'esz\'aros B, Knight J C, Timcheck J and Nowotny T 2025 A complete pipeline for deploying SNNs with synaptic delays on Loihi 2 \textit{arXiv}:2510.13757
+
+\bibitem{denram} D'Agostino S \textit{et al} 2024 DenRAM: neuromorphic dendritic architecture with RRAM for efficient temporal processing with delays \textit{Nat. Commun.} \textbf{15} 3446
+
+\bibitem{certsnn} Liang L, Xu K, Hu X, Deng L and Xie Y 2022 Toward robust spiking neural network against adversarial perturbation \textit{Advances in Neural Information Processing Systems} \textbf{35}
+
+\bibitem{rsnn2024} Ding J, Pan Z, Liu Y, Yu Z and Huang T 2024 Robust stable spiking neural networks \textit{Proc. 41st Int. Conf. on Machine Learning} (PMLR vol 235)
+
+\bibitem{mukhoty2024} Mukhoty B, AlQuabeh H, De Masi G, Xiong H and Gu B 2024 Certified adversarial robustness for rate encoded spiking neural networks \textit{Int. Conf. on Learning Representations}
+
+\bibitem{wang2026} Wang S \textit{et al} 2026 Robust spiking neural networks against adversarial attacks \textit{Int. Conf. on Learning Representations}; \textit{arXiv}:2602.20548
+
+\bibitem{banerjee2023} Banerjee A, Banerjee S, Ghosh S and Mohalik S 2023 SMT-based modeling and verification of spiking neural networks: a case study \textit{Verification, Model Checking, and Abstract Interpretation (VMCAI 2023)} pp 25--43
+
+\bibitem{gowal2019} Gowal S \textit{et al} 2019 Scalable verified training for provably robust image classification \textit{Proc. IEEE/CVF Int. Conf. on Computer Vision}
+
+\bibitem{mao2024} Mao Y, M\"uller M N, Fischer M and Vechev M 2024 Understanding certified training with interval bound propagation \textit{Int. Conf. on Learning Representations}
+
+\bibitem{sorbaro2020} Sorbaro M, Liu Q, Bortone M and Sheik S 2020 Optimizing the energy consumption of spiking neural networks for neuromorphic applications \textit{Front. Neurosci.} \textbf{14} 662
+
+\bibitem{narduzzi2025} Narduzzi S, Zenke F, Liu S-C and Dunbar L A 2025 EFLOP: a sparsity-aware metric for evaluating computational cost in spiking and non-spiking neural networks \textit{Neuromorph. Comput. Eng.} \textbf{5} doi:10.1088/2634-4386/addee8
+
+\bibitem{stanojevic2024} Stanojevic A, Wo\'zniak S, Bellec G, Cherubini G, Pantazi A and Gerstner W 2024 High-performance deep spiking neural networks with 0.3 spikes per neuron \textit{Nat. Commun.} \textbf{15} 6793
+
+\bibitem{reeb2026} Reeb N, Grabmann M, Lopez-Randulfe J, Dietrich R and Knoll A C 2026 Energy-efficient radar detection with spiking neural resonators via activity-gated sparsity on Intel Loihi 2 \textit{Neuromorph. Comput. Eng.} \textbf{6} 024006
+
+\bibitem{speck} Yao M \textit{et al} 2024 Spike-based dynamic computing with asynchronous sensing-computing neuromorphic chip \textit{Nat. Commun.} \textbf{15} 4464
+
+\bibitem{hunter2022} Hunter K, Spracklen L and Ahmad S 2022 Two sparsities are better than one: unlocking the performance benefits of sparse--sparse networks \textit{Neuromorph. Comput. Eng.} \textbf{2} 034004
+
+\bibitem{dampfhoffer2023} Dampfhoffer M, Mesquida T, Valentian A and Anghel L 2023 Are SNNs really more energy-efficient than ANNs? An in-depth hardware-aware study \textit{IEEE Trans. Emerg. Top. Comput. Intell.} \textbf{7} 731--741
+
+\bibitem{petschenig2023} Petschenig H and Legenstein R 2023 Quantized rewiring: hardware-aware training of sparse deep neural networks \textit{Neuromorph. Comput. Eng.} \textbf{3} 024006
+
+\bibitem{eprop} Korcsak-Gorzo A, Espinoza-Valverde J A, Stapmanns J, Plesser H E, Dahmen D, Bolten M, van Albada S J and Diesmann M 2026 Event-driven eligibility propagation in large sparse networks \textit{Neuromorph. Comput. Eng.}
+
+\bibitem{paralif} Arnaud Yarga S Y and Wood S U N 2025 Accelerating spiking neural networks with parallelizable leaky integrate-and-fire neurons \textit{Neuromorph. Comput. Eng.} \textbf{5} 014012
+
+\bibitem{lsnn} Bellec G, Salaj D, Subramoney A, Legenstein R and Maass W 2018 Long short-term memory and learning-to-learn in networks of spiking neurons \textit{Advances in Neural Information Processing Systems} \textbf{31}
+
+\bibitem{asrnn} Yin B, Corradi F and Boht\'e S M 2021 Accurate and efficient time-domain classification with adaptive spiking recurrent neural networks \textit{Nat. Mach. Intell.} \textbf{3} 905--913
+
+\bibitem{shd} Cramer B, Stradmann Y, Schemmel J and Zenke F 2022 The Heidelberg spiking data sets for the systematic evaluation of spiking neural networks \textit{IEEE Trans. Neural Netw. Learn. Syst.} \textbf{33} 2744--2757
+
+\bibitem{nmnist} Orchard G, Jayawant A, Cohen G K and Thakor N 2015 Converting static image datasets to spiking neuromorphic datasets using saccades \textit{Front. Neurosci.} \textbf{9} 437
+
+\bibitem{baronig2025} Baronig M, Ferrand R, Sabathiel S and Legenstein R 2025 Advancing spatio-temporal processing through adaptation in spiking neural networks \textit{Nat. Commun.} \textbf{16} 5776
+
+\bibitem{moro2026} Moro F, Aceituno P V, Kriener L and Payvand M 2026 Temporal hierarchy in spiking neural networks \textit{Neuromorph. Comput. Eng.} \textbf{6} 024023
+
+\bibitem{spikcommander} Wang J, Yu L, Shen X, Guo S, Zhou C, Zhao L, Zhong Y, Zhang Z and Ma Z 2026 SpikCommander: a high-performance spiking transformer with multi-view learning for efficient speech command recognition \textit{Proc. AAAI Conf. on Artificial Intelligence}; \textit{arXiv}:2511.07883
+
+\bibitem{openroad} Ajayi T \textit{et al} 2019 Toward an open-source digital flow: first learnings from the OpenROAD project \textit{Proc. 56th ACM/IEEE Design Automation Conf.} pp 1--4
+
+\bibitem{pynn} Davison A P, Br\"{u}derle D, Eppler J, Kremkow J, Muller E, Pecevski D, Perrinet L and Yger P 2009 PyNN: a common interface for neuronal network simulators \textit{Front. Neuroinform.} \textbf{2} 11
+
+\bibitem{spynnaker} Rhodes O \textit{et al} 2018 sPyNNaker: a software package for running PyNN simulations on SpiNNaker \textit{Front. Neurosci.} \textbf{12} 816
+
+\bibitem{conduction} Swadlow H A and Waxman S G 2012 Axonal conduction delays \textit{Scholarpedia} \textbf{7} 1451
+
+\bibitem{sparsefiring} Barth A L and Poulet J F A 2012 Experimental evidence for sparse firing in the neocortex \textit{Trends Neurosci.} \textbf{35} 345--355
+
+\end{thebibliography}
+
+\end{document}

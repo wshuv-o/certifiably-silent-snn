@@ -1,0 +1,25 @@
+128
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Byte Order:                              Little Endian
+Address sizes:                           46 bits physical, 48 bits virtual
+CPU(s):                                  128
+On-line CPU(s) list:                     0-127
+Thread(s) per core:                      2
+Core(s) per socket:                      32
+Socket(s):                               2
+NUMA node(s):                            2
+Vendor ID:                               GenuineIntel
+CPU family:                              6
+Model:                                   106
+Model name:                              Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz
+Stepping:                                6
+CPU MHz:                                 3499.180
+BogoMIPS:                                5799.94
+Hypervisor vendor:                       KVM
+Virtualization type:                     full
+L1d cache:                               3 MiB
+              total        used        free      shared  buff/cache   available
+Mem:            247          30         208           0           8         215
+Swap:             0           0           0
+ 08:15:57 up 1 min,  0 users,  load average: 3.37, 1.24, 0.46
