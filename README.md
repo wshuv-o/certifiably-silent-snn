@@ -81,3 +81,10 @@ through `git rev-parse` or the `REPO` environment variable.
 ## Data
 
 The Heidelberg Spiking Digits, Spiking Speech Commands and N-MNIST datasets are publicly available from their authors.
+
+## License
+
+The code is released under the MIT License (`LICENSE`). Trained models and result files are released under the
+Creative Commons Attribution 4.0 International License (CC BY 4.0). The manuscript and supplement in
+`research/paper/` are the authors' submitted version and remain under the authors' copyright. The datasets are
+distributed by their authors under their own terms.

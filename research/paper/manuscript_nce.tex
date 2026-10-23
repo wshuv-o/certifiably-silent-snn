@@ -33,13 +33,13 @@
 
 \affil{$^1$Department of Computer Science, American International University-Bangladesh, Dhaka 1229, Bangladesh}
 
-\affil{$^2$United International University, Dhaka, Bangladesh}
+\affil{$^2$Department of Computer Science and Engineering, United International University, Dhaka 1212, Bangladesh}
 
 \affil{$^*$Author to whom any correspondence should be addressed.}
 
 \email{wshuvo360@gmail.com}
 
-\keywords{spiking neural networks, neuromorphic computing, synchronisation, synaptic delays, formal guarantees, parallel discrete-event simulation}
+\keywords{spiking neural networks, neuromorphic hardware, synaptic delays, provable silence, multi-core synchronisation, formal verification, SpiNNaker}
 
 \begin{abstract}
 In multi-core neuromorphic systems a core waits for neighbour spikes before each time step, and may skip the wait only if their silence is proven in advance. Trained networks are silent in most core-steps, but what makes silence provable has not been identified. Here we show that, for recurrent networks of adaptive leaky integrate-and-fire neurons with multi-tap synaptic delays, a $K$-step silence certificate needs a worst-case bound only for synapses with delay shorter than $K$, so the binding quantity is $R_{\mathrm{short}}$, the excitatory drive carried by those delays. Across 23 networks, certified silence decreases with $R_{\mathrm{short}}$ (Spearman $\rho=-0.804$), and total recurrent excitation does not order the networks. A certificate penalty meets the bound by moving excitation into longer delays: binding-tap drive falls 94\% while total excitatory mass changes 1--16\%. In two published Heidelberg Spiking Digits architectures the certified layer reaches 91.09\% and 91.46\% test accuracy against 91.30\% and 91.42\% for matched controls, certifying 89--94\% of the oracle fraction. The recipe transfers unchanged to Spiking Speech Commands and event-camera vision. An oracle bounds the gain of silence-based execution at $1.5$--$1.7\times$ in our networks; certificate-based execution, bit-identical to lock-step on up to 64 cores, realises $1.11$--$1.28\times$ at $500\,\mu$s per message. In a core routed in SkyWater 130\,nm, a 16-bit certificate with directed rounding runs beside the neuron update and keeps 96--99\% of certified silence, and on SpiNNaker certificates from the stored weights certify 91\% of silent windows without violation. Provable silence is a trainable property set by where excitation sits across delays.
